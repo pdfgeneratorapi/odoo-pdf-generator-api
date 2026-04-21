@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_pdfgen_root"
+              name="PDF Generator API"
+              web_icon="pdfgeneratorapi_connector,static/description/icon.png"
+              sequence="95"/>
+
+    <menuitem id="menu_pdfgen_settings"
+              name="Settings"
+              parent="menu_pdfgen_root"
+              action="action_pdfgen_settings"
+              groups="base.group_system"
+              sequence="10"/>
+</odoo>

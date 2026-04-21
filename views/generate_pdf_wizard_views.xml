@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pdfgen_generate_wizard_form" model="ir.ui.view">
+        <field name="name">pdfgen.generate.wizard.form</field>
+        <field name="model">pdfgen.generate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate custom PDF">
+                <group>
+                    <field name="move_id" readonly="1"/>
+                    <field name="template_id"/>
+                </group>
+                <footer>
+                    <button name="action_generate"
+                            type="object"
+                            string="Generate"
+                            class="btn-primary"/>
+                    <button special="cancel"
+                            string="Cancel"
+                            class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
