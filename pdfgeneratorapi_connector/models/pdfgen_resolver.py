@@ -1,0 +1,125 @@
+"""Pure-Python helpers for turning a pdfgen template-data shape into a flat
+list of placeholder rows, and for walking an Odoo record tree driven by a
+mapping to produce the payload sent to `/documents/generate`.
+
+Kept free of Odoo imports so it can be unit-tested on the host.
+"""
+
+
+def flatten_placeholders(data, prefix=""):
+    """Walk a template-data dict and yield placeholder descriptors.
+
+    Each yielded tuple is `(path, kind)` where kind is:
+      - "scalar" for leaf values (strings, numbers, booleans, None)
+      - "list"   for arrays of dicts (repeated sections in the template)
+
+    List-item descriptors carry the child schema in a nested call so the caller
+    can build a second level of mapping lines whose paths are relative to each
+    item. The caller is responsible for that recursion.
+
+    Nested dicts are flattened with dot-joined paths. Empty dicts and empty lists
+    are treated as scalars (the template hasn't bound anything concrete to them).
+    """
+    if not isinstance(data, dict):
+        return
+    for key, value in data.items():
+        path = f"{prefix}{key}"
+        if isinstance(value, dict):
+            yield from flatten_placeholders(value, prefix=f"{path}.")
+        elif isinstance(value, list) and value and isinstance(value[0], dict):
+            yield (path, "list", value[0])
+        else:
+            yield (path, "scalar", None)
+
+
+def set_nested(target, dotted_path, value):
+    """Assign `value` into `target` at a dotted path, creating intermediate dicts.
+
+    Example: `set_nested({}, "a.b.c", 1)` → `{"a": {"b": {"c": 1}}}`.
+    """
+    keys = dotted_path.split(".")
+    cursor = target
+    for key in keys[:-1]:
+        if not isinstance(cursor.get(key), dict):
+            cursor[key] = {}
+        cursor = cursor[key]
+    cursor[keys[-1]] = value
+
+
+def walk(record, dotted_path):
+    """Follow a dotted attribute path on an Odoo record.
+
+    Empty path → return the record itself. `record` may be a recordset, a plain
+    dict, or any object whose attributes resolve via getattr. Missing attributes
+    return None rather than raising, so templates tolerate partially-populated
+    records.
+    """
+    if not dotted_path:
+        return record
+    cursor = record
+    for segment in dotted_path.split("."):
+        if cursor is None or cursor is False:
+            return None
+        if isinstance(cursor, dict):
+            cursor = cursor.get(segment)
+            continue
+        cursor = getattr(cursor, segment, None)
+    return _normalize(cursor)
+
+
+def _normalize(value):
+    """Coerce Odoo False/empty-recordset sentinels into JSON-friendly values."""
+    if value is False:
+        return ""
+    try:
+        if hasattr(value, "_name") and hasattr(value, "ids") and not value.ids:
+            return ""
+    except Exception:
+        pass
+    return value
+
+
+def resolve(record, lines):
+    """Build the payload dict for a single record from mapping lines.
+
+    `lines` is an iterable of objects exposing:
+      - `placeholder_path`: string
+      - `odoo_field_path`: string
+      - `is_list`: bool
+      - `child_lines`: iterable of the same shape (used when is_list is True)
+
+    Scalar rows walk the path from `record` and set the result into the output
+    dict at `placeholder_path`. List rows walk the path to a recordset, then
+    iterate it, resolving each child line relative to the iteration's current
+    record. Unresolved paths map to empty string so template rendering stays
+    stable.
+    """
+    payload = {}
+    for line in lines:
+        if line.is_list:
+            items = []
+            rs = walk(record, line.odoo_field_path)
+            iterable = rs if rs and not isinstance(rs, str) else []
+            try:
+                iterator = list(iterable)
+            except TypeError:
+                iterator = []
+            for sub in iterator:
+                item = resolve(sub, list(line.child_lines))
+                items.append(item)
+            set_nested(payload, line.placeholder_path, items)
+        else:
+            value = walk(record, line.odoo_field_path) if line.odoo_field_path else ""
+            set_nested(payload, line.placeholder_path, _jsonable(value))
+    return payload
+
+
+def _jsonable(value):
+    """Make a walked value safe to drop into a JSON payload."""
+    if value is None:
+        return ""
+    if hasattr(value, "isoformat"):
+        return value.isoformat()
+    if hasattr(value, "_name") and hasattr(value, "display_name"):
+        return value.display_name or ""
+    return value

@@ -1,2 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_pdfgen_generate_wizard_user,pdfgen.generate.wizard user,model_pdfgen_generate_wizard,base.group_user,1,1,1,1
+access_pdfgen_template_mapping_user,pdfgen.template.mapping user,model_pdfgen_template_mapping,base.group_user,1,0,0,0
+access_pdfgen_template_mapping_admin,pdfgen.template.mapping admin,model_pdfgen_template_mapping,base.group_system,1,1,1,1
+access_pdfgen_template_mapping_line_user,pdfgen.template.mapping.line user,model_pdfgen_template_mapping_line,base.group_user,1,0,0,0
+access_pdfgen_template_mapping_line_admin,pdfgen.template.mapping.line admin,model_pdfgen_template_mapping_line,base.group_system,1,1,1,1

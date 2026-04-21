@@ -116,6 +116,15 @@ class PdfGenApiClient:
             params["access"] = access
         return self._request("GET", "/templates", params=params)
 
+    def get_template_data(self, template_id):
+        """Return the sample data dict the template expects.
+
+        The response envelope is `{"response": <dict>, "meta": {}}`. The dict shape
+        defines every placeholder path (nested dicts + arrays of dicts) the template
+        will interpolate.
+        """
+        return self._request("GET", f"/templates/{int(template_id)}/data")
+
     def generate(self, template_id, data, name=None, output="base64", fmt="pdf"):
         body = {
             "template": {"id": int(template_id), "data": data},

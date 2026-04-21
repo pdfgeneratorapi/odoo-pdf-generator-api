@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pdfgen_template_mapping_tree" model="ir.ui.view">
+        <field name="name">pdfgen.template.mapping.tree</field>
+        <field name="model">pdfgen.template.mapping</field>
+        <field name="arch" type="xml">
+            <list string="Template Mappings">
+                <field name="name"/>
+                <field name="template_id"/>
+                <field name="template_name"/>
+                <field name="model_id"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pdfgen_template_mapping_form" model="ir.ui.view">
+        <field name="name">pdfgen.template.mapping.form</field>
+        <field name="model">pdfgen.template.mapping</field>
+        <field name="arch" type="xml">
+            <form string="Template Mapping">
+                <header>
+                    <button name="action_load_placeholders"
+                            type="object"
+                            string="Load placeholders"
+                            class="btn-primary"
+                            invisible="not template_id"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="template_id"/>
+                            <field name="template_name" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="model_id"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Field Mappings" name="lines">
+                            <field name="line_ids">
+                                <list string="Mappings" editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="placeholder_path"/>
+                                    <field name="is_list" widget="boolean_toggle"/>
+                                    <field name="odoo_field_path"
+                                           placeholder="e.g. partner_id.name"/>
+                                    <field name="parent_id" column_invisible="1"/>
+                                </list>
+                                <form string="Mapping">
+                                    <sheet>
+                                        <group>
+                                            <field name="placeholder_path"/>
+                                            <field name="is_list"/>
+                                            <field name="odoo_field_path"/>
+                                            <field name="parent_id"/>
+                                        </group>
+                                        <notebook invisible="not is_list">
+                                            <page string="List Item Fields">
+                                                <field name="child_ids">
+                                                    <list editable="bottom">
+                                                        <field name="sequence" widget="handle"/>
+                                                        <field name="placeholder_path"/>
+                                                        <field name="odoo_field_path"
+                                                               placeholder="relative to each iterated record"/>
+                                                    </list>
+                                                </field>
+                                            </page>
+                                        </notebook>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pdfgen_template_mapping" model="ir.actions.act_window">
+        <field name="name">Template Mappings</field>
+        <field name="res_model">pdfgen.template.mapping</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

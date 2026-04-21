@@ -1,8 +1,8 @@
-"""Wizard that generates a PDF for an invoice via pdfgeneratorapi.com.
+"""Wizard that generates a PDF for a record via pdfgeneratorapi.com.
 
-v1 slice: invoice-only, hardcoded serializer, synchronous generation. The
-wizard pulls the template list live from the API each time it opens (no
-local registry) and saves the returned PDF as ir.attachment.
+The payload sent to `/documents/generate` is built dynamically from the user's
+template mapping (see `pdfgen.template.mapping`). Templates without a mapping
+can't be generated — the wizard surfaces a clear error.
 """
 
 import base64
@@ -18,61 +18,6 @@ from ..models.pdfgen_api_client import (
 )
 
 _logger = logging.getLogger(__name__)
-
-
-def _serialize_partner(partner):
-    if not partner:
-        return {}
-    return {
-        "name": partner.name or "",
-        "street": partner.street or "",
-        "street2": partner.street2 or "",
-        "city": partner.city or "",
-        "zip": partner.zip or "",
-        "state": partner.state_id.name or "",
-        "country": partner.country_id.name or "",
-        "country_code": partner.country_id.code or "",
-        "vat": partner.vat or "",
-        "email": partner.email or "",
-        "phone": partner.phone or "",
-    }
-
-
-def _serialize_invoice(move):
-    return {
-        "invoice_number": move.name or "",
-        "invoice_date": (move.invoice_date and move.invoice_date.isoformat()) or "",
-        "due_date": (move.invoice_date_due and move.invoice_date_due.isoformat()) or "",
-        "state": move.state,
-        "currency": {
-            "code": move.currency_id.name or "",
-            "symbol": move.currency_id.symbol or "",
-            "position": move.currency_id.position or "",
-        },
-        "company": _serialize_partner(move.company_id.partner_id),
-        "customer": _serialize_partner(move.partner_id),
-        "lines": [
-            {
-                "description": line.name or "",
-                "quantity": line.quantity,
-                "uom": line.product_uom_id.name or "",
-                "price_unit": line.price_unit,
-                "discount": line.discount,
-                "tax_labels": line.tax_ids.mapped("name"),
-                "price_subtotal": line.price_subtotal,
-                "price_total": line.price_total,
-            }
-            for line in move.invoice_line_ids.filtered(lambda ln: ln.display_type == "product")
-        ],
-        "totals": {
-            "untaxed": move.amount_untaxed,
-            "tax": move.amount_tax,
-            "total": move.amount_total,
-            "residual": move.amount_residual,
-        },
-        "payment_reference": move.payment_reference or "",
-        "narration": (move.narration or "") if isinstance(move.narration, str) else "",
-    }
 
 
 class GeneratePdfWizard(models.TransientModel):
@@ -133,8 +78,23 @@ class GeneratePdfWizard(models.TransientModel):
 
     def action_generate(self):
         self.ensure_one()
+        mapping = self.env["pdfgen.template.mapping"].search(
+            [
+                ("template_id", "=", self.template_id),
+                ("model", "=", "account.move"),
+                ("active", "=", True),
+            ],
+            limit=1,
+        )
+        if not mapping:
+            raise UserError(
+                _(
+                    "No active mapping found for this template and model. "
+                    "Create one under PDF Generator API > Template Mappings."
+                )
+            )
         client = self._build_client()
-        data = _serialize_invoice(self.move_id)
+        data = mapping.resolve_payload(self.move_id)
         filename = f"{(self.move_id.name or 'invoice').replace('/', '_')}.pdf"
         try:
             response = client.generate(
