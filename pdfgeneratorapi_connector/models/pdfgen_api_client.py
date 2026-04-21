@@ -5,6 +5,7 @@ module has zero external pip dependencies. Auth is JWT Bearer (HS256) per
 https://docs.pdfgeneratorapi.com/v4 — iss=API key, sub=workspace identifier,
 exp=short TTL. Fresh JWT per request.
 """
+
 import base64
 import hashlib
 import hmac
@@ -33,8 +34,9 @@ class PdfGenApiError(Exception):
 class PdfGenApiClient:
     """Minimal client covering the endpoints the Odoo addon needs for v1."""
 
-    def __init__(self, base_url, api_key, api_secret, workspace_identifier,
-                 timeout=DEFAULT_TIMEOUT):
+    def __init__(
+        self, base_url, api_key, api_secret, workspace_identifier, timeout=DEFAULT_TIMEOUT
+    ):
         self.base_url = (base_url or DEFAULT_BASE_URL).rstrip("/")
         self.api_key = api_key
         self.api_secret = api_secret
@@ -80,14 +82,17 @@ class PdfGenApiClient:
                     "User-Agent": "pdfgeneratorapi-odoo-connector/1.0",
                 },
             )
-        except requests.Timeout:
-            raise PdfGenApiError(0, "", "Request timed out")
+        except requests.Timeout as e:
+            raise PdfGenApiError(0, "", "Request timed out") from e
         except requests.RequestException as e:
-            raise PdfGenApiError(0, "", f"Network error: {e}")
+            raise PdfGenApiError(0, "", f"Network error: {e}") from e
         if not response.ok:
             _logger.warning(
                 "PDF Generator API %s %s → %s %s",
-                method, path, response.status_code, response.text[:500],
+                method,
+                path,
+                response.status_code,
+                response.text[:500],
             )
             raise PdfGenApiError(response.status_code, response.text)
         if not response.content:

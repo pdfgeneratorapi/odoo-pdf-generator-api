@@ -4,6 +4,7 @@ v1 slice: invoice-only, hardcoded serializer, synchronous generation. The
 wizard pulls the template list live from the API each time it opens (no
 local registry) and saves the returned PDF as ir.attachment.
 """
+
 import base64
 import logging
 
@@ -40,8 +41,8 @@ def _serialize_partner(partner):
 def _serialize_invoice(move):
     return {
         "invoice_number": move.name or "",
-        "invoice_date": move.invoice_date and move.invoice_date.isoformat() or "",
-        "due_date": move.invoice_date_due and move.invoice_date_due.isoformat() or "",
+        "invoice_date": (move.invoice_date and move.invoice_date.isoformat()) or "",
+        "due_date": (move.invoice_date_due and move.invoice_date_due.isoformat()) or "",
         "state": move.state,
         "currency": {
             "code": move.currency_id.name or "",
@@ -61,9 +62,7 @@ def _serialize_invoice(move):
                 "price_subtotal": line.price_subtotal,
                 "price_total": line.price_total,
             }
-            for line in move.invoice_line_ids.filtered(
-                lambda l: l.display_type == "product"
-            )
+            for line in move.invoice_line_ids.filtered(lambda ln: ln.display_type == "product")
         ],
         "totals": {
             "untaxed": move.amount_untaxed,
@@ -99,10 +98,9 @@ class GeneratePdfWizard(models.TransientModel):
         secret = icp.get_param("pdfgen.api_secret")
         workspace = icp.get_param("pdfgen.workspace_identifier")
         if not (key and secret and workspace):
-            raise UserError(_(
-                "PDF Generator API is not configured. Go to "
-                "Settings > PDF Generator API."
-            ))
+            raise UserError(
+                _("PDF Generator API is not configured. Go to Settings > PDF Generator API.")
+            )
         return PdfGenApiClient(
             base_url=icp.get_param("pdfgen.api_base_url") or DEFAULT_BASE_URL,
             api_key=key,
@@ -117,7 +115,7 @@ class GeneratePdfWizard(models.TransientModel):
         except UserError:
             return []
         try:
-            response = client.list_templates(per_page=200)
+            response = client.list_templates(per_page=100)
         except PdfGenApiError as e:
             _logger.warning("list_templates failed: %s / %s", e.status, e.body)
             return []
@@ -135,8 +133,6 @@ class GeneratePdfWizard(models.TransientModel):
 
     def action_generate(self):
         self.ensure_one()
-        if not self.template_id:
-            raise UserError(_("Select a template first."))
         client = self._build_client()
         data = _serialize_invoice(self.move_id)
         filename = f"{(self.move_id.name or 'invoice').replace('/', '_')}.pdf"
@@ -149,41 +145,45 @@ class GeneratePdfWizard(models.TransientModel):
                 fmt="pdf",
             )
         except PdfGenApiError as e:
-            raise UserError(_(
-                "PDF generation failed (HTTP %s): %s",
-                e.status or "—",
-                (e.body or "no body")[:500],
-            ))
+            raise UserError(
+                _(
+                    "PDF generation failed (HTTP %s): %s",
+                    e.status or "—",
+                    (e.body or "no body")[:500],
+                )
+            ) from e
 
         pdf_b64 = self._extract_pdf_payload(response)
         if not pdf_b64:
-            raise UserError(_(
-                "Unexpected API response shape. Got keys: %s",
-                list(response.keys()) if isinstance(response, dict) else type(response).__name__,
-            ))
+            raise UserError(
+                _(
+                    "Unexpected API response shape. Got keys: %s",
+                    list(response.keys())
+                    if isinstance(response, dict)
+                    else type(response).__name__,
+                )
+            )
 
         try:
             base64.b64decode(pdf_b64, validate=True)
         except (ValueError, TypeError) as e:
-            raise UserError(_("API returned invalid base64: %s", e))
+            raise UserError(_("API returned invalid base64: %s", e)) from e
 
-        attachment = self.env["ir.attachment"].create({
-            "name": filename,
-            "type": "binary",
-            "datas": pdf_b64,
-            "res_model": "account.move",
-            "res_id": self.move_id.id,
-            "mimetype": "application/pdf",
-        })
+        attachment = self.env["ir.attachment"].create(
+            {
+                "name": filename,
+                "type": "binary",
+                "datas": pdf_b64,
+                "res_model": "account.move",
+                "res_id": self.move_id.id,
+                "mimetype": "application/pdf",
+            }
+        )
         self.move_id.message_post(
             body=_("Generated custom PDF via pdfgeneratorapi.com."),
             attachment_ids=[attachment.id],
         )
-        return {
-            "type": "ir.actions.act_url",
-            "url": f"/web/content/{attachment.id}?download=true",
-            "target": "self",
-        }
+        return {"type": "ir.actions.act_window_close"}
 
     @staticmethod
     def _extract_pdf_payload(response):

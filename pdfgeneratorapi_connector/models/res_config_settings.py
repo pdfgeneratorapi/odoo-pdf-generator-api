@@ -1,7 +1,7 @@
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
-from .pdfgen_api_client import PdfGenApiClient, PdfGenApiError, DEFAULT_BASE_URL
+from .pdfgen_api_client import DEFAULT_BASE_URL, PdfGenApiClient, PdfGenApiError
 
 
 class ResConfigSettings(models.TransientModel):
@@ -27,23 +27,32 @@ class ResConfigSettings(models.TransientModel):
         string="Workspace Identifier",
         config_parameter="pdfgen.workspace_identifier",
         help="Your account email for regular workspaces, or the sub-workspace "
-             "identifier for sub-workspaces.",
+        "identifier for sub-workspaces.",
+    )
+    pdfgen_show_secret = fields.Boolean(
+        string="Show secret",
+        default=False,
+        help="Toggle to reveal the API secret in plaintext.",
     )
 
     def _get_pdfgen_client(self):
         self.ensure_one()
         missing = [
-            label for label, value in [
+            label
+            for label, value in [
                 ("API Key", self.pdfgen_api_key),
                 ("API Secret", self.pdfgen_api_secret),
                 ("Workspace Identifier", self.pdfgen_workspace_identifier),
-            ] if not value
+            ]
+            if not value
         ]
         if missing:
-            raise UserError(_(
-                "Please fill in: %s",
-                ", ".join(missing),
-            ))
+            raise UserError(
+                _(
+                    "Please fill in: %s",
+                    ", ".join(missing),
+                )
+            )
         return PdfGenApiClient(
             base_url=self.pdfgen_api_base_url or DEFAULT_BASE_URL,
             api_key=self.pdfgen_api_key,
@@ -56,11 +65,13 @@ class ResConfigSettings(models.TransientModel):
         try:
             workspace = client.ping()
         except PdfGenApiError as e:
-            raise UserError(_(
-                "Connection failed (HTTP %s): %s",
-                e.status or "—",
-                (e.body or "no body")[:500],
-            ))
+            raise UserError(
+                _(
+                    "Connection failed (HTTP %s): %s",
+                    e.status or "—",
+                    (e.body or "no body")[:500],
+                )
+            ) from e
         name = ""
         if isinstance(workspace, dict):
             name = (
@@ -75,7 +86,9 @@ class ResConfigSettings(models.TransientModel):
             "params": {
                 "type": "success",
                 "title": _("PDF Generator API"),
-                "message": _("Connected to workspace: %s", name or self.pdfgen_workspace_identifier),
+                "message": _(
+                    "Connected to workspace: %s", name or self.pdfgen_workspace_identifier
+                ),
                 "sticky": False,
             },
         }

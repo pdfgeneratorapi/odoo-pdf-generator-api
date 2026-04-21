@@ -1,0 +1,108 @@
+[project]
+name = "pdfgeneratorapi_connector-dev"
+version = "0.0.0"
+description = "Dev tooling config for the pdfgeneratorapi_connector Odoo addon (not a distributable package)."
+requires-python = ">=3.11"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9",
+    "pylint-odoo>=9.3",
+    "pytest>=8",
+    "pytest-cov>=6",
+    "coverage[toml]>=7",
+    "pre-commit>=4",
+    "requests>=2",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["__pycache__", "static/lib", ".venv"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "B",
+    "UP",
+    "SIM",
+    "RUF",
+]
+ignore = [
+    "E501",
+    "B008",
+    "RUF012",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__manifest__.py" = ["B018"]
+"__init__.py" = ["F401"]
+"tests/*" = ["S101"]
+"tests_unit/*" = ["S101"]
+
+[tool.pylint.master]
+load-plugins = "pylint_odoo"
+score = "n"
+
+[tool.pylint."messages control"]
+disable = [
+    "missing-docstring",
+    "too-few-public-methods",
+    "too-many-arguments",
+    "too-many-positional-arguments",
+    "import-outside-toplevel",
+    "broad-exception-caught",
+    "broad-exception-raised",
+    "unused-argument",
+]
+enable = [
+    "odoolint",
+]
+
+[tool.pylint.odoolint]
+manifest-required-authors = "PDF Generator API"
+manifest-required-keys = ["license"]
+manifest-deprecated-keys = ["description"]
+valid-odoo-versions = ["18.0", "19.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests_unit"]
+python_files = "test_*.py"
+addopts = "-ra -q --import-mode=importlib"
+
+[tool.coverage.run]
+source = ["pdfgeneratorapi_connector"]
+branch = true
+parallel = true
+omit = [
+    "*/__init__.py",
+    "*/__manifest__.py",
+    "*/tests/*",
+    "*/tests_unit/*",
+]
+
+[tool.coverage.paths]
+source = [
+    "pdfgeneratorapi_connector",
+    "/mnt/extra-addons/pdfgeneratorapi_connector",
+]
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
+skip_covered = false
+omit = [
+    "*/__init__.py",
+    "*/__manifest__.py",
+    "*/tests/*",
+    "*/tests_unit/*",
+]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
