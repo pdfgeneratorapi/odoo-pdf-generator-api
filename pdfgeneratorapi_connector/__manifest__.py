@@ -42,6 +42,9 @@ Not supported on Odoo Online (SaaS), which does not allow third-party apps.
             "pdfgeneratorapi_connector/static/src/mapping_editor/droppable_field_selector.js",
             "pdfgeneratorapi_connector/static/src/mapping_editor/mapping_editor.scss",
         ],
+        "web.assets_unit_tests": [
+            "pdfgeneratorapi_connector/static/tests/**/*.test.js",
+        ],
     },
     "images": ["static/description/icon.png"],
     "application": True,
