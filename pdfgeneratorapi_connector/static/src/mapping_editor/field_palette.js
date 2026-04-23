@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, onWillStart, useEffect, useState } from "@odoo/owl";
+import { Component, onWillStart, useEffect, useRef, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
@@ -23,11 +23,14 @@ export class PdfgenFieldPalette extends Component {
 
     setup() {
         this.fieldService = useService("field");
+        this.filterRef = useRef("filter");
+        this.listRef = useRef("list");
         this.state = useState({
             stack: [], // breadcrumb of { model, label, pathSegment }
             fields: [],
             search: "",
             loading: false,
+            focusIndex: -1, // index into filteredFields for keyboard nav
         });
         onWillStart(async () => {
             if (this.rootModel) {
@@ -47,6 +50,28 @@ export class PdfgenFieldPalette extends Component {
                 }
             },
             () => [this.rootModel]
+        );
+        // Reset keyboard focus whenever the filter term changes so the
+        // highlighted row always matches what the user just typed.
+        useEffect(
+            () => {
+                this.state.focusIndex = -1;
+            },
+            () => [this.state.search]
+        );
+        // Scroll the focused <li> into view on arrow-key navigation.
+        useEffect(
+            (idx) => {
+                if (idx < 0 || !this.listRef.el) {
+                    return;
+                }
+                const items = this.listRef.el.querySelectorAll(".o_pdfgen_palette_item");
+                const el = items[idx];
+                if (el) {
+                    el.scrollIntoView({ block: "nearest" });
+                }
+            },
+            () => [this.state.focusIndex]
         );
     }
 
@@ -126,6 +151,7 @@ export class PdfgenFieldPalette extends Component {
         // A filter scoped to the previous model is almost never meaningful on
         // the drilled-in model; reset so the user sees the full field list.
         this.state.search = "";
+        this.state.focusIndex = -1;
         await this.loadModel(field.relation, field.string, field.name);
     }
 
@@ -136,9 +162,73 @@ export class PdfgenFieldPalette extends Component {
         // Rewind to that frame and re-load it; clear the filter for the same
         // reason as onDrillIn.
         this.state.search = "";
+        this.state.focusIndex = -1;
         const frame = this.state.stack[index];
         this.state.stack = this.state.stack.slice(0, index);
         await this.loadModel(frame.model, frame.label, frame.pathSegment);
+    }
+
+    onKeyDown(ev) {
+        const filterEl = this.filterRef.el;
+        const filterHasFocus = filterEl && document.activeElement === filterEl;
+        const visible = this.filteredFields;
+        switch (ev.key) {
+            case "ArrowDown":
+                ev.preventDefault();
+                this.state.focusIndex = Math.min(
+                    this.state.focusIndex + 1,
+                    visible.length - 1
+                );
+                return;
+            case "ArrowUp":
+                ev.preventDefault();
+                this.state.focusIndex = Math.max(this.state.focusIndex - 1, 0);
+                return;
+            case "Enter": {
+                if (this.state.focusIndex < 0 || this.state.focusIndex >= visible.length) {
+                    return;
+                }
+                const field = visible[this.state.focusIndex];
+                if (field && field.isRelation) {
+                    ev.preventDefault();
+                    this.onDrillIn(field);
+                }
+                return;
+            }
+            case "Escape":
+                if (filterHasFocus && this.state.search) {
+                    ev.preventDefault();
+                    this.state.search = "";
+                    return;
+                }
+                if (this.state.stack.length > 1) {
+                    ev.preventDefault();
+                    this.onBreadcrumbClick(this.state.stack.length - 2);
+                }
+                return;
+            case "Backspace":
+                if (filterHasFocus) {
+                    // Let the input handle its own character delete.
+                    return;
+                }
+                if (this.state.stack.length > 1) {
+                    ev.preventDefault();
+                    this.onBreadcrumbClick(this.state.stack.length - 2);
+                }
+                return;
+            case "/":
+                if (!filterHasFocus && filterEl) {
+                    ev.preventDefault();
+                    filterEl.focus();
+                }
+                return;
+            default:
+                return;
+        }
+    }
+
+    onItemFocus(index) {
+        this.state.focusIndex = index;
     }
 
     onPointerDown(event, field) {

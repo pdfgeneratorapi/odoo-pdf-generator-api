@@ -33,7 +33,24 @@
             &:active {
                 cursor: grabbing;
             }
+
+            &:focus {
+                outline: none; // let the focused-class style own the appearance
+            }
         }
+    }
+
+    // Keyboard-driven highlight, shown only while the palette itself has focus
+    // somewhere in its subtree — avoids leaving a stale outline after the user
+    // clicks away.
+    &:focus-within .o_pdfgen_palette_item_focused {
+        background-color: rgba(124, 123, 173, 0.12);
+        outline: 2px solid var(--bs-primary, #7c7bad);
+        outline-offset: -2px;
+    }
+
+    .o_pdfgen_palette_hint {
+        font-size: 11px;
     }
 }
 

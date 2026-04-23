@@ -2,7 +2,9 @@
 <templates xml:space="preserve">
 
     <t t-name="pdfgeneratorapi_connector.FieldPalette">
-        <div class="o_pdfgen_palette d-flex flex-column">
+        <div class="o_pdfgen_palette d-flex flex-column"
+             tabindex="-1"
+             t-on-keydown="onKeyDown">
             <div class="o_pdfgen_palette_header px-2 pt-2 pb-1">
                 <div class="d-flex align-items-center gap-2 mb-2">
                     <i class="fa fa-sitemap text-muted"/>
@@ -21,10 +23,17 @@
                         </li>
                     </ol>
                 </nav>
-                <input type="text" class="form-control form-control-sm" placeholder="Filter fields…"
+                <input type="text" class="form-control form-control-sm"
+                       placeholder="Filter fields…"
+                       t-ref="filter"
                        t-model="state.search"/>
+                <div class="text-muted small mt-1 o_pdfgen_palette_hint">
+                    <i class="fa fa-keyboard-o me-1"/>
+                    <span>↑↓ navigate · Enter drills in · Esc back · / filter</span>
+                </div>
             </div>
-            <div class="o_pdfgen_palette_body flex-grow-1 overflow-auto px-2 pb-2">
+            <div class="o_pdfgen_palette_body flex-grow-1 overflow-auto px-2 pb-2"
+                 t-ref="list">
                 <div t-if="state.loading" class="text-center text-muted py-3">
                     <i class="fa fa-spinner fa-spin"/>
                 </div>
@@ -33,8 +42,10 @@
                 </div>
                 <ul t-else="" class="list-unstyled mb-0">
                     <li t-foreach="filteredFields" t-as="field" t-key="field.name"
-                        class="o_pdfgen_palette_item d-flex align-items-center gap-2 py-1 px-2 rounded"
+                        t-att-class="'o_pdfgen_palette_item d-flex align-items-center gap-2 py-1 px-2 rounded' + (field_index === state.focusIndex ? ' o_pdfgen_palette_item_focused' : '')"
+                        tabindex="0"
                         t-on-pointerdown="(ev) => this.onPointerDown(ev, field)"
+                        t-on-focus="() => this.onItemFocus(field_index)"
                         t-on-dblclick="() => field.isRelation ? this.onDrillIn(field) : null">
                         <i t-att-class="'fa fa-' + (field.isRelation ? 'link' : 'circle-o') + ' text-muted small'"/>
                         <div class="flex-grow-1 lh-sm">
