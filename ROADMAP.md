@@ -64,17 +64,33 @@ First attempt keyed the mapping per remote template. Usable, but required re-bin
 
 ## Phase 3 — Additional document types
 
-Targets beyond invoices. For each: inherit the originating model, add the "Generate custom PDF" action + wizard flow.
+Per-doc-type bridge modules, each depending on the main `pdfgeneratorapi_connector` + the respective Odoo module. Users install only the bridges they need; the main module stays lean (base/mail/account).
 
-- [ ] `sale.order` (quotations)
-- [ ] `purchase.order`
-- [ ] `stock.picking` (delivery slips)
-- [ ] `mrp.production` (manufacturing orders)
-- [ ] `project.task` (work orders / agreements)
-- [ ] Rental flows (`sale.order` with `is_rental=True`, or `rental.order` depending on version)
-- [ ] Custom Studio models (generic entry point — expose the wizard on any `mail.thread` model via an action server)
+### Phase 3.1 — Generic wizard + mixin (landed, `e31cce6`)
 
-Each one is independent work; Phase 2 mapper makes them mostly configuration rather than code.
+- [x] `pdfgen.generate.wizard` refactored from a hardcoded `account.move` Many2one to a generic `(res_model, res_id)` pair.
+- [x] New `pdfgen.document.mixin` abstract model exposing `pdfgen_configured` + `action_open_pdfgen_wizard`. Target models just `_inherit` the mixin; bridges add a view to surface the button.
+- [x] `account.move` migrated to use the mixin (no duplication left in the main module).
+- [x] Wizard attachment posts to the chatter only when the source model supports `message_post`.
+
+### Phase 3.2 — sale.order bridge (landed)
+
+- [x] New sibling addon `pdfgeneratorapi_connector_sale`. Depends on `pdfgeneratorapi_connector` + `sale`.
+- [x] Seed dataset for `sale.order` (~25 lines: scalars, currency, company, customer, totals, salesperson, order lines as a list section with product/qty/uom/price/discount/subtotal/total).
+- [x] View inheritance adds **Generate custom PDF** button to the `sale.order` form header when configured.
+- [x] Bridge tests: mixin exposure, seed dataset shape, payload resolution, end-to-end wizard on a sale.order.
+- [x] Docker compose + Makefile updated to mount and drive both addons; pre-commit's `make coverage` covers the bridge (97% combined).
+
+### Phase 3.3+ — Remaining bridges (pending)
+
+Each follows the same pattern as `pdfgeneratorapi_connector_sale`: new addon dir, manifest depending on the Odoo module, `_inherit` the mixin, seed dataset, view inheritance for the button, tests.
+
+- [ ] `pdfgeneratorapi_connector_purchase` (`purchase.order`)
+- [ ] `pdfgeneratorapi_connector_stock` (`stock.picking` — delivery slips)
+- [ ] `pdfgeneratorapi_connector_mrp` (`mrp.production`)
+- [ ] `pdfgeneratorapi_connector_project` (`project.task`)
+- [ ] Rental flows (`sale.order` with `is_rental=True` in v18+, or `rental.order` in earlier/Enterprise variants)
+- [ ] Custom Studio models — generic entry point exposing the wizard via an action server so any `mail.thread` model can be wired without code.
 
 ---
 

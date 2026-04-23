@@ -1,10 +1,19 @@
 ODOO_SERVICE ?= odoo
 ODOO_DB ?= odoo
 MODULE := pdfgeneratorapi_connector
+BRIDGES := pdfgeneratorapi_connector_sale
+# Comma-joined list for Odoo's -u / --test-tags.
+MODULES := $(MODULE),$(BRIDGES)
+TEST_TAGS := /$(MODULE),$(foreach b,$(BRIDGES),/$(b))
 COMPOSE_DIR := /Users/brunofarias/code/ar/odoo
 REPO_ROOT := $(CURDIR)
-# .coverage file written by odoo into the bind-mounted addon dir (visible at this host path):
-ODOO_COVERAGE_FILE_HOST := $(REPO_ROOT)/pdfgeneratorapi_connector/.coverage.odoo
+# .coverage file written by odoo into the bind-mounted main addon dir
+# (visible at this host path). Bridges aren't directly writable by the
+# Odoo container's coverage run but their code is covered via --source.
+ODOO_COVERAGE_FILE_HOST := $(REPO_ROOT)/$(MODULE)/.coverage.odoo
+# Comma-joined --source list: main addon + every bridge.
+COVERAGE_SOURCES := /mnt/extra-addons/$(MODULE)$(foreach b,$(BRIDGES),$(comma)/mnt/extra-addons/$(b))
+comma := ,
 
 .PHONY: help setup lint lint-ruff lint-pylint format test test-unit test-odoo \
         coverage coverage-unit coverage-odoo coverage-clean \
@@ -17,7 +26,7 @@ help:
 	@echo "format           - apply ruff formatting + import sorting"
 	@echo "test             - run unit tests (host) + Odoo integration tests (container)"
 	@echo "coverage         - combined coverage (unit + Odoo), fail under threshold in pyproject"
-	@echo "upgrade          - upgrade the module in the running Odoo container"
+	@echo "upgrade          - upgrade all addons (main + bridges) in the running Odoo container"
 
 setup:
 	uv sync --group dev
@@ -31,7 +40,7 @@ lint-ruff:
 	uv run ruff check .
 
 lint-pylint:
-	uv run pylint --rcfile=pyproject.toml -- $(shell find pdfgeneratorapi_connector -type f -name "*.py" -not -path "*/__pycache__/*")
+	uv run pylint --rcfile=pyproject.toml -- $(shell find pdfgeneratorapi_connector pdfgeneratorapi_connector_sale -type f -name "*.py" -not -path "*/__pycache__/*")
 
 format:
 	uv run ruff format .
@@ -45,9 +54,9 @@ test-unit:
 test-odoo:
 	cd $(COMPOSE_DIR) && docker compose exec -T $(ODOO_SERVICE) odoo \
 		-d $(ODOO_DB) \
-		-u $(MODULE) \
+		-u $(MODULES) \
 		--test-enable \
-		--test-tags /$(MODULE) \
+		--test-tags $(TEST_TAGS) \
 		--stop-after-init \
 		--no-http \
 		--http-port=18069 \
@@ -66,13 +75,13 @@ coverage-odoo:
 		 cd /mnt/extra-addons/$(MODULE) && \
 		 /var/lib/odoo/.local/bin/coverage run \
 		   --data-file=.coverage.odoo \
-		   --source=/mnt/extra-addons/$(MODULE) \
+		   --source=/mnt/extra-addons/$(MODULE),/mnt/extra-addons/$(BRIDGES) \
 		   --branch \
 		   /usr/bin/odoo \
 		     -d $(ODOO_DB) \
-		     -u $(MODULE) \
+		     -u $(MODULES) \
 		     --test-enable \
-		     --test-tags /$(MODULE) \
+		     --test-tags $(TEST_TAGS) \
 		     --stop-after-init \
 		     --no-http \
 		     --http-port=18069 \
@@ -86,7 +95,7 @@ coverage: coverage-unit coverage-odoo
 upgrade:
 	cd $(COMPOSE_DIR) && docker compose exec -T $(ODOO_SERVICE) odoo \
 		-d $(ODOO_DB) \
-		-u $(MODULE) \
+		-u $(MODULES) \
 		--stop-after-init \
 		--no-http
 	cd $(COMPOSE_DIR) && docker compose restart $(ODOO_SERVICE)
