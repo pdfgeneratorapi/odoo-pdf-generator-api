@@ -5,10 +5,10 @@
               web_icon="pdfgeneratorapi_connector,static/description/icon.png"
               sequence="95"/>
 
-    <menuitem id="menu_pdfgen_mappings"
-              name="Template Mappings"
+    <menuitem id="menu_pdfgen_datasets"
+              name="Field Datasets"
               parent="menu_pdfgen_root"
-              action="action_pdfgen_template_mapping"
+              action="action_pdfgen_model_dataset"
               groups="base.group_system"
               sequence="20"/>
 

@@ -16,10 +16,11 @@ sys.modules["pdfgen_resolver"] = resolver
 spec.loader.exec_module(resolver)
 
 
-def _line(placeholder, odoo_path="", is_list=False, children=None):
+def _line(placeholder, odoo_path="", is_list=False, children=None, expression=""):
     return SimpleNamespace(
         placeholder_path=placeholder,
         odoo_field_path=odoo_path,
+        expression=expression,
         is_list=is_list,
         child_lines=children or [],
     )
@@ -188,3 +189,62 @@ class ResolveTests(unittest.TestCase):
             resolver.resolve(rec, [_line("customer", "partner")]),
             {"customer": ""},
         )
+
+
+class RenderExpressionTests(unittest.TestCase):
+    def test_substitutes_single_token(self):
+        rec = SimpleNamespace(name="Acme")
+        self.assertEqual(resolver.render_expression(rec, "{name}"), "Acme")
+
+    def test_substitutes_multiple_tokens_with_literals(self):
+        rec = SimpleNamespace(street="1 Main", city="Springfield", zip="12345")
+        out = resolver.render_expression(rec, "{street}, {city} {zip}")
+        self.assertEqual(out, "1 Main, Springfield 12345")
+
+    def test_dotted_token_walks_relations(self):
+        rec = SimpleNamespace(partner=SimpleNamespace(name="Acme"))
+        self.assertEqual(
+            resolver.render_expression(rec, "Hello {partner.name}!"),
+            "Hello Acme!",
+        )
+
+    def test_missing_field_renders_empty(self):
+        rec = SimpleNamespace(name="Acme")
+        self.assertEqual(
+            resolver.render_expression(rec, "{name} / {missing}"),
+            "Acme / ",
+        )
+
+    def test_unterminated_brace_renders_literal(self):
+        rec = SimpleNamespace(name="Acme")
+        self.assertEqual(
+            resolver.render_expression(rec, "Totals {name and no close"),
+            "Totals {name and no close",
+        )
+
+    def test_empty_braces_render_literal(self):
+        rec = SimpleNamespace()
+        self.assertEqual(resolver.render_expression(rec, "literal {}"), "literal {}")
+
+    def test_date_value_is_isoformatted(self):
+        import datetime
+
+        rec = SimpleNamespace(d=datetime.date(2026, 4, 23))
+        self.assertEqual(
+            resolver.render_expression(rec, "as of {d}"),
+            "as of 2026-04-23",
+        )
+
+    def test_empty_string_returns_empty(self):
+        self.assertEqual(resolver.render_expression(SimpleNamespace(), ""), "")
+
+    def test_resolve_prefers_expression_over_odoo_field_path(self):
+        rec = SimpleNamespace(street="X", city="Y", name="IGNORED")
+        lines = [
+            _line(
+                "address",
+                odoo_path="name",
+                expression="{street}, {city}",
+            )
+        ]
+        self.assertEqual(resolver.resolve(rec, lines), {"address": "X, Y"})

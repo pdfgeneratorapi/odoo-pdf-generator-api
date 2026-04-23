@@ -74,9 +74,60 @@ def _normalize(value):
     try:
         if hasattr(value, "_name") and hasattr(value, "ids") and not value.ids:
             return ""
-    except Exception:
+    except Exception:  # pragma: no cover - defensive; exotic __getattr__ objects
         pass
     return value
+
+
+def render_expression(record, template_string):
+    """Substitute `{dotted.path}` tokens in `template_string` with walked values.
+
+    - Missing fields → empty string (no exceptions raised).
+    - Unmatched/orphan braces render literally so a stray `{` in user text
+      doesn't destabilise generation.
+    - Non-string field values go through `_jsonable` so dates / recordsets
+      coerce the same way as in scalar rows.
+    """
+    if not template_string:
+        return ""
+    out = []
+    i = 0
+    n = len(template_string)
+    while i < n:
+        ch = template_string[i]
+        if ch == "{":
+            close = template_string.find("}", i + 1)
+            if close == -1:
+                out.append(template_string[i:])
+                break
+            token = template_string[i + 1 : close].strip()
+            if not token:
+                # `{}` with nothing inside: emit literally.
+                out.append(template_string[i : close + 1])
+            else:
+                value = walk(record, token)
+                out.append(_stringify(_jsonable(value)))
+            i = close + 1
+        else:
+            out.append(ch)
+            i += 1
+    return "".join(out)
+
+
+def _stringify(value):
+    if value is None or value == "":
+        return ""
+    return str(value)
+
+
+def _row_value(record, line):
+    """Scalar row value — expression wins over plain path."""
+    expr = getattr(line, "expression", "") or ""
+    if expr:
+        return render_expression(record, expr)
+    if line.odoo_field_path:
+        return _jsonable(walk(record, line.odoo_field_path))
+    return ""
 
 
 def resolve(record, lines):
@@ -87,12 +138,13 @@ def resolve(record, lines):
       - `odoo_field_path`: string
       - `is_list`: bool
       - `child_lines`: iterable of the same shape (used when is_list is True)
+      - `expression`: optional string — if set, beats `odoo_field_path`
 
-    Scalar rows walk the path from `record` and set the result into the output
-    dict at `placeholder_path`. List rows walk the path to a recordset, then
-    iterate it, resolving each child line relative to the iteration's current
-    record. Unresolved paths map to empty string so template rendering stays
-    stable.
+    Scalar rows walk the path from `record` (or render the expression) and set
+    the result into the output dict at `placeholder_path`. List rows walk the
+    path to a recordset, iterate it, and resolve each child line relative to
+    the iteration's current record. Unresolved paths map to empty string so
+    template rendering stays stable.
     """
     payload = {}
     for line in lines:
@@ -102,15 +154,14 @@ def resolve(record, lines):
             iterable = rs if rs and not isinstance(rs, str) else []
             try:
                 iterator = list(iterable)
-            except TypeError:
+            except TypeError:  # pragma: no cover - defensive; non-iterable walked value
                 iterator = []
             for sub in iterator:
                 item = resolve(sub, list(line.child_lines))
                 items.append(item)
             set_nested(payload, line.placeholder_path, items)
         else:
-            value = walk(record, line.odoo_field_path) if line.odoo_field_path else ""
-            set_nested(payload, line.placeholder_path, _jsonable(value))
+            set_nested(payload, line.placeholder_path, _row_value(record, line))
     return payload
 
 

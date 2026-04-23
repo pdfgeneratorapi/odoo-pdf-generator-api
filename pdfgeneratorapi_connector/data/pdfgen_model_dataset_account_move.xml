@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="dataset_account_move" model="pdfgen.model.dataset">
+        <field name="name">Invoice</field>
+        <field name="model_id" ref="account.model_account_move"/>
+    </record>
+
+    <!-- Scalars -->
+    <record id="dataset_line_invoice_number" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">10</field>
+        <field name="placeholder_path">invoice_number</field>
+        <field name="odoo_field_path">name</field>
+    </record>
+    <record id="dataset_line_invoice_date" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">20</field>
+        <field name="placeholder_path">invoice_date</field>
+        <field name="odoo_field_path">invoice_date</field>
+    </record>
+    <record id="dataset_line_due_date" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">30</field>
+        <field name="placeholder_path">due_date</field>
+        <field name="odoo_field_path">invoice_date_due</field>
+    </record>
+    <record id="dataset_line_state" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">40</field>
+        <field name="placeholder_path">state</field>
+        <field name="odoo_field_path">state</field>
+    </record>
+    <record id="dataset_line_payment_reference" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">50</field>
+        <field name="placeholder_path">payment_reference</field>
+        <field name="odoo_field_path">payment_reference</field>
+    </record>
+    <record id="dataset_line_narration" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">60</field>
+        <field name="placeholder_path">narration</field>
+        <field name="odoo_field_path">narration</field>
+    </record>
+
+    <!-- Currency block -->
+    <record id="dataset_line_currency_code" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">100</field>
+        <field name="placeholder_path">currency.code</field>
+        <field name="odoo_field_path">currency_id.name</field>
+    </record>
+    <record id="dataset_line_currency_symbol" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">110</field>
+        <field name="placeholder_path">currency.symbol</field>
+        <field name="odoo_field_path">currency_id.symbol</field>
+    </record>
+    <record id="dataset_line_currency_position" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">120</field>
+        <field name="placeholder_path">currency.position</field>
+        <field name="odoo_field_path">currency_id.position</field>
+    </record>
+
+    <!-- Company block -->
+    <record id="dataset_line_company_name" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">200</field>
+        <field name="placeholder_path">company.name</field>
+        <field name="odoo_field_path">company_id.partner_id.name</field>
+    </record>
+    <record id="dataset_line_company_email" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">210</field>
+        <field name="placeholder_path">company.email</field>
+        <field name="odoo_field_path">company_id.partner_id.email</field>
+    </record>
+    <record id="dataset_line_company_phone" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">220</field>
+        <field name="placeholder_path">company.phone</field>
+        <field name="odoo_field_path">company_id.partner_id.phone</field>
+    </record>
+    <record id="dataset_line_company_vat" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">230</field>
+        <field name="placeholder_path">company.vat</field>
+        <field name="odoo_field_path">company_id.partner_id.vat</field>
+    </record>
+    <record id="dataset_line_company_street" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">240</field>
+        <field name="placeholder_path">company.street</field>
+        <field name="odoo_field_path">company_id.partner_id.street</field>
+    </record>
+    <record id="dataset_line_company_city" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">250</field>
+        <field name="placeholder_path">company.city</field>
+        <field name="odoo_field_path">company_id.partner_id.city</field>
+    </record>
+    <record id="dataset_line_company_zip" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">260</field>
+        <field name="placeholder_path">company.zip</field>
+        <field name="odoo_field_path">company_id.partner_id.zip</field>
+    </record>
+    <record id="dataset_line_company_country_code" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">270</field>
+        <field name="placeholder_path">company.country_code</field>
+        <field name="odoo_field_path">company_id.partner_id.country_id.code</field>
+    </record>
+
+    <!-- Customer block (rooted at partner_id) -->
+    <record id="dataset_line_customer_name" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">300</field>
+        <field name="placeholder_path">customer.name</field>
+        <field name="odoo_field_path">partner_id.name</field>
+    </record>
+    <record id="dataset_line_customer_email" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">310</field>
+        <field name="placeholder_path">customer.email</field>
+        <field name="odoo_field_path">partner_id.email</field>
+    </record>
+    <record id="dataset_line_customer_phone" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">320</field>
+        <field name="placeholder_path">customer.phone</field>
+        <field name="odoo_field_path">partner_id.phone</field>
+    </record>
+    <record id="dataset_line_customer_vat" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">330</field>
+        <field name="placeholder_path">customer.vat</field>
+        <field name="odoo_field_path">partner_id.vat</field>
+    </record>
+    <record id="dataset_line_customer_street" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">340</field>
+        <field name="placeholder_path">customer.street</field>
+        <field name="odoo_field_path">partner_id.street</field>
+    </record>
+    <record id="dataset_line_customer_city" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">350</field>
+        <field name="placeholder_path">customer.city</field>
+        <field name="odoo_field_path">partner_id.city</field>
+    </record>
+    <record id="dataset_line_customer_zip" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">360</field>
+        <field name="placeholder_path">customer.zip</field>
+        <field name="odoo_field_path">partner_id.zip</field>
+    </record>
+    <record id="dataset_line_customer_country_code" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">370</field>
+        <field name="placeholder_path">customer.country_code</field>
+        <field name="odoo_field_path">partner_id.country_id.code</field>
+    </record>
+    <record id="dataset_line_customer_full_address" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">380</field>
+        <field name="placeholder_path">customer.full_address</field>
+        <field name="expression">{partner_id.street}, {partner_id.city} {partner_id.zip}</field>
+    </record>
+
+    <!-- Totals block -->
+    <record id="dataset_line_totals_untaxed" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">400</field>
+        <field name="placeholder_path">totals.untaxed</field>
+        <field name="odoo_field_path">amount_untaxed</field>
+    </record>
+    <record id="dataset_line_totals_tax" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">410</field>
+        <field name="placeholder_path">totals.tax</field>
+        <field name="odoo_field_path">amount_tax</field>
+    </record>
+    <record id="dataset_line_totals_total" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">420</field>
+        <field name="placeholder_path">totals.total</field>
+        <field name="odoo_field_path">amount_total</field>
+    </record>
+    <record id="dataset_line_totals_residual" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">430</field>
+        <field name="placeholder_path">totals.residual</field>
+        <field name="odoo_field_path">amount_residual</field>
+    </record>
+
+    <!-- Lines (repeating section) -->
+    <record id="dataset_line_lines" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="sequence">500</field>
+        <field name="placeholder_path">lines</field>
+        <field name="is_list" eval="True"/>
+        <field name="odoo_field_path">invoice_line_ids</field>
+    </record>
+    <record id="dataset_line_lines_description" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">10</field>
+        <field name="placeholder_path">description</field>
+        <field name="odoo_field_path">name</field>
+    </record>
+    <record id="dataset_line_lines_quantity" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">20</field>
+        <field name="placeholder_path">quantity</field>
+        <field name="odoo_field_path">quantity</field>
+    </record>
+    <record id="dataset_line_lines_uom" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">30</field>
+        <field name="placeholder_path">uom</field>
+        <field name="odoo_field_path">product_uom_id.name</field>
+    </record>
+    <record id="dataset_line_lines_price_unit" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">40</field>
+        <field name="placeholder_path">price_unit</field>
+        <field name="odoo_field_path">price_unit</field>
+    </record>
+    <record id="dataset_line_lines_discount" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">50</field>
+        <field name="placeholder_path">discount</field>
+        <field name="odoo_field_path">discount</field>
+    </record>
+    <record id="dataset_line_lines_subtotal" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">60</field>
+        <field name="placeholder_path">price_subtotal</field>
+        <field name="odoo_field_path">price_subtotal</field>
+    </record>
+    <record id="dataset_line_lines_total" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_account_move"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">70</field>
+        <field name="placeholder_path">price_total</field>
+        <field name="odoo_field_path">price_total</field>
+    </record>
+
+</odoo>

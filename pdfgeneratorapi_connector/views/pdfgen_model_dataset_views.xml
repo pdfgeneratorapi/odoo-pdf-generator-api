@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pdfgen_model_dataset_tree" model="ir.ui.view">
+        <field name="name">pdfgen.model.dataset.tree</field>
+        <field name="model">pdfgen.model.dataset</field>
+        <field name="arch" type="xml">
+            <list string="Field Datasets">
+                <field name="name"/>
+                <field name="model_id"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pdfgen_model_dataset_form" model="ir.ui.view">
+        <field name="name">pdfgen.model.dataset.form</field>
+        <field name="model">pdfgen.model.dataset</field>
+        <field name="arch" type="xml">
+            <form string="Field Dataset">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="model_id"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="model" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Field Mappings" name="lines">
+                            <div class="row g-3">
+                                <div class="col-12 col-lg-8">
+                                    <field name="line_ids">
+                                        <list string="Mappings" editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="placeholder_path"/>
+                                            <field name="is_list" widget="boolean_toggle"/>
+                                            <field name="target_model" column_invisible="1"/>
+                                            <field name="odoo_field_path"
+                                                   widget="pdfgen_droppable_field_selector"
+                                                   options="{'model': 'target_model', 'followRelations': true}"/>
+                                            <field name="expression"
+                                                   placeholder="{street}, {city} {zip}"/>
+                                            <field name="parent_id" column_invisible="1"/>
+                                        </list>
+                                        <form string="Mapping">
+                                            <sheet>
+                                                <group>
+                                                    <field name="placeholder_path"/>
+                                                    <field name="is_list"/>
+                                                    <field name="target_model" invisible="1"/>
+                                                    <field name="odoo_field_path"
+                                                           widget="pdfgen_droppable_field_selector"
+                                                           options="{'model': 'target_model', 'followRelations': true}"/>
+                                                    <field name="expression"
+                                                           placeholder="{street}, {city} {zip}"/>
+                                                    <field name="parent_id"/>
+                                                </group>
+                                                <notebook invisible="not is_list">
+                                                    <page string="List Item Fields">
+                                                        <field name="child_ids">
+                                                            <list editable="bottom">
+                                                                <field name="sequence" widget="handle"/>
+                                                                <field name="placeholder_path"/>
+                                                                <field name="target_model" column_invisible="1"/>
+                                                                <field name="odoo_field_path"
+                                                                       widget="pdfgen_droppable_field_selector"
+                                                                       options="{'model': 'target_model', 'followRelations': true}"/>
+                                                                <field name="expression"
+                                                                       placeholder="{name} ({qty})"/>
+                                                            </list>
+                                                        </field>
+                                                    </page>
+                                                </notebook>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </div>
+                                <div class="col-12 col-lg-4">
+                                    <widget name="pdfgen_field_palette"/>
+                                </div>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pdfgen_model_dataset" model="ir.actions.act_window">
+        <field name="name">Field Datasets</field>
+        <field name="res_model">pdfgen.model.dataset</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

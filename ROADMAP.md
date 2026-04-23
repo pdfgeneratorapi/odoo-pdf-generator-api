@@ -14,11 +14,9 @@ the April 2026 strategy doc; checked items are landed on `main`.
 - [x] `Test Connection` button hitting `GET /workspaces/{id}`
 - [x] `Generate custom PDF` button on `account.move`
 - [x] Wizard with live `GET /templates` (first 100)
-- [x] Hardcoded invoice serializer (partner, lines, totals, taxes)
-- [x] `POST /documents/generate` → `ir.attachment` on the invoice
+- [x] `POST /documents/generate` → `ir.attachment` on the invoice, posted to the chatter
 - [x] Docker compose: v19 + v18 services, shared network with pdfgeneratorapi backend
 - [x] Dev tooling: `uv`, `ruff`, `pylint-odoo`, `pre-commit` hook with 95% coverage gate
-- [x] 25 tests green (11 host unit + 14 Odoo integration), 98% coverage
 
 ### Open Phase 1 follow-ups
 
@@ -34,13 +32,33 @@ the April 2026 strategy doc; checked items are landed on `main`.
 
 Goal: let users target any placeholder in a pdfgen template to any Odoo field, without code changes.
 
-- [ ] New `pdfgen.template_mapping` model — keyed by `(remote_template_id, odoo_model)`, stores mapping rules as JSON. **Not** a cached copy of remote templates.
-- [ ] OWL component: side-by-side view — template placeholders (left, from `GET /templates/{id}`) vs. Odoo field picker (right, introspection via `ir.model.fields`).
-- [ ] Drag-to-map / click-to-bind interaction.
-- [ ] Expression support for computed fields (`partner_id.commercial_partner_id.vat`, arithmetic on line items).
-- [ ] Fall back to the hardcoded invoice serializer when no mapping exists (backward compatibility).
-- [ ] Extend the wizard to look up the mapping for the selected template and build the payload from the mapping rules.
-- [ ] Unit + integration tests for the mapping resolver (edge cases: circular refs, missing fields, typed conversions).
+### Phase 2.1 — Per-template mapping model (superseded by 2.3)
+
+First attempt keyed the mapping per remote template. Usable, but required re-binding the same fields for every new template — abandoned in favour of Phase 2.3's shared dataset-per-model.
+
+### Phase 2.2 — OWL field palette + drag-to-bind (landed)
+
+- [x] Custom `view_widgets` OWL component — browsable, filterable field tree for the selected Odoo model with breadcrumb drill-down into relations.
+- [x] Uses the stock `field` service (`loadFields` → `fields_get`) so any field Odoo recognises is pickable.
+- [x] Pointer-event-based drag (bypasses native HTML5 drag which OWL / list editor interferes with) with a floating ghost and a row-level highlight under the cursor.
+- [x] Drop writes the bound path directly on the matching line record via `record.update()` — no ORM round-trip, no need to enter edit mode first.
+- [x] Tests + coverage gate still green at ≥95%.
+
+### Phase 2.3 — Shared dataset per Odoo model (landed)
+
+- [x] `pdfgen.model.dataset` model (plus `pdfgen.model.dataset.line`), unique per Odoo model — one invoice dataset serves every pdfgen template.
+- [x] Seed data `data/pdfgen_model_dataset_account_move.xml` with ~30 pre-filled placeholder→field mappings matching the payload the old hardcoded serializer produced.
+- [x] **Expression column** on each line — template-string syntax `{dotted.path}` to compose multiple Odoo fields (e.g. `customer.full_address = {partner_id.street}, {partner_id.city} {partner_id.zip}`). Beats `odoo_field_path` when set.
+- [x] Palette drag-drop is expression-aware: dropping onto a row with an expression appends ` {path}`; dropping onto a row with a bare path promotes it to an expression before appending.
+- [x] Menu renamed **Template Mappings → Field Datasets**. Old `pdfgen.template.mapping` model + views + tests deleted; "Load placeholders" flow removed (no longer meaningful — schema is now model-defined, not template-defined).
+- [x] Wizard looks up the dataset by `('model', '=', 'account.move')`, builds the payload, sends it unchanged to whatever template the user picks.
+- [x] Coverage at 99% across 50 host unit + 23 Odoo integration tests.
+
+### Known gaps after 2.3
+
+- [ ] Keyboard navigation inside the palette (tab/arrows for power users).
+- [ ] Hoot/QUnit tests for the OWL palette + pointer-drag flow.
+- [ ] "Check template coverage" — fetch the selected template's `/data` endpoint, diff against the dataset, warn about placeholders the dataset doesn't provide.
 
 ---
 
@@ -114,18 +132,20 @@ Only wire this up if real-world templates regularly exceed ~30s:
 
 ---
 
-## Future improvements (deferred from Phase 2.1)
+## Future improvements (deferred from Phase 2)
 
-These were scoped out of the first mapping slice to keep it shippable; revisit once v2.1 ships and real users have tried it.
+Scoped out of Phase 2.1/2.2/2.3 to keep each slice shippable; revisit once the addon has seen real use.
 
-- [ ] **Expression support** — map a placeholder to a computed callable (`total_in_words`, `format_date('DD MMM YYYY', invoice_date)`, arithmetic on lines). Needs either a sandboxed eval (`safe_eval`) or a named-helper registry (`pdfgen.helpers`) plus a UI for picking a helper.
-- [ ] **Multi-level nested lists** — `{{#pages}}{{#lines}}...{{/lines}}{{/pages}}` style templates. v2.1 supports one level of list iteration; nested lists need a recursive resolver and a tree-aware UI.
-- [ ] **Conditional placeholders** — emit a placeholder only when a field is truthy (`{{#has_discount}}...{{/has_discount}}`). Today the resolver always emits the key.
-- [ ] **Default values** — fall back to a literal when an Odoo field is empty (e.g., blank `vat` → `"N/A"`).
+- [x] ~~**Expression support**~~ — landed in 2.3 as template-string composition (`{dotted.path}` tokens). Format specifiers / conditionals still deferred.
+- [ ] **Format specifiers in expressions** — `{amount|currency}`, `{invoice_date|date:DD MMM YYYY}`. Needs a small helper registry.
+- [ ] **Conditional / fallback operators in expressions** — `{vat or "N/A"}`, `{#has_discount}…{/has_discount}`.
+- [ ] **Multi-level nested lists** — `{{#pages}}{{#lines}}...{{/lines}}{{/pages}}` style templates. One level works; recursive list iteration needs a tree-aware dataset UI.
+- [ ] **Per-template overrides** — if a specific template needs a divergent payload shape, no built-in way today. Add a template-scoped override layer on top of the dataset if real use demands.
 - [ ] **Preview button** — show the resolved JSON payload for a sample record before calling `/documents/generate`. Makes debugging mapping mistakes much faster than reading the rendered PDF.
-- [ ] **Reuse mapping across templates** — "Copy from…" action to seed a new mapping from an existing one.
-- [ ] **Mapping versioning** — keep a history so bumping a template doesn't silently break in-flight flows.
+- [ ] **"Check template coverage"** — fetch the selected template's `/data` endpoint, diff against the dataset, warn about placeholders the dataset doesn't provide.
 - [ ] **Bulk-field picker** — "auto-map by name" button that matches placeholder paths to Odoo fields by fuzzy name (e.g. `customer_name` → `partner_id.name`).
+- [ ] **Dataset versioning** — keep a history so bumping the dataset doesn't silently break in-flight flows.
+- [ ] **Warn when a selected template uses placeholders the dataset doesn't provide** — pre-flight check on `action_generate` that runs the coverage diff and surfaces missing keys.
 
 ## Reference
 

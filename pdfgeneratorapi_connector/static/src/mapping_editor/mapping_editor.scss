@@ -1,0 +1,59 @@
+.o_pdfgen_palette {
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 4px;
+    background: var(--bs-body-bg, #fff);
+    height: 100%;
+    max-height: 640px;
+    min-height: 320px;
+
+    .o_pdfgen_palette_header {
+        border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+    }
+
+    .o_pdfgen_palette_body {
+        .o_pdfgen_palette_item {
+            cursor: grab;
+            user-select: none;
+            transition: background-color 80ms ease;
+
+            &:hover {
+                background-color: var(--bs-tertiary-bg, #f1f3f5);
+            }
+
+            &:active {
+                cursor: grabbing;
+            }
+        }
+    }
+}
+
+.o_pdfgen_droppable {
+    display: block;
+    width: 100%;
+}
+
+tr.o_data_row.o_pdfgen_drop_row {
+    background-color: rgba(124, 123, 173, 0.12) !important;
+    outline: 2px dashed var(--bs-primary, #7c7bad);
+    outline-offset: -2px;
+}
+
+.o_pdfgen_drag_ghost {
+    position: fixed;
+    z-index: 10000;
+    pointer-events: none;
+    padding: 4px 10px;
+    background: var(--bs-primary, #7c7bad);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    user-select: none;
+}
+
+body.o_pdfgen_dragging {
+    cursor: grabbing !important;
+    user-select: none;
+}

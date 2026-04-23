@@ -78,23 +78,19 @@ class GeneratePdfWizard(models.TransientModel):
 
     def action_generate(self):
         self.ensure_one()
-        mapping = self.env["pdfgen.template.mapping"].search(
-            [
-                ("template_id", "=", self.template_id),
-                ("model", "=", "account.move"),
-                ("active", "=", True),
-            ],
+        dataset = self.env["pdfgen.model.dataset"].search(
+            [("model", "=", "account.move"), ("active", "=", True)],
             limit=1,
         )
-        if not mapping:
+        if not dataset:
             raise UserError(
                 _(
-                    "No active mapping found for this template and model. "
-                    "Create one under PDF Generator API > Template Mappings."
+                    "No active dataset found for invoices. "
+                    "Create one under PDF Generator API > Field Datasets."
                 )
             )
         client = self._build_client()
-        data = mapping.resolve_payload(self.move_id)
+        data = dataset.resolve_payload(self.move_id)
         filename = f"{(self.move_id.name or 'invoice').replace('/', '_')}.pdf"
         try:
             response = client.generate(

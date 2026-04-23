@@ -1,7 +1,7 @@
 from . import (
     account_move,
     pdfgen_api_client,
+    pdfgen_model_dataset,
     pdfgen_resolver,
-    pdfgen_template_mapping,
     res_config_settings,
 )

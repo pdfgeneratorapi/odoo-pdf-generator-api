@@ -25,30 +25,6 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         )
         cls.move_model = cls.env.ref("account.model_account_move")
 
-    def _make_mapping(self, template_id="42"):
-        mapping = self.env["pdfgen.template.mapping"].create(
-            {
-                "name": f"Mapping for {template_id}",
-                "template_id": template_id,
-                "model_id": self.move_model.id,
-            }
-        )
-        self.env["pdfgen.template.mapping.line"].create(
-            [
-                {
-                    "mapping_id": mapping.id,
-                    "placeholder_path": "invoice_number",
-                    "odoo_field_path": "name",
-                },
-                {
-                    "mapping_id": mapping.id,
-                    "placeholder_path": "customer.name",
-                    "odoo_field_path": "partner_id.name",
-                },
-            ]
-        )
-        return mapping
-
     def _patch_client(self, client):
         return patch.object(
             self.env["pdfgen.generate.wizard"].__class__,
@@ -75,8 +51,7 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         selection = self.env["pdfgen.generate.wizard"]._selection_template_id()
         self.assertEqual(selection, [])
 
-    def test_action_generate_uses_mapping_payload_and_closes(self):
-        self._make_mapping(template_id="42")
+    def test_action_generate_uses_dataset_payload_and_closes(self):
         client = MagicMock()
         client.generate.return_value = {"response": PDF_B64}
         wizard = self.env["pdfgen.generate.wizard"].create(
@@ -86,6 +61,7 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
             action = wizard.action_generate()
         client.generate.assert_called_once()
         data = client.generate.call_args.kwargs["data"]
+        # Built from the seed dataset for account.move.
         self.assertEqual(data["invoice_number"], self.invoice.name)
         self.assertEqual(data["customer"]["name"], self.invoice.partner_id.name)
         self.assertEqual(action, {"type": "ir.actions.act_window_close"})
@@ -100,20 +76,23 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         self.assertTrue(attachment)
         self.assertEqual(base64.b64decode(attachment.datas), b"%PDF-1.4 fake pdf bytes")
 
-    def test_action_generate_requires_mapping(self):
+    def test_action_generate_requires_dataset(self):
+        # Archive the seed dataset to exercise the "no dataset" branch.
+        dataset = self.env.ref("pdfgeneratorapi_connector.dataset_account_move")
+        dataset.active = False
         wizard = self.env["pdfgen.generate.wizard"].create(
             {"move_id": self.invoice.id, "template_id": "999"}
         )
         with self.assertRaises(UserError) as ctx:
             wizard.action_generate()
-        self.assertIn("mapping", str(ctx.exception).lower())
+        self.assertIn("dataset", str(ctx.exception).lower())
+        dataset.active = True
 
     def test_action_generate_wraps_api_errors(self):
         from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (
             PdfGenApiError,
         )
 
-        self._make_mapping(template_id="42")
         client = MagicMock()
         client.generate.side_effect = PdfGenApiError(500, "upstream boom")
         wizard = self.env["pdfgen.generate.wizard"].create(
@@ -125,7 +104,6 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         self.assertIn("upstream boom", str(ctx.exception))
 
     def test_action_generate_rejects_non_base64_payload(self):
-        self._make_mapping(template_id="42")
         client = MagicMock()
         client.generate.return_value = {"response": "not valid base64 !!!"}
         wizard = self.env["pdfgen.generate.wizard"].create(
@@ -135,7 +113,6 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
             wizard.action_generate()
 
     def test_action_generate_raises_on_unexpected_envelope(self):
-        self._make_mapping(template_id="42")
         client = MagicMock()
         client.generate.return_value = {"unexpected_key": "abc"}
         wizard = self.env["pdfgen.generate.wizard"].create(
