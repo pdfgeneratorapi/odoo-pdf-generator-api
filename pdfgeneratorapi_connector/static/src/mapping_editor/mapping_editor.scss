@@ -1,9 +1,19 @@
+// Make the palette column stick to the top of whatever scrollable ancestor
+// the form view lives in. `align-self: flex-start` is the critical part:
+// without it, bootstrap stretches .col-* items to the row's full height and
+// sticky has nothing to slide against.
+.o_pdfgen_palette_col {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    z-index: 2;
+}
+
 .o_pdfgen_palette {
     border: 1px solid var(--bs-border-color, #dee2e6);
     border-radius: 4px;
     background: var(--bs-body-bg, #fff);
-    height: 100%;
-    max-height: 640px;
+    max-height: calc(100vh - 160px);
     min-height: 320px;
 
     .o_pdfgen_palette_header {

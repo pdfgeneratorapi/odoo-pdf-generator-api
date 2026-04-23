@@ -80,7 +80,7 @@
                                         </form>
                                     </field>
                                 </div>
-                                <div class="col-12 col-lg-4">
+                                <div class="col-12 col-lg-4 o_pdfgen_palette_col">
                                     <widget name="pdfgen_field_palette"/>
                                 </div>
                             </div>
