@@ -54,11 +54,11 @@ First attempt keyed the mapping per remote template. Usable, but required re-bin
 - [x] Wizard looks up the dataset by `('model', '=', 'account.move')`, builds the payload, sends it unchanged to whatever template the user picks.
 - [x] Coverage at 99% across 50 host unit + 23 Odoo integration tests.
 
-### Known gaps after 2.3
+### Phase 2.3 gap closeout (landed)
 
-- [ ] Keyboard navigation inside the palette (tab/arrows for power users).
-- [ ] Hoot/QUnit tests for the OWL palette + pointer-drag flow.
-- [ ] "Check template coverage" — fetch the selected template's `/data` endpoint, diff against the dataset, warn about placeholders the dataset doesn't provide.
+- [x] **Template coverage wizard** (`bedd0f4`) — `pdfgen.coverage.wizard` transient model + "Check template coverage" button on the dataset form. Fetches `/templates/{id}/data`, flattens, diffs against the dataset's line paths, reports matched / missing / extra.
+- [x] **Keyboard navigation** (`6f6189b`) — Arrows navigate the palette list, Enter drills into relations, Esc/Backspace pop the breadcrumb, `/` focuses the filter input. Focused-row highlight shows only while the palette has focus.
+- [x] **Hoot tests** (`2a4afb6`) — `web.assets_unit_tests` bundle + `static/tests/field_palette.test.js` covering initial load, filter, drill-in, breadcrumb rewind, keyboard shortcuts. Pointer-drag binding is left to manual verification (fragile under hoot's window-level simulation; Python-side wizard tests already cover the record.update contract).
 
 ---
 
