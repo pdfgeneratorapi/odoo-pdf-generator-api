@@ -123,6 +123,9 @@ export class PdfgenFieldPalette extends Component {
         if (!field.isRelation || !field.relation) {
             return;
         }
+        // A filter scoped to the previous model is almost never meaningful on
+        // the drilled-in model; reset so the user sees the full field list.
+        this.state.search = "";
         await this.loadModel(field.relation, field.string, field.name);
     }
 
@@ -130,7 +133,9 @@ export class PdfgenFieldPalette extends Component {
         if (index >= this.state.stack.length - 1) {
             return;
         }
-        // Rewind to that frame and re-load it.
+        // Rewind to that frame and re-load it; clear the filter for the same
+        // reason as onDrillIn.
+        this.state.search = "";
         const frame = this.state.stack[index];
         this.state.stack = this.state.stack.slice(0, index);
         await this.loadModel(frame.model, frame.label, frame.pathSegment);

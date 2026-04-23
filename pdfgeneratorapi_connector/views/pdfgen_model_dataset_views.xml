@@ -40,11 +40,11 @@
                                             <field name="placeholder_path"/>
                                             <field name="is_list" widget="boolean_toggle"/>
                                             <field name="target_model" column_invisible="1"/>
+                                            <field name="expression"
+                                                   placeholder="{street}, {city} {zip}"/>
                                             <field name="odoo_field_path"
                                                    widget="pdfgen_droppable_field_selector"
                                                    options="{'model': 'target_model', 'followRelations': true}"/>
-                                            <field name="expression"
-                                                   placeholder="{street}, {city} {zip}"/>
                                             <field name="parent_id" column_invisible="1"/>
                                         </list>
                                         <form string="Mapping">
@@ -67,11 +67,11 @@
                                                                 <field name="sequence" widget="handle"/>
                                                                 <field name="placeholder_path"/>
                                                                 <field name="target_model" column_invisible="1"/>
+                                                                <field name="expression"
+                                                                       placeholder="{name} ({qty})"/>
                                                                 <field name="odoo_field_path"
                                                                        widget="pdfgen_droppable_field_selector"
                                                                        options="{'model': 'target_model', 'followRelations': true}"/>
-                                                                <field name="expression"
-                                                                       placeholder="{name} ({qty})"/>
                                                             </list>
                                                         </field>
                                                     </page>
