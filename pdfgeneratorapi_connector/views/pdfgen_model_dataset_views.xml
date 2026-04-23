@@ -17,6 +17,14 @@
         <field name="model">pdfgen.model.dataset</field>
         <field name="arch" type="xml">
             <form string="Field Dataset">
+                <header>
+                    <button name="%(action_pdfgen_coverage_wizard)d"
+                            type="action"
+                            string="Check template coverage"
+                            context="{'default_dataset_id': id}"
+                            class="btn-secondary"
+                            invisible="not id"/>
+                </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
                     <group>

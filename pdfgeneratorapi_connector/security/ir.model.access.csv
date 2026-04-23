@@ -1,5 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_pdfgen_generate_wizard_user,pdfgen.generate.wizard user,model_pdfgen_generate_wizard,base.group_user,1,1,1,1
+access_pdfgen_coverage_wizard_user,pdfgen.coverage.wizard user,model_pdfgen_coverage_wizard,base.group_user,1,1,1,1
 access_pdfgen_model_dataset_user,pdfgen.model.dataset user,model_pdfgen_model_dataset,base.group_user,1,0,0,0
 access_pdfgen_model_dataset_admin,pdfgen.model.dataset admin,model_pdfgen_model_dataset,base.group_system,1,1,1,1
 access_pdfgen_model_dataset_line_user,pdfgen.model.dataset.line user,model_pdfgen_model_dataset_line,base.group_user,1,0,0,0

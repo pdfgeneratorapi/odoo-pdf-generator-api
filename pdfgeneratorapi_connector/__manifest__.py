@@ -27,6 +27,7 @@ Not supported on Odoo Online (SaaS), which does not allow third-party apps.
         "security/ir.model.access.csv",
         "data/ir_config_parameter.xml",
         "views/res_config_settings_views.xml",
+        "views/pdfgen_coverage_wizard_views.xml",
         "views/pdfgen_model_dataset_views.xml",
         "views/generate_pdf_wizard_views.xml",
         "views/account_move_views.xml",
