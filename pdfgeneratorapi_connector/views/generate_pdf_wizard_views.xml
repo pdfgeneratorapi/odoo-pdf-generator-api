@@ -6,7 +6,9 @@
         <field name="arch" type="xml">
             <form string="Generate custom PDF">
                 <group>
-                    <field name="move_id" readonly="1"/>
+                    <field name="res_display_name" readonly="1"/>
+                    <field name="res_model" invisible="1"/>
+                    <field name="res_id" invisible="1"/>
                     <field name="template_id"/>
                 </group>
                 <footer>

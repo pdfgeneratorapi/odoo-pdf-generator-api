@@ -55,7 +55,7 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         client = MagicMock()
         client.generate.return_value = {"response": PDF_B64}
         wizard = self.env["pdfgen.generate.wizard"].create(
-            {"move_id": self.invoice.id, "template_id": "42"}
+            {"res_model": "account.move", "res_id": self.invoice.id, "template_id": "42"}
         )
         with self._patch_client(client):
             action = wizard.action_generate()
@@ -81,7 +81,7 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         dataset = self.env.ref("pdfgeneratorapi_connector.dataset_account_move")
         dataset.active = False
         wizard = self.env["pdfgen.generate.wizard"].create(
-            {"move_id": self.invoice.id, "template_id": "999"}
+            {"res_model": "account.move", "res_id": self.invoice.id, "template_id": "999"}
         )
         with self.assertRaises(UserError) as ctx:
             wizard.action_generate()
@@ -96,7 +96,7 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         client = MagicMock()
         client.generate.side_effect = PdfGenApiError(500, "upstream boom")
         wizard = self.env["pdfgen.generate.wizard"].create(
-            {"move_id": self.invoice.id, "template_id": "42"}
+            {"res_model": "account.move", "res_id": self.invoice.id, "template_id": "42"}
         )
         with self._patch_client(client), self.assertRaises(UserError) as ctx:
             wizard.action_generate()
@@ -107,7 +107,7 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         client = MagicMock()
         client.generate.return_value = {"response": "not valid base64 !!!"}
         wizard = self.env["pdfgen.generate.wizard"].create(
-            {"move_id": self.invoice.id, "template_id": "42"}
+            {"res_model": "account.move", "res_id": self.invoice.id, "template_id": "42"}
         )
         with self._patch_client(client), self.assertRaises(UserError):
             wizard.action_generate()
@@ -116,7 +116,7 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         client = MagicMock()
         client.generate.return_value = {"unexpected_key": "abc"}
         wizard = self.env["pdfgen.generate.wizard"].create(
-            {"move_id": self.invoice.id, "template_id": "42"}
+            {"res_model": "account.move", "res_id": self.invoice.id, "template_id": "42"}
         )
         with self._patch_client(client), self.assertRaises(UserError) as ctx:
             wizard.action_generate()
@@ -152,6 +152,37 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         with self._patch_client(client):
             selection = self.env["pdfgen.generate.wizard"]._selection_template_id()
         self.assertEqual(selection, [])
+
+    def test_res_display_name_reflects_source_record(self):
+        wizard = self.env["pdfgen.generate.wizard"].create(
+            {"res_model": "account.move", "res_id": self.invoice.id, "template_id": "42"}
+        )
+        self.assertEqual(wizard.res_display_name, self.invoice.display_name)
+
+    def test_res_display_name_empty_when_model_missing(self):
+        wizard = self.env["pdfgen.generate.wizard"].create(
+            {"res_model": "account.move", "res_id": self.invoice.id, "template_id": "42"}
+        )
+        wizard.res_model = ""
+        self.assertEqual(wizard.res_display_name, "")
+
+    def test_action_generate_errors_when_source_record_deleted(self):
+        wizard = self.env["pdfgen.generate.wizard"].create(
+            {"res_model": "account.move", "res_id": self.invoice.id, "template_id": "42"}
+        )
+        wizard.res_id = 99999999
+        with self.assertRaises(UserError) as ctx:
+            wizard.action_generate()
+        self.assertIn("no longer exists", str(ctx.exception).lower())
+
+    def test_action_generate_errors_on_unknown_model(self):
+        wizard = self.env["pdfgen.generate.wizard"].create(
+            {"res_model": "account.move", "res_id": self.invoice.id, "template_id": "42"}
+        )
+        wizard.res_model = "not.a.real.model"
+        with self.assertRaises(UserError) as ctx:
+            wizard.action_generate()
+        self.assertIn("unknown", str(ctx.exception).lower())
 
     def test_extract_pdf_payload_handles_various_shapes(self):
         from odoo.addons.pdfgeneratorapi_connector.wizards.generate_pdf_wizard import (

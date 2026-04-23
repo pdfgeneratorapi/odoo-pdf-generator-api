@@ -30,4 +30,5 @@ class TestAccountMovePdfgen(AccountTestInvoicingCommon):
         self.assertEqual(action["type"], "ir.actions.act_window")
         self.assertEqual(action["res_model"], "pdfgen.generate.wizard")
         self.assertEqual(action["target"], "new")
-        self.assertEqual(action["context"]["default_move_id"], self.invoice.id)
+        self.assertEqual(action["context"]["default_res_model"], "account.move")
+        self.assertEqual(action["context"]["default_res_id"], self.invoice.id)

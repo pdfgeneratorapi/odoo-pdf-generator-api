@@ -1,8 +1,10 @@
-"""Wizard that generates a PDF for a record via pdfgeneratorapi.com.
+"""Wizard that generates a PDF for any record via pdfgeneratorapi.com.
 
-The payload sent to `/documents/generate` is built dynamically from the user's
-template mapping (see `pdfgen.template.mapping`). Templates without a mapping
-can't be generated — the wizard surfaces a clear error.
+Generic over the source model — the wizard is opened with
+`default_res_model`/`default_res_id` in context (typically by the
+`action_open_pdfgen_wizard` method on `pdfgen.document.mixin`). The payload
+is built from the `pdfgen.model.dataset` bound to that model. If no dataset
+exists, generation fails with a user-actionable error.
 """
 
 import base64
@@ -24,17 +26,36 @@ class GeneratePdfWizard(models.TransientModel):
     _name = "pdfgen.generate.wizard"
     _description = "Generate PDF via pdfgeneratorapi.com"
 
-    move_id = fields.Many2one(
-        "account.move",
-        string="Invoice",
+    res_model = fields.Char(
+        string="Source Model",
         required=True,
-        ondelete="cascade",
+        readonly=True,
+        help="Odoo model the PDF is generated from (e.g. account.move).",
+    )
+    res_id = fields.Integer(
+        string="Source Record",
+        required=True,
+        readonly=True,
+    )
+    res_display_name = fields.Char(
+        string="Document",
+        compute="_compute_res_display_name",
+        readonly=True,
     )
     template_id = fields.Selection(
         selection="_selection_template_id",
         string="Template",
         required=True,
     )
+
+    @api.depends("res_model", "res_id")
+    def _compute_res_display_name(self):
+        for rec in self:
+            if rec.res_model and rec.res_id and rec.res_model in self.env:
+                target = self.env[rec.res_model].browse(rec.res_id)
+                rec.res_display_name = target.display_name or ""
+            else:
+                rec.res_display_name = ""
 
     @api.model
     def _build_client(self):
@@ -76,22 +97,33 @@ class GeneratePdfWizard(models.TransientModel):
             result.append((str(tid), name))
         return result
 
+    def _target_record(self):
+        self.ensure_one()
+        if not self.res_model or self.res_model not in self.env:
+            raise UserError(_("Unknown source model: %s", self.res_model))
+        return self.env[self.res_model].browse(self.res_id).exists()
+
     def action_generate(self):
         self.ensure_one()
+        record = self._target_record()
+        if not record:
+            raise UserError(_("Source record no longer exists."))
         dataset = self.env["pdfgen.model.dataset"].search(
-            [("model", "=", "account.move"), ("active", "=", True)],
+            [("model", "=", self.res_model), ("active", "=", True)],
             limit=1,
         )
         if not dataset:
             raise UserError(
                 _(
-                    "No active dataset found for invoices. "
-                    "Create one under PDF Generator API > Field Datasets."
+                    "No active dataset found for %s. "
+                    "Create one under PDF Generator API > Field Datasets.",
+                    self.res_model,
                 )
             )
         client = self._build_client()
-        data = dataset.resolve_payload(self.move_id)
-        filename = f"{(self.move_id.name or 'invoice').replace('/', '_')}.pdf"
+        data = dataset.resolve_payload(record)
+        stem = record.display_name or record._name
+        filename = f"{stem.replace('/', '_')}.pdf"
         try:
             response = client.generate(
                 template_id=self.template_id,
@@ -130,15 +162,17 @@ class GeneratePdfWizard(models.TransientModel):
                 "name": filename,
                 "type": "binary",
                 "datas": pdf_b64,
-                "res_model": "account.move",
-                "res_id": self.move_id.id,
+                "res_model": self.res_model,
+                "res_id": self.res_id,
                 "mimetype": "application/pdf",
             }
         )
-        self.move_id.message_post(
-            body=_("Generated custom PDF via pdfgeneratorapi.com."),
-            attachment_ids=[attachment.id],
-        )
+        # Only post to the chatter if the source model supports it.
+        if hasattr(record, "message_post"):
+            record.message_post(
+                body=_("Generated custom PDF via pdfgeneratorapi.com."),
+                attachment_ids=[attachment.id],
+            )
         return {"type": "ir.actions.act_window_close"}
 
     @staticmethod
