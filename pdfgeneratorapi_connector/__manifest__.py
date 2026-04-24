@@ -28,6 +28,7 @@ Not supported on Odoo Online (SaaS), which does not allow third-party apps.
         "data/ir_config_parameter.xml",
         "views/res_config_settings_views.xml",
         "views/pdfgen_coverage_wizard_views.xml",
+        "views/pdfgen_template_editor_wizard_views.xml",
         "views/pdfgen_model_dataset_views.xml",
         "views/generate_pdf_wizard_views.xml",
         "views/account_move_views.xml",
@@ -41,6 +42,9 @@ Not supported on Odoo Online (SaaS), which does not allow third-party apps.
             "pdfgeneratorapi_connector/static/src/mapping_editor/field_palette.xml",
             "pdfgeneratorapi_connector/static/src/mapping_editor/droppable_field_selector.js",
             "pdfgeneratorapi_connector/static/src/mapping_editor/mapping_editor.scss",
+            "pdfgeneratorapi_connector/static/src/template_editor/editor_iframe_field.js",
+            "pdfgeneratorapi_connector/static/src/template_editor/editor_iframe_field.xml",
+            "pdfgeneratorapi_connector/static/src/template_editor/template_editor.scss",
         ],
         "web.assets_unit_tests": [
             "pdfgeneratorapi_connector/static/tests/**/*.test.js",

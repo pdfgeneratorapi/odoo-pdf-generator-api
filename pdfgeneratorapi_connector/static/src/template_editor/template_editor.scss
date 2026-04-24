@@ -1,0 +1,26 @@
+// The Template Editor is a one-shot transient wizard — the control panel
+// (breadcrumb + New + record counter + cog) adds no value, so we hide it and
+// hand those ~55px back to the iframe canvas. `.o_pdfgen_template_editor_form`
+// is set on the form's outer `.o_form_view` element, and `.o_control_panel`
+// is a descendant — so a plain descendant selector works (no `:has()` needed).
+.o_pdfgen_template_editor_form {
+    // Kill the form-view's default sheet padding so the toolbar sits flush.
+    // Odoo 19 exposes these custom properties as the supported opt-out.
+    --formView-sheet-padding-y: 0;
+    --formView-sheet-padding-x: 0;
+
+    // !important needed because Odoo's control panel carries Bootstrap's
+    // `.d-flex` utility (which is itself `!important`), otherwise our rule
+    // loses the cascade.
+    .o_control_panel {
+        display: none !important;
+    }
+
+    .o_pdfgen_template_editor_toolbar {
+        background: var(--bs-body-bg, white);
+    }
+
+    .o_pdfgen_template_editor_pane .o_field_widget {
+        width: 100%;
+    }
+}

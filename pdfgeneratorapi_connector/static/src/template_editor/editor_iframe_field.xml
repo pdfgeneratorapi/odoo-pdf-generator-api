@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="pdfgeneratorapi_connector.PdfgenEditorIframeField">
+        <iframe t-ref="iframe"
+                class="o_pdfgen_editor_iframe w-100 border-0"
+                allow="clipboard-read; clipboard-write"
+                style="height: calc(100vh - 100px); display: block;"/>
+    </t>
+
+</templates>

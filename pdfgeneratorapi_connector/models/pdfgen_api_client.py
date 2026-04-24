@@ -35,13 +35,25 @@ class PdfGenApiClient:
     """Minimal client covering the endpoints the Odoo addon needs for v1."""
 
     def __init__(
-        self, base_url, api_key, api_secret, workspace_identifier, timeout=DEFAULT_TIMEOUT
+        self,
+        base_url,
+        api_key,
+        api_secret,
+        workspace_identifier,
+        timeout=DEFAULT_TIMEOUT,
+        editor_web_url=None,
     ):
         self.base_url = (base_url or DEFAULT_BASE_URL).rstrip("/")
         self.api_key = api_key
         self.api_secret = api_secret
         self.workspace = workspace_identifier
         self.timeout = timeout
+        # Browser-facing host for the editor. When None, we derive from base_url
+        # by stripping the /api/vN suffix — correct for pdfgeneratorapi.com's
+        # hosted service. Needed as an explicit override when the API is reached
+        # via a hostname the browser can't resolve (Docker service name, private
+        # VPC endpoint, …).
+        self.editor_web_url = editor_web_url.rstrip("/") if editor_web_url else None
 
     @staticmethod
     def _b64url(payload):
@@ -133,3 +145,79 @@ class PdfGenApiClient:
             "name": name or f"template-{template_id}",
         }
         return self._request("POST", "/documents/generate", json_body=body)
+
+    def open_editor(self, template_id, data=None, language=None):
+        """Call `POST /templates/{id}/editor` (openEditor) and return the signed
+        URL pointing at the embedded template editor.
+
+        Per https://docs.pdfgeneratorapi.com/v4#tag/Templates/operation/openEditor
+        the response envelope is `{"response": "<signed url string>"}`. The URL
+        is time-limited and intended for redirect or iframe src — don't cache
+        beyond the current action.
+
+        When the server-side API is reached via a hostname the browser can't
+        resolve (Docker service name, private VPC endpoint, …) the admin can
+        set `editor_web_url` — we rewrite the returned URL's scheme+host to
+        match, preserving the path and (crucially) the signed token in the
+        query string.
+        """
+        body = {}
+        if data is not None:
+            body["data"] = data
+        if language:
+            body["language"] = language
+        response = self._request("POST", f"/templates/{int(template_id)}/editor", json_body=body)
+        url = self._extract_editor_url(response)
+        if url and self.editor_web_url:
+            url = self._rewrite_url_host(url, self.editor_web_url)
+        return url
+
+    @staticmethod
+    def _extract_editor_url(response):
+        """Pull the signed URL string out of an openEditor response."""
+        if isinstance(response, str):
+            return response
+        if isinstance(response, dict):
+            value = response.get("response")
+            if isinstance(value, str):
+                return value
+            if isinstance(value, dict):
+                for key in ("url", "editor_url", "link"):
+                    if isinstance(value.get(key), str):
+                        return value[key]
+        return None
+
+    @staticmethod
+    def _rewrite_url_host(url, new_host_base):
+        """Replace the scheme+host of `url` with `new_host_base`. Keeps path,
+        query and fragment verbatim so the signed session identifier (typically
+        embedded in the path as a UUID) survives intact.
+
+        Any path in `new_host_base` is ignored — admins should set the override
+        to a bare origin like `http://pdfgeneratorapi.test`, not a path-prefixed
+        URL. Including a prefix was a footgun: the API's returned URL already
+        starts with `/editor/...`, and concatenating produced `/editor/editor/...`.
+        """
+        from urllib.parse import urlparse, urlunparse
+
+        original = urlparse(url)
+        replacement = urlparse(new_host_base.rstrip("/"))
+        return urlunparse(
+            (
+                replacement.scheme or original.scheme,
+                replacement.netloc or original.netloc,
+                original.path,
+                original.params,
+                original.query,
+                original.fragment,
+            )
+        )
+
+    def create_template(self, name, description=None):
+        """Create a new blank template. Returns the template's metadata, including
+        `id`, which the caller typically pairs with `get_editor_url` to immediately
+        open the editor on the fresh template."""
+        body = {"name": name}
+        if description:
+            body["description"] = description
+        return self._request("POST", "/templates", json_body=body)

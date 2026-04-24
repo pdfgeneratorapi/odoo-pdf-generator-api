@@ -103,10 +103,21 @@ Each follows the same pattern as the purchase/sale bridges: new addon dir, manif
 
 ## Phase 4 — Template editor embed
 
-- [ ] `POST /templates/{id}/editor` to get a signed editor URL.
-- [ ] Iframe embed inside Odoo (wizard or full-page client action).
-- [ ] Handle the `postMessage` handshake if the editor sends events back.
-- [ ] Create-template flow (`POST /templates`) from the Odoo side so users never have to visit pdfgeneratorapi.com.
+### Phase 4.1 — In-Odoo iframe editor (landed)
+
+- [x] `PdfGenApiClient.get_editor_url(template_id, data=, language=)` → `POST /templates/{id}/editor`.
+- [x] `PdfGenApiClient.create_template(name, description=)` → `POST /templates`.
+- [x] `pdfgen.template.editor.wizard` TransientModel with live-fetched template Selection, **Open editor** action (writes signed URL to `editor_url` field), **Create new template** action (creates + immediately opens editor on the fresh template).
+- [x] Custom OWL field widget `pdfgen_editor_iframe` — assigns the signed URL to `<iframe src>` imperatively. We avoid `widget="html"` with `sandboxedPreview` because that wraps content in a script-blocked sandbox (fine for the HTML preview, fatal for a full JS editor).
+- [x] Full-page action (`target=current` — same UX pattern as Settings / Field Datasets). Thin toolbar at the top (template selector + Open editor + new-template name + Create), iframe pane below that swaps in once a URL is set.
+- [x] New **Template Editor** menu entry under the PDF Generator API root (admin only).
+- [x] 16 Odoo tests (URL storage, shape variants, error paths, create flow, extract helpers) + 4 host unit tests for the new client methods. Combined coverage 97%.
+
+### Phase 4.2 — postMessage handshake (deferred)
+
+- [ ] Listen for `message` events from the iframe (template-saved, template-closed).
+- [ ] Refresh the list view / cached template name when the editor reports a save.
+- [ ] Verify `event.origin` against the configured pdfgen base URL before trusting any payload.
 
 ---
 

@@ -13,6 +13,17 @@ class ResConfigSettings(models.TransientModel):
         default=DEFAULT_BASE_URL,
         help="Regional endpoint. Default: us1.pdfgeneratorapi.com.",
     )
+    pdfgen_editor_web_url = fields.Char(
+        string="Editor Web URL",
+        config_parameter="pdfgen.editor_web_url",
+        help=(
+            "Browser-facing URL for the template editor (without /api/vN). "
+            "Leave empty to derive from API Base URL — correct for regular "
+            "pdfgeneratorapi.com users. Set this only when Odoo reaches the "
+            "API via a hostname the browser can't resolve (e.g. a Docker-"
+            "internal service name or a private VPC endpoint)."
+        ),
+    )
     pdfgen_api_key = fields.Char(
         string="API Key",
         config_parameter="pdfgen.api_key",
@@ -58,6 +69,7 @@ class ResConfigSettings(models.TransientModel):
             api_key=self.pdfgen_api_key,
             api_secret=self.pdfgen_api_secret,
             workspace_identifier=self.pdfgen_workspace_identifier,
+            editor_web_url=self.pdfgen_editor_web_url or None,
         )
 
     def action_pdfgen_test_connection(self):

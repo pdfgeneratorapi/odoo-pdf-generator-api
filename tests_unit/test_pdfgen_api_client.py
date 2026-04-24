@@ -190,6 +190,88 @@ class RequestTests(unittest.TestCase):
             result = self.client._request("DELETE", "/x")
         self.assertIsNone(result)
 
+    def test_open_editor_posts_to_editor_endpoint(self):
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(
+                json_body={"response": "https://editor.test/signed?token=abc"}
+            )
+            url = self.client.open_editor(template_id=42)
+        args, kwargs = mock_req.call_args
+        self.assertEqual(args[0], "POST")
+        self.assertEqual(args[1], "https://example.test/api/v4/templates/42/editor")
+        self.assertEqual(kwargs["json"], {})
+        self.assertEqual(url, "https://editor.test/signed?token=abc")
+
+    def test_open_editor_forwards_data_and_language(self):
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(json_body={"response": "u"})
+            self.client.open_editor(template_id=7, data={"x": 1}, language="es")
+        _, kwargs = mock_req.call_args
+        self.assertEqual(kwargs["json"], {"data": {"x": 1}, "language": "es"})
+
+    def test_open_editor_rewrites_host_with_editor_web_url_override(self):
+        # Simulates the Docker-internal setup: API returns a pdf-api-nginx URL,
+        # browser needs localhost:8080.
+        client = PdfGenApiClient(
+            base_url="http://pdf-api-nginx/api/v4",
+            api_key="k",
+            api_secret="s",
+            workspace_identifier="w",
+            editor_web_url="http://localhost:8080",
+        )
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(
+                json_body={"response": "http://pdf-api-nginx/editor/42?token=SIGNED"}
+            )
+            url = client.open_editor(template_id=42)
+        # Host rewritten; signed token preserved verbatim.
+        self.assertEqual(url, "http://localhost:8080/editor/42?token=SIGNED")
+
+    def test_extract_editor_url_variants(self):
+        extract = PdfGenApiClient._extract_editor_url
+        self.assertEqual(extract("https://x"), "https://x")
+        self.assertEqual(extract({"response": "https://y"}), "https://y")
+        self.assertEqual(extract({"response": {"url": "https://z"}}), "https://z")
+        self.assertEqual(extract({"response": {"editor_url": "https://w"}}), "https://w")
+        self.assertIsNone(extract({"response": {"foo": "bar"}}))
+        self.assertIsNone(extract(123))
+
+    def test_rewrite_url_host_preserves_query(self):
+        rewrite = PdfGenApiClient._rewrite_url_host
+        self.assertEqual(
+            rewrite("http://api.internal/editor/1?token=abc#frag", "http://outside:9000"),
+            "http://outside:9000/editor/1?token=abc#frag",
+        )
+
+    def test_rewrite_url_host_ignores_override_path(self):
+        # If the admin mistakenly points the override at a path-prefixed URL,
+        # we must NOT prepend it to the original path — that double-prefixes
+        # (e.g. `/editor/editor/open/{uuid}`) and pdfgen returns 400.
+        rewrite = PdfGenApiClient._rewrite_url_host
+        self.assertEqual(
+            rewrite("http://api.internal/editor/open/abc", "http://outside/editor"),
+            "http://outside/editor/open/abc",
+        )
+
+    def test_create_template_posts_to_templates_endpoint(self):
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(
+                json_body={"response": {"id": 99, "name": "My new template"}}
+            )
+            result = self.client.create_template("My new template")
+        args, kwargs = mock_req.call_args
+        self.assertEqual(args[0], "POST")
+        self.assertEqual(args[1], "https://example.test/api/v4/templates")
+        self.assertEqual(kwargs["json"], {"name": "My new template"})
+        self.assertEqual(result["response"]["id"], 99)
+
+    def test_create_template_forwards_description(self):
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(json_body={"response": {"id": 1}})
+            self.client.create_template("Tpl", description="a nice template")
+        _, kwargs = mock_req.call_args
+        self.assertEqual(kwargs["json"], {"name": "Tpl", "description": "a nice template"})
+
     def test_default_base_url_used_when_blank(self):
         c = PdfGenApiClient(
             base_url="",

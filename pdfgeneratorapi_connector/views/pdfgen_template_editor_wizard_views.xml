@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_pdfgen_template_editor_wizard_form" model="ir.ui.view">
+        <field name="name">pdfgen.template.editor.wizard.form</field>
+        <field name="model">pdfgen.template.editor.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Template Editor" class="o_pdfgen_template_editor_form">
+                <!-- Single-line toolbar: edit existing / create new, kept compact
+                     so the iframe below has maximum canvas. -->
+                <div class="o_pdfgen_template_editor_toolbar d-flex flex-wrap gap-2 align-items-center py-2 px-3 border-bottom">
+                    <span class="small text-muted fw-bold">Edit:</span>
+                    <field name="template_id" nolabel="1" class="oe_inline"/>
+                    <button name="action_open_editor"
+                            type="object"
+                            string="Open"
+                            class="btn btn-primary btn-sm"
+                            invisible="not template_id"/>
+                    <div class="vr mx-2"/>
+                    <span class="small text-muted fw-bold">New:</span>
+                    <field name="new_template_name" nolabel="1" class="oe_inline"/>
+                    <button name="action_create_template"
+                            type="object"
+                            string="Create"
+                            class="btn btn-secondary btn-sm"/>
+                </div>
+
+                <!-- Editor pane. Flex-fills all viewport space below the toolbar. -->
+                <div class="o_pdfgen_template_editor_pane">
+                    <div invisible="editor_url"
+                         class="d-flex flex-column align-items-center justify-content-center text-muted h-100">
+                        <i class="fa fa-pencil-square-o fa-3x mb-3"/>
+                        <p class="mb-0">Pick a template above to open it in the editor, or create a new one.</p>
+                    </div>
+                    <field name="editor_url"
+                           widget="pdfgen_editor_iframe"
+                           readonly="1"
+                           nolabel="1"
+                           invisible="not editor_url"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pdfgen_template_editor" model="ir.actions.act_window">
+        <field name="name">Template Editor</field>
+        <field name="res_model">pdfgen.template.editor.wizard</field>
+        <field name="view_mode">form</field>
+        <!-- Explicit target=current → full-page (same pattern as Settings).
+             TransientModels with form-only view default to modal in some
+             contexts if target isn't set, so we spell it out. -->
+        <field name="target">current</field>
+    </record>
+
+</odoo>

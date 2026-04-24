@@ -7,11 +7,18 @@ from odoo.tests.common import TransactionCase, tagged
 @tagged("post_install", "-at_install")
 class TestResConfigSettings(TransactionCase):
     def _make_config(self, **overrides):
+        # Clear ir.config_parameter values for a deterministic starting point;
+        # config fields that read from ICP otherwise inherit whatever the
+        # developer set via the UI in this DB.
+        icp = self.env["ir.config_parameter"].sudo()
+        for key in ("pdfgen.editor_web_url",):
+            icp.set_param(key, "")
         vals = {
             "pdfgen_api_base_url": "https://us1.pdfgeneratorapi.com/api/v4",
             "pdfgen_api_key": "test-key",
             "pdfgen_api_secret": "test-secret",
             "pdfgen_workspace_identifier": "me@example.com",
+            "pdfgen_editor_web_url": False,
         }
         vals.update(overrides)
         return self.env["res.config.settings"].create(vals)
@@ -35,6 +42,16 @@ class TestResConfigSettings(TransactionCase):
         self.assertEqual(client.api_key, "test-key")
         self.assertEqual(client.api_secret, "test-secret")
         self.assertEqual(client.workspace, "me@example.com")
+        # editor_web_url empty by default — client falls back to stripping
+        # /api/vN from base_url.
+        self.assertIsNone(client.editor_web_url)
+
+    def test_get_client_forwards_editor_web_url_override(self):
+        config = self._make_config()
+        config.pdfgen_editor_web_url = "http://localhost:8080"
+        config.execute()
+        client = config._get_pdfgen_client()
+        self.assertEqual(client.editor_web_url, "http://localhost:8080")
 
     def test_test_connection_success_returns_notification(self):
         config = self._make_config()
