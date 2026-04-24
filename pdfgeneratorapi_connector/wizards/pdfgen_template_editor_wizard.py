@@ -27,7 +27,6 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
 
     template_id = fields.Selection(
         selection="_selection_template_id",
-        string="Template",
     )
     new_template_name = fields.Char(
         string="New template name",
@@ -82,9 +81,9 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
         except PdfGenApiError as e:
             raise UserError(
                 _(
-                    "Could not load the editor (HTTP %s): %s",
-                    e.status or "—",
-                    (e.body or "no body")[:500],
+                    "Could not load the editor (HTTP %(status)s): %(body)s",
+                    status=e.status or "—",
+                    body=(e.body or "no body")[:500],
                 )
             ) from e
         if not url:
@@ -104,9 +103,9 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
         except PdfGenApiError as e:
             raise UserError(
                 _(
-                    "Could not create template (HTTP %s): %s",
-                    e.status or "—",
-                    (e.body or "no body")[:500],
+                    "Could not create template (HTTP %(status)s): %(body)s",
+                    status=e.status or "—",
+                    body=(e.body or "no body")[:500],
                 )
             ) from e
         template = response.get("response", response) if isinstance(response, dict) else response

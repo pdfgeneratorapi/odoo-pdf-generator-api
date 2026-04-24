@@ -30,13 +30,11 @@ class PdfgenCoverageWizard(models.TransientModel):
 
     dataset_id = fields.Many2one(
         "pdfgen.model.dataset",
-        string="Dataset",
         required=True,
         ondelete="cascade",
     )
     template_id = fields.Selection(
         selection="_selection_template_id",
-        string="Template",
         required=True,
     )
     template_name = fields.Char(readonly=True)
@@ -144,9 +142,9 @@ class PdfgenCoverageWizard(models.TransientModel):
         except PdfGenApiError as e:
             raise UserError(
                 _(
-                    "Could not load template data (HTTP %s): %s",
-                    e.status or "—",
-                    (e.body or "no body")[:500],
+                    "Could not load template data (HTTP %(status)s): %(body)s",
+                    status=e.status or "—",
+                    body=(e.body or "no body")[:500],
                 )
             ) from e
         data = response.get("response", response) if isinstance(response, dict) else {}
@@ -207,9 +205,9 @@ class PdfgenCoverageWizard(models.TransientModel):
         except PdfGenApiError as e:
             raise UserError(
                 _(
-                    "Preview failed (HTTP %s): %s",
-                    e.status or "—",
-                    (e.body or "no body")[:500],
+                    "Preview failed (HTTP %(status)s): %(body)s",
+                    status=e.status or "—",
+                    body=(e.body or "no body")[:500],
                 )
             ) from e
         html_b64 = self._extract_payload(response)
@@ -253,9 +251,9 @@ class PdfgenCoverageWizard(models.TransientModel):
         except PdfGenApiError as e:
             raise UserError(
                 _(
-                    "Could not load sample template data (HTTP %s): %s",
-                    e.status or "—",
-                    (e.body or "no body")[:500],
+                    "Could not load sample template data (HTTP %(status)s): %(body)s",
+                    status=e.status or "—",
+                    body=(e.body or "no body")[:500],
                 )
             ) from e
         data = response.get("response", {}) if isinstance(response, dict) else {}

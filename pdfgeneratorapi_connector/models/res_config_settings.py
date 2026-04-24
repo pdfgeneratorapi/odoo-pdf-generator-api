@@ -108,9 +108,9 @@ class ResConfigSettings(models.TransientModel):
         except PdfGenApiError as e:
             raise UserError(
                 _(
-                    "Connection failed (HTTP %s): %s",
-                    e.status or "—",
-                    (e.body or "no body")[:500],
+                    "Connection failed (HTTP %(status)s): %(body)s",
+                    status=e.status or "—",
+                    body=(e.body or "no body")[:500],
                 )
             ) from e
         name = ""

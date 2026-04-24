@@ -40,7 +40,6 @@ class GeneratePdfWizard(models.TransientModel):
     )
     template_id = fields.Selection(
         selection="_selection_template_id",
-        string="Template",
         required=True,
     )
 
@@ -123,9 +122,9 @@ class GeneratePdfWizard(models.TransientModel):
         except PdfGenApiError as e:
             raise UserError(
                 _(
-                    "PDF generation failed (HTTP %s): %s",
-                    e.status or "—",
-                    (e.body or "no body")[:500],
+                    "PDF generation failed (HTTP %(status)s): %(body)s",
+                    status=e.status or "—",
+                    body=(e.body or "no body")[:500],
                 )
             ) from e
 
