@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Rental-specific fields appended to the sale bridge's sale.order
+         dataset. Non-rental sale orders resolve these paths to empty strings
+         (harmless — templates only render them on rental-variant layouts). -->
+
+    <record id="dataset_line_rental_is_rental" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="pdfgeneratorapi_connector_sale.dataset_sale_order"/>
+        <field name="sequence">700</field>
+        <field name="placeholder_path">rental.is_rental</field>
+        <field name="odoo_field_path">is_rental_order</field>
+    </record>
+    <record id="dataset_line_rental_start_date" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="pdfgeneratorapi_connector_sale.dataset_sale_order"/>
+        <field name="sequence">710</field>
+        <field name="placeholder_path">rental.start_date</field>
+        <field name="odoo_field_path">rental_start_date</field>
+    </record>
+    <record id="dataset_line_rental_return_date" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="pdfgeneratorapi_connector_sale.dataset_sale_order"/>
+        <field name="sequence">720</field>
+        <field name="placeholder_path">rental.return_date</field>
+        <field name="odoo_field_path">rental_return_date</field>
+    </record>
+    <record id="dataset_line_rental_duration_days" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="pdfgeneratorapi_connector_sale.dataset_sale_order"/>
+        <field name="sequence">730</field>
+        <field name="placeholder_path">rental.duration_days</field>
+        <field name="odoo_field_path">duration_days</field>
+    </record>
+
+    <!-- Per-line rental fields — appended as children of the existing
+         `lines` list row shipped by the sale bridge. They coexist with the
+         base sale line fields (product, quantity, price, etc.). -->
+
+    <record id="dataset_line_lines_is_rental" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="pdfgeneratorapi_connector_sale.dataset_sale_order"/>
+        <field name="parent_id" ref="pdfgeneratorapi_connector_sale.dataset_line_lines"/>
+        <field name="sequence">200</field>
+        <field name="placeholder_path">is_rental</field>
+        <field name="odoo_field_path">is_rental</field>
+    </record>
+    <record id="dataset_line_lines_pickup_date" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="pdfgeneratorapi_connector_sale.dataset_sale_order"/>
+        <field name="parent_id" ref="pdfgeneratorapi_connector_sale.dataset_line_lines"/>
+        <field name="sequence">210</field>
+        <field name="placeholder_path">pickup_date</field>
+        <field name="odoo_field_path">start_date</field>
+    </record>
+    <record id="dataset_line_lines_return_date" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="pdfgeneratorapi_connector_sale.dataset_sale_order"/>
+        <field name="parent_id" ref="pdfgeneratorapi_connector_sale.dataset_line_lines"/>
+        <field name="sequence">220</field>
+        <field name="placeholder_path">return_date</field>
+        <field name="odoo_field_path">return_date</field>
+    </record>
+
+</odoo>

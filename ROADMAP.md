@@ -103,10 +103,27 @@ Per-doc-type bridge modules, each depending on the main `pdfgeneratorapi_connect
 - [x] View inheritance adds **Generate custom PDF** button to `mrp.production` form.
 - [x] 5 bridge tests — all green.
 
-### Phase 3.6+ — Remaining bridges (pending)
+### Phase 3.6 — rental bridge (landed, Enterprise-gated)
 
-- [ ] `pdfgeneratorapi_connector_project` (`project.task`)
-- [ ] Rental flows (`sale.order` with `is_rental=True` in v18+, or `rental.order` in earlier/Enterprise variants)
+- [x] New sibling addon `pdfgeneratorapi_connector_rental`. Depends on `pdfgeneratorapi_connector_sale` + `sale_renting`. Installable only on Odoo Enterprise — `sale_renting` ships with Enterprise, not Community.
+- [x] Pure data addon (no Python, no views). Extends the sale bridge's `dataset_sale_order` with rental-specific lines: `rental.is_rental`, `rental.start_date`, `rental.return_date`, `rental.duration_days`, plus per-line `is_rental`, `pickup_date`, `return_date`.
+- [x] The **Generate custom PDF** button on rental orders is inherited from the sale bridge (rental orders are still `sale.order` records in v18+).
+- [x] Not tested locally — Community Odoo can't install `sale_renting`. Manifest + dataset are deliberate: fields match the `sale_renting` schema shipped with Odoo 19 Enterprise. Users on Enterprise can install and verify; a test run against an Enterprise Odoo is a follow-up.
+
+### Initial-version coverage (Sales / Invoicing / Rental / Manufacturing)
+
+With 3.6 landed, every app on the initial-version priority list has a dataset:
+
+- **Sales** → `pdfgeneratorapi_connector_sale` (sale.order) — Phase 3.2.
+- **Invoicing** → main `pdfgeneratorapi_connector` module (account.move) — Phase 1.
+- **Rental** → `pdfgeneratorapi_connector_rental` extending the sale dataset — Phase 3.6.
+- **Manufacturing** → `pdfgeneratorapi_connector_mrp` (mrp.production) — Phase 3.5.
+
+Bonus bridges: `_purchase` (Phase 3.3), `_stock` (Phase 3.4).
+
+### Phase 3.7+ — Further bridges (deferred)
+
+- [ ] `pdfgeneratorapi_connector_project` (`project.task`) — not in initial scope.
 - [ ] Custom Studio models — generic entry point exposing the wizard via an action server so any `mail.thread` model can be wired without code.
 
 ---
