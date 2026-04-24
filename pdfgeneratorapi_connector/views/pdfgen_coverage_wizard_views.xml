@@ -52,6 +52,21 @@
                         </div>
                     </div>
 
+                    <div invisible="not preview_html" class="mt-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <h4 class="mb-0 me-2">Preview</h4>
+                            <span class="text-muted small" invisible="not preview_source">
+                                <span>rendered from </span>
+                                <field name="preview_source" readonly="1" nolabel="1" class="oe_inline"/>
+                            </span>
+                        </div>
+                        <field name="preview_html"
+                               widget="html"
+                               readonly="1"
+                               nolabel="1"
+                               options="{'sandboxedPreview': true}"/>
+                    </div>
+
                     <field name="checked" invisible="1"/>
                 </sheet>
                 <footer>
@@ -59,6 +74,11 @@
                             type="object"
                             string="Check"
                             class="btn-primary"
+                            invisible="not template_id"/>
+                    <button name="action_preview"
+                            type="object"
+                            string="Preview"
+                            class="btn-secondary"
                             invisible="not template_id"/>
                     <button special="cancel"
                             string="Close"

@@ -190,6 +190,34 @@ class ResolveTests(unittest.TestCase):
             {"customer": ""},
         )
 
+    def test_multi_record_recordset_falls_back_to_joined_display_names(self):
+        """Regression: multi-record recordset must not raise from _jsonable."""
+
+        class MultiRecordRS:
+            _name = "res.users"
+            ids = [1, 2]
+
+            def __init__(self, names):
+                self._children = [
+                    SimpleNamespace(_name="res.users", ids=[i + 1], display_name=n)
+                    for i, n in enumerate(names)
+                ]
+
+            @property
+            def display_name(self):
+                # Mirrors Odoo's ensure_one behaviour on multi-record recordsets.
+                raise ValueError("Expected singleton: res.users(1, 2)")
+
+            def __iter__(self):
+                return iter(self._children)
+
+        rs = MultiRecordRS(["Admin", "Demo User"])
+        rec = SimpleNamespace(users=rs)
+        self.assertEqual(
+            resolver.resolve(rec, [_line("owners", "users")]),
+            {"owners": "Admin, Demo User"},
+        )
+
 
 class RenderExpressionTests(unittest.TestCase):
     def test_substitutes_single_token(self):

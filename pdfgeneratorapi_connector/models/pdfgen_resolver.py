@@ -171,6 +171,13 @@ def _jsonable(value):
         return ""
     if hasattr(value, "isoformat"):
         return value.isoformat()
-    if hasattr(value, "_name") and hasattr(value, "display_name"):
-        return value.display_name or ""
+    if hasattr(value, "_name"):
+        # `_name` is a class attribute (safe hasattr); `display_name` is a
+        # computed field descriptor that ensure_ones under the hood, which
+        # raises ValueError on multi-record recordsets. Python 3's hasattr
+        # only catches AttributeError, so we must use try/except here.
+        try:
+            return value.display_name or ""
+        except ValueError:
+            return ", ".join(r.display_name or "" for r in value) or ""
     return value

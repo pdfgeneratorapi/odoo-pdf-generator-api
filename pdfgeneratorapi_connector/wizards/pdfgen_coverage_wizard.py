@@ -12,6 +12,7 @@ on purpose — two callers don't yet justify a mixin. If a third caller appears,
 extract into a shared helper.
 """
 
+import base64
 import logging
 
 from odoo import _, api, fields, models
@@ -56,6 +57,21 @@ class PdfgenCoverageWizard(models.TransientModel):
         string="Unused by template",
         readonly=True,
         help="Paths the dataset maps but this template doesn't reference.",
+    )
+
+    preview_html = fields.Html(
+        string="Preview",
+        readonly=True,
+        sanitize=False,
+        help=(
+            "HTML render of the selected template with a sample record's data. "
+            "Useful to sanity-check the template + dataset combination without "
+            "generating a PDF."
+        ),
+    )
+    preview_source = fields.Char(
+        readonly=True,
+        help="Origin of the sample payload: a real record's display name, or the API's dummy data.",
     )
 
     @api.model
@@ -183,6 +199,86 @@ class PdfgenCoverageWizard(models.TransientModel):
                 "template_name": display_name,
             }
         )
+        return self._reopen()
+
+    def action_preview(self):
+        """Call /documents/generate with format=html and stash the result in the wizard.
+
+        Prefers a real record of the dataset's model (so the user sees *their* data
+        in the template). Falls back to the template's own sample data when no
+        record exists — useful for fresh databases or models with no instances yet.
+        """
+        self.ensure_one()
+        client = self._build_client()
+        data, source = self._preview_payload(client)
+        try:
+            response = client.generate(
+                template_id=self.template_id,
+                data=data,
+                name="coverage-preview",
+                output="base64",
+                fmt="html",
+            )
+        except PdfGenApiError as e:
+            raise UserError(
+                _(
+                    "Preview failed (HTTP %s): %s",
+                    e.status or "—",
+                    (e.body or "no body")[:500],
+                )
+            ) from e
+        html_b64 = self._extract_payload(response)
+        if not html_b64:
+            raise UserError(
+                _(
+                    "Unexpected API response for preview. Got: %s",
+                    list(response.keys())
+                    if isinstance(response, dict)
+                    else type(response).__name__,
+                )
+            )
+        try:
+            html = base64.b64decode(html_b64).decode("utf-8", errors="replace")
+        except (ValueError, TypeError) as e:
+            raise UserError(_("API returned invalid base64 HTML: %s", e)) from e
+        self.write({"preview_html": html, "preview_source": source})
+        return self._reopen()
+
+    def _preview_payload(self, client):
+        """Resolve the payload for the preview call.
+
+        Returns a `(data, source_label)` tuple. Tries a real record first, falls
+        back to `/templates/{id}/data` sample payload.
+        """
+        dataset = self.dataset_id
+        if dataset.model and dataset.model in self.env:
+            record = self.env[dataset.model].search([], limit=1)
+            if record:
+                try:
+                    return dataset.resolve_payload(record), record.display_name or dataset.model
+                except Exception as e:
+                    _logger.warning(
+                        "preview: resolve_payload failed for %s(%s): %s",
+                        dataset.model,
+                        record.id,
+                        e,
+                    )
+        try:
+            response = client.get_template_data(self.template_id)
+        except PdfGenApiError as e:
+            raise UserError(
+                _(
+                    "Could not load sample template data (HTTP %s): %s",
+                    e.status or "—",
+                    (e.body or "no body")[:500],
+                )
+            ) from e
+        data = response.get("response", {}) if isinstance(response, dict) else {}
+        if not isinstance(data, dict):
+            data = {}
+        return data, _("API sample data")
+
+    def _reopen(self):
         return {
             "type": "ir.actions.act_window",
             "res_model": self._name,
@@ -190,3 +286,20 @@ class PdfgenCoverageWizard(models.TransientModel):
             "view_mode": "form",
             "target": "new",
         }
+
+    @staticmethod
+    def _extract_payload(response):
+        """Pull the base64 string out of a pdfgen /generate response."""
+        if isinstance(response, str):
+            return response
+        if not isinstance(response, dict):
+            return None
+        for key in ("response", "data", "base64"):
+            value = response.get(key)
+            if isinstance(value, str):
+                return value
+            if isinstance(value, dict):
+                for sub_key in ("base64", "content", "data"):
+                    if isinstance(value.get(sub_key), str):
+                        return value[sub_key]
+        return None
