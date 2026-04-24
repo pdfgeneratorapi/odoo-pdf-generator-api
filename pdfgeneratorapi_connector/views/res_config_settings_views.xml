@@ -86,6 +86,13 @@
                                     class="btn-primary"/>
                         </setting>
                     </block>
+                    <block title="Attachments"
+                           help="Control what happens to previously-generated PDFs when a user clicks Generate again on the same record.">
+                        <setting string="Cleanup policy"
+                                 help="Keep: every generation adds a new attachment. Replace: pdfgen-generated PDFs on that record are deleted first. Manually uploaded PDFs are never touched.">
+                            <field name="pdfgen_attachment_cleanup" widget="radio"/>
+                        </setting>
+                    </block>
                 </app>
             </xpath>
         </field>

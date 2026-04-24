@@ -157,6 +157,19 @@ class GeneratePdfWizard(models.TransientModel):
         except (ValueError, TypeError) as e:
             raise UserError(_("API returned invalid base64: %s", e)) from e
 
+        # Honor the attachment cleanup policy before creating the fresh one.
+        # Only deletes attachments we created ourselves (description starts with
+        # "pdfgen:"), so manually uploaded PDFs on the same record survive.
+        icp = self.env["ir.config_parameter"].sudo()
+        if icp.get_param("pdfgen.attachment_cleanup") == "replace":
+            self.env["ir.attachment"].search(
+                [
+                    ("res_model", "=", self.res_model),
+                    ("res_id", "=", self.res_id),
+                    ("description", "=like", "pdfgen:%"),
+                ]
+            ).unlink()
+
         attachment = self.env["ir.attachment"].create(
             {
                 "name": filename,
@@ -165,6 +178,9 @@ class GeneratePdfWizard(models.TransientModel):
                 "res_model": self.res_model,
                 "res_id": self.res_id,
                 "mimetype": "application/pdf",
+                # Marker so the cleanup policy can find our attachments without
+                # risking other PDFs the user manually uploaded to the record.
+                "description": f"pdfgen:template:{self.template_id}",
             }
         )
         # Only post to the chatter if the source model supports it.

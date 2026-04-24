@@ -184,6 +184,72 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
             wizard.action_generate()
         self.assertIn("unknown", str(ctx.exception).lower())
 
+    def _generate(self, template_id="42"):
+        """Run one generate cycle, return the attachment it created."""
+        client = MagicMock()
+        client.generate.return_value = {"response": PDF_B64}
+        wizard = self.env["pdfgen.generate.wizard"].create(
+            {"res_model": "account.move", "res_id": self.invoice.id, "template_id": template_id}
+        )
+        with self._patch_client(client):
+            wizard.action_generate()
+        return self.env["ir.attachment"].search(
+            [
+                ("res_model", "=", "account.move"),
+                ("res_id", "=", self.invoice.id),
+                ("description", "=like", "pdfgen:%"),
+            ],
+        )
+
+    def test_attachment_cleanup_keep_stacks_versions(self):
+        icp = self.env["ir.config_parameter"].sudo()
+        icp.set_param("pdfgen.attachment_cleanup", "keep")
+        self._generate()
+        self._generate()
+        self._generate()
+        self.assertEqual(len(self._generate()), 4)
+
+    def test_attachment_cleanup_replace_keeps_only_latest(self):
+        icp = self.env["ir.config_parameter"].sudo()
+        icp.set_param("pdfgen.attachment_cleanup", "replace")
+        self._generate()
+        self._generate()
+        attachments = self._generate()
+        self.assertEqual(len(attachments), 1)
+
+    def test_attachment_cleanup_replace_spares_manual_uploads(self):
+        """A PDF the user attached manually (description not starting with
+        `pdfgen:`) must survive the Replace cleanup — only our attachments
+        are touched."""
+        icp = self.env["ir.config_parameter"].sudo()
+        icp.set_param("pdfgen.attachment_cleanup", "replace")
+        manual = self.env["ir.attachment"].create(
+            {
+                "name": "manual.pdf",
+                "type": "binary",
+                "datas": PDF_B64,
+                "res_model": "account.move",
+                "res_id": self.invoice.id,
+                "mimetype": "application/pdf",
+                # No "pdfgen:" description — mimics a manual upload.
+                "description": "user uploaded this",
+            }
+        )
+        self._generate()
+        self._generate()
+        self.assertTrue(manual.exists(), "manual attachment must not be cleaned")
+        pdfgen_attachments = self._generate()
+        self.assertEqual(len(pdfgen_attachments), 1)
+
+    def test_attachment_gets_pdfgen_description_marker(self):
+        """Cleanup relies on the `description` marker — regression-guard it."""
+        icp = self.env["ir.config_parameter"].sudo()
+        icp.set_param("pdfgen.attachment_cleanup", "keep")
+        attachments = self._generate(template_id="77")
+        self.assertEqual(len(attachments), 1)
+        self.assertTrue(attachments.description.startswith("pdfgen:"))
+        self.assertIn("77", attachments.description)
+
     def test_extract_pdf_payload_handles_various_shapes(self):
         from odoo.addons.pdfgeneratorapi_connector.wizards.generate_pdf_wizard import (
             GeneratePdfWizard,
