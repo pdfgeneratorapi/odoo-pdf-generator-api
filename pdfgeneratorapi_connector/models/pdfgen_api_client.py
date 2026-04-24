@@ -11,6 +11,7 @@ import hashlib
 import hmac
 import json
 import logging
+import re
 import time
 
 import requests
@@ -20,6 +21,30 @@ _logger = logging.getLogger(__name__)
 DEFAULT_BASE_URL = "https://us1.pdfgeneratorapi.com/api/v4"
 DEFAULT_TIMEOUT = 60
 JWT_TTL_SECONDS = 30
+
+# Matches `<secret-key>: <value>` / `<secret-key>="<value>"` / etc. across
+# typical log formats. We redact the value so error bodies logged at WARN
+# can't leak tokens even if pdfgen echoes them back in a 4xx/5xx payload.
+# Key names are case-insensitive; value runs until whitespace, quote, comma,
+# or closing brace.
+_REDACT_RE = re.compile(
+    r"((?:token|secret|authorization|bearer|jwt|apikey|api[_-]?key|password)"
+    r'["\']?\s*[:=]\s*(?:Bearer\s+)?["\']?)'
+    r'([^\s"\',}]+)',
+    re.IGNORECASE,
+)
+
+
+def _redact(text):
+    """Mask values after secret-sounding keys in free-form text.
+
+    Used before logging API response bodies so a stray token in an error
+    payload doesn't land in server logs. Non-matching text passes through
+    untouched.
+    """
+    if not text:
+        return text
+    return _REDACT_RE.sub(r"\1<redacted>", text)
 
 
 class PdfGenApiError(Exception):
@@ -99,12 +124,14 @@ class PdfGenApiClient:
         except requests.RequestException as e:
             raise PdfGenApiError(0, "", f"Network error: {e}") from e
         if not response.ok:
+            # Redact before truncating so a token straddling the 500-char
+            # boundary is still caught by the regex.
             _logger.warning(
                 "PDF Generator API %s %s → %s %s",
                 method,
                 path,
                 response.status_code,
-                response.text[:500],
+                _redact(response.text)[:500],
             )
             raise PdfGenApiError(response.status_code, response.text)
         if not response.content:

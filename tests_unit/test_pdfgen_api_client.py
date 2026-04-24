@@ -282,6 +282,73 @@ class RequestTests(unittest.TestCase):
         self.assertEqual(c.base_url, _client_module.DEFAULT_BASE_URL.rstrip("/"))
 
 
+class RedactionTests(unittest.TestCase):
+    """`_redact` protects log output from pdfgen error bodies echoing secrets."""
+
+    def test_redacts_token_in_json_body(self):
+        text = '{"token": "abc123xyz", "message": "bad"}'
+        out = _client_module._redact(text)
+        self.assertIn("<redacted>", out)
+        self.assertNotIn("abc123xyz", out)
+        self.assertIn("bad", out)  # unrelated fields pass through
+
+    def test_redacts_bearer_header_style(self):
+        text = "Authorization: Bearer eyJ.payload.sig"
+        out = _client_module._redact(text)
+        self.assertIn("<redacted>", out)
+        self.assertNotIn("eyJ.payload.sig", out)
+
+    def test_redacts_api_key_underscore_and_hyphen(self):
+        for key in ("api_key", "api-key", "apikey", "API_KEY"):
+            text = f'{key}="secretvalue"'
+            out = _client_module._redact(text)
+            self.assertNotIn("secretvalue", out, f"failed to redact {key}")
+
+    def test_redacts_multiple_occurrences(self):
+        text = 'token: a secret: b password="c"'
+        out = _client_module._redact(text)
+        for leaked in ("a", "b", "c"):
+            self.assertNotIn(f" {leaked}", out, text)
+        self.assertEqual(out.count("<redacted>"), 3)
+
+    def test_plain_error_body_passes_through(self):
+        text = '{"message": "Bad request", "status": 400}'
+        self.assertEqual(_client_module._redact(text), text)
+
+    def test_empty_and_none_are_safe(self):
+        self.assertEqual(_client_module._redact(""), "")
+        self.assertIsNone(_client_module._redact(None))
+
+    def test_warning_log_is_redacted_end_to_end(self):
+        """Prove the redaction is actually wired into the warning call site."""
+        client = PdfGenApiClient(
+            base_url="https://example.test/api/v4",
+            api_key="k",
+            api_secret="s",
+            workspace_identifier="w",
+        )
+        body = '{"token": "LEAKED_TOKEN", "error": "boom"}'
+        with (
+            patch.object(_client_module.requests, "request") as mock_req,
+            self.assertLogs(_client_module._logger, level="WARNING") as captured,
+        ):
+            mock_req.return_value = self._mock_response(ok=False, status=401, text=body)
+            with self.assertRaises(PdfGenApiError):
+                client.ping()
+        joined = "\n".join(captured.output)
+        self.assertIn("<redacted>", joined)
+        self.assertNotIn("LEAKED_TOKEN", joined)
+
+    def _mock_response(self, *, ok=True, status=200, json_body=None, text=""):
+        resp = MagicMock()
+        resp.ok = ok
+        resp.status_code = status
+        resp.text = text or (json.dumps(json_body) if json_body is not None else "")
+        resp.content = resp.text.encode()
+        resp.json.return_value = json_body
+        return resp
+
+
 class PdfGenApiErrorTests(unittest.TestCase):
     def test_default_message_includes_status_and_body(self):
         err = PdfGenApiError(500, "boom")
