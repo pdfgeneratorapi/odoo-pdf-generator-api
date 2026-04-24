@@ -96,11 +96,15 @@ Per-doc-type bridge modules, each depending on the main `pdfgeneratorapi_connect
 - [x] View inheritance adds **Generate custom PDF** button to the `stock.picking` form header when configured.
 - [x] Bridge tests: mixin exposure, action context, seed dataset shape, payload resolution, end-to-end wizard on a stock.picking. 5 tests, all green.
 
-### Phase 3.5+ — Remaining bridges (pending)
+### Phase 3.5 — mrp.production bridge (landed)
 
-Each follows the same pattern as the purchase/sale/stock bridges.
+- [x] New sibling addon `pdfgeneratorapi_connector_mrp`. Depends on `pdfgeneratorapi_connector` + `mrp`.
+- [x] Seed dataset for `mrp.production` (~25 lines: scalars including reference / source doc / start+finish+deadline dates / state / priority, product block with name/code/qty-to-produce/qty-produced/uom, BOM reference + type, company block, responsible, and raw-material components as a list iterating `move_raw_ids` with product/code/demand/consumed/uom).
+- [x] View inheritance adds **Generate custom PDF** button to `mrp.production` form.
+- [x] 5 bridge tests — all green.
 
-- [ ] `pdfgeneratorapi_connector_mrp` (`mrp.production`)
+### Phase 3.6+ — Remaining bridges (pending)
+
 - [ ] `pdfgeneratorapi_connector_project` (`project.task`)
 - [ ] Rental flows (`sale.order` with `is_rental=True` in v18+, or `rental.order` in earlier/Enterprise variants)
 - [ ] Custom Studio models — generic entry point exposing the wizard via an action server so any `mail.thread` model can be wired without code.

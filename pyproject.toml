@@ -79,6 +79,7 @@ source = [
     "pdfgeneratorapi_connector_sale",
     "pdfgeneratorapi_connector_purchase",
     "pdfgeneratorapi_connector_stock",
+    "pdfgeneratorapi_connector_mrp",
 ]
 branch = true
 parallel = true
@@ -105,6 +106,10 @@ purchase_bridge = [
 stock_bridge = [
     "pdfgeneratorapi_connector_stock",
     "/mnt/extra-addons/pdfgeneratorapi_connector_stock",
+]
+mrp_bridge = [
+    "pdfgeneratorapi_connector_mrp",
+    "/mnt/extra-addons/pdfgeneratorapi_connector_mrp",
 ]
 
 [tool.coverage.report]

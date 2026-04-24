@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="dataset_mrp_production" model="pdfgen.model.dataset">
+        <field name="name">Manufacturing Order</field>
+        <field name="model_id" ref="mrp.model_mrp_production"/>
+    </record>
+
+    <!-- Scalars -->
+    <record id="dataset_line_reference" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">10</field>
+        <field name="placeholder_path">reference</field>
+        <field name="odoo_field_path">name</field>
+    </record>
+    <record id="dataset_line_origin" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">20</field>
+        <field name="placeholder_path">source_document</field>
+        <field name="odoo_field_path">origin</field>
+    </record>
+    <record id="dataset_line_date_start" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">30</field>
+        <field name="placeholder_path">start_date</field>
+        <field name="odoo_field_path">date_start</field>
+    </record>
+    <record id="dataset_line_date_finished" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">40</field>
+        <field name="placeholder_path">finish_date</field>
+        <field name="odoo_field_path">date_finished</field>
+    </record>
+    <record id="dataset_line_date_deadline" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">50</field>
+        <field name="placeholder_path">deadline</field>
+        <field name="odoo_field_path">date_deadline</field>
+    </record>
+    <record id="dataset_line_state" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">60</field>
+        <field name="placeholder_path">state</field>
+        <field name="odoo_field_path">state</field>
+    </record>
+    <record id="dataset_line_priority" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">70</field>
+        <field name="placeholder_path">priority</field>
+        <field name="odoo_field_path">priority</field>
+    </record>
+
+    <!-- Product being manufactured -->
+    <record id="dataset_line_product_name" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">100</field>
+        <field name="placeholder_path">product.name</field>
+        <field name="odoo_field_path">product_id.display_name</field>
+    </record>
+    <record id="dataset_line_product_code" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">110</field>
+        <field name="placeholder_path">product.code</field>
+        <field name="odoo_field_path">product_id.default_code</field>
+    </record>
+    <record id="dataset_line_quantity_to_produce" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">120</field>
+        <field name="placeholder_path">product.quantity</field>
+        <field name="odoo_field_path">product_qty</field>
+    </record>
+    <record id="dataset_line_quantity_produced" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">130</field>
+        <field name="placeholder_path">product.quantity_produced</field>
+        <field name="odoo_field_path">qty_produced</field>
+    </record>
+    <record id="dataset_line_uom" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">140</field>
+        <field name="placeholder_path">product.uom</field>
+        <field name="odoo_field_path">product_uom_id.name</field>
+    </record>
+
+    <!-- Bill of Materials reference -->
+    <record id="dataset_line_bom_reference" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">200</field>
+        <field name="placeholder_path">bom.reference</field>
+        <field name="odoo_field_path">bom_id.code</field>
+    </record>
+    <record id="dataset_line_bom_type" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">210</field>
+        <field name="placeholder_path">bom.type</field>
+        <field name="odoo_field_path">bom_id.type</field>
+    </record>
+
+    <!-- Company block -->
+    <record id="dataset_line_company_name" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">300</field>
+        <field name="placeholder_path">company.name</field>
+        <field name="odoo_field_path">company_id.partner_id.name</field>
+    </record>
+    <record id="dataset_line_company_email" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">310</field>
+        <field name="placeholder_path">company.email</field>
+        <field name="odoo_field_path">company_id.partner_id.email</field>
+    </record>
+    <record id="dataset_line_company_phone" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">320</field>
+        <field name="placeholder_path">company.phone</field>
+        <field name="odoo_field_path">company_id.partner_id.phone</field>
+    </record>
+
+    <!-- Responsible (production manager) -->
+    <record id="dataset_line_responsible" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">400</field>
+        <field name="placeholder_path">responsible.name</field>
+        <field name="odoo_field_path">user_id.name</field>
+    </record>
+
+    <!-- Raw materials (components consumed).
+         Iterates move_raw_ids — each raw component is one line. -->
+    <record id="dataset_line_components" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="sequence">500</field>
+        <field name="placeholder_path">components</field>
+        <field name="is_list" eval="True"/>
+        <field name="odoo_field_path">move_raw_ids</field>
+    </record>
+    <record id="dataset_line_components_product" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="parent_id" ref="dataset_line_components"/>
+        <field name="sequence">10</field>
+        <field name="placeholder_path">product</field>
+        <field name="odoo_field_path">product_id.display_name</field>
+    </record>
+    <record id="dataset_line_components_code" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="parent_id" ref="dataset_line_components"/>
+        <field name="sequence">20</field>
+        <field name="placeholder_path">code</field>
+        <field name="odoo_field_path">product_id.default_code</field>
+    </record>
+    <record id="dataset_line_components_demand" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="parent_id" ref="dataset_line_components"/>
+        <field name="sequence">30</field>
+        <field name="placeholder_path">demand</field>
+        <field name="odoo_field_path">product_uom_qty</field>
+    </record>
+    <record id="dataset_line_components_consumed" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="parent_id" ref="dataset_line_components"/>
+        <field name="sequence">40</field>
+        <field name="placeholder_path">consumed</field>
+        <field name="odoo_field_path">quantity</field>
+    </record>
+    <record id="dataset_line_components_uom" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_mrp_production"/>
+        <field name="parent_id" ref="dataset_line_components"/>
+        <field name="sequence">50</field>
+        <field name="placeholder_path">uom</field>
+        <field name="odoo_field_path">product_uom.name</field>
+    </record>
+
+</odoo>
