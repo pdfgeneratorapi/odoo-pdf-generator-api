@@ -48,6 +48,14 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         icp = self.env["ir.config_parameter"].sudo()
         for key in ("pdfgen.api_key", "pdfgen.api_secret", "pdfgen.workspace_identifier"):
             icp.set_param(key, "")
+        # Phase F: company-level creds win over ICP — wipe those too.
+        self.env.company.write(
+            {
+                "pdfgen_api_key": False,
+                "pdfgen_api_secret": False,
+                "pdfgen_workspace_identifier": False,
+            }
+        )
         selection = self.env["pdfgen.generate.wizard"]._selection_template_id()
         self.assertEqual(selection, [])
 

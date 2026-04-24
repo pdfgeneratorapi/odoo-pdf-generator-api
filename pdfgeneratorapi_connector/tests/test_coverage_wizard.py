@@ -157,6 +157,14 @@ class TestCoverageWizard(TransactionCase):
         icp = self.env["ir.config_parameter"].sudo()
         for key in ("pdfgen.api_key", "pdfgen.api_secret", "pdfgen.workspace_identifier"):
             icp.set_param(key, "")
+        # Phase F: company-level creds win — wipe those too.
+        self.env.company.write(
+            {
+                "pdfgen_api_key": False,
+                "pdfgen_api_secret": False,
+                "pdfgen_workspace_identifier": False,
+            }
+        )
         selection = self.env["pdfgen.coverage.wizard"]._selection_template_id()
         self.assertEqual(selection, [])
 
@@ -195,6 +203,15 @@ class TestCoverageWizard(TransactionCase):
         icp = self.env["ir.config_parameter"].sudo()
         for key in ("pdfgen.api_key", "pdfgen.api_secret", "pdfgen.workspace_identifier"):
             icp.set_param(key, "")
+        # Per-company creds now win over ICP (multi-company feature). Wipe
+        # those too so the client-build sees a genuinely unconfigured env.
+        self.env.company.write(
+            {
+                "pdfgen_api_key": False,
+                "pdfgen_api_secret": False,
+                "pdfgen_workspace_identifier": False,
+            }
+        )
         wizard = self._new_wizard(template_id="99")
         with self.assertRaises(UserError) as ctx:
             wizard.action_check()

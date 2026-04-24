@@ -69,6 +69,13 @@ class ResConfigSettings(models.TransientModel):
     )
 
     def _get_pdfgen_client(self):
+        """Build a client from what's on the unsaved Settings form.
+
+        Note this reads the transient wizard's values (pre-save), not the
+        stored ICP — that lets Test Connection work before the user clicks
+        Save. Multi-company credential resolution happens at generate-time
+        via pdfgen.document.mixin.build_pdfgen_client().
+        """
         self.ensure_one()
         missing = [
             label

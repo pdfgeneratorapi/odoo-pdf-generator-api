@@ -116,6 +116,14 @@ class TestTemplateEditorWizard(TransactionCase):
         icp = self.env["ir.config_parameter"].sudo()
         for key in ("pdfgen.api_key", "pdfgen.api_secret", "pdfgen.workspace_identifier"):
             icp.set_param(key, "")
+        # Phase F: company-level creds win — wipe those too.
+        self.env.company.write(
+            {
+                "pdfgen_api_key": False,
+                "pdfgen_api_secret": False,
+                "pdfgen_workspace_identifier": False,
+            }
+        )
         sel = self.env["pdfgen.template.editor.wizard"]._selection_template_id()
         self.assertEqual(sel, [])
 
@@ -123,6 +131,15 @@ class TestTemplateEditorWizard(TransactionCase):
         icp = self.env["ir.config_parameter"].sudo()
         for key in ("pdfgen.api_key", "pdfgen.api_secret", "pdfgen.workspace_identifier"):
             icp.set_param(key, "")
+        # Company-level creds override ICP. Wipe those too so the client
+        # build actually sees an unconfigured environment.
+        self.env.company.write(
+            {
+                "pdfgen_api_key": False,
+                "pdfgen_api_secret": False,
+                "pdfgen_workspace_identifier": False,
+            }
+        )
         wizard = self._new_wizard(template_id="1")
         with self.assertRaises(UserError) as ctx:
             wizard.action_open_editor()

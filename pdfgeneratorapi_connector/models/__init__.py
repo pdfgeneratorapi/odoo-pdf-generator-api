@@ -7,5 +7,6 @@ from . import (
     pdfgen_api_client,
     pdfgen_model_dataset,
     pdfgen_resolver,
+    res_company,
     res_config_settings,
 )

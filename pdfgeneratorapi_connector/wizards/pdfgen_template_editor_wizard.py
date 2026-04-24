@@ -16,11 +16,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.pdfgen_api_client import (
-    DEFAULT_BASE_URL,
-    PdfGenApiClient,
-    PdfGenApiError,
-)
+from ..models.pdfgen_api_client import PdfGenApiError
 
 _logger = logging.getLogger(__name__)
 
@@ -49,21 +45,9 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
 
     @api.model
     def _build_client(self):
-        icp = self.env["ir.config_parameter"].sudo()
-        key = icp.get_param("pdfgen.api_key")
-        secret = icp.get_param("pdfgen.api_secret")
-        workspace = icp.get_param("pdfgen.workspace_identifier")
-        if not (key and secret and workspace):
-            raise UserError(
-                _("PDF Generator API is not configured. Go to Settings > PDF Generator API.")
-            )
-        return PdfGenApiClient(
-            base_url=icp.get_param("pdfgen.api_base_url") or DEFAULT_BASE_URL,
-            api_key=key,
-            api_secret=secret,
-            workspace_identifier=workspace,
-            editor_web_url=icp.get_param("pdfgen.editor_web_url") or None,
-        )
+        from ..models.pdfgen_document_mixin import build_pdfgen_client
+
+        return build_pdfgen_client(self.env)
 
     @api.model
     def _selection_template_id(self):

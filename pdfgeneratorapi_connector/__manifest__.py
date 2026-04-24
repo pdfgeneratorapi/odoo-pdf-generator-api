@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator API Connector",
-    "version": "19.0.1.0.0",
+    "version": "19.0.2.0.0",
     "category": "Accounting",
     "summary": "Generate invoices, quotes and other documents via pdfgeneratorapi.com",
     "description": """
