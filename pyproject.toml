@@ -74,7 +74,11 @@ python_files = "test_*.py"
 addopts = "-ra -q --import-mode=importlib"
 
 [tool.coverage.run]
-source = ["pdfgeneratorapi_connector", "pdfgeneratorapi_connector_sale"]
+source = [
+    "pdfgeneratorapi_connector",
+    "pdfgeneratorapi_connector_sale",
+    "pdfgeneratorapi_connector_purchase",
+]
 branch = true
 parallel = true
 omit = [
@@ -92,6 +96,10 @@ source = [
 sale_bridge = [
     "pdfgeneratorapi_connector_sale",
     "/mnt/extra-addons/pdfgeneratorapi_connector_sale",
+]
+purchase_bridge = [
+    "pdfgeneratorapi_connector_purchase",
+    "/mnt/extra-addons/pdfgeneratorapi_connector_purchase",
 ]
 
 [tool.coverage.report]

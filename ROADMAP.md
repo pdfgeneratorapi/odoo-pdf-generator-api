@@ -81,11 +81,18 @@ Per-doc-type bridge modules, each depending on the main `pdfgeneratorapi_connect
 - [x] Bridge tests: mixin exposure, seed dataset shape, payload resolution, end-to-end wizard on a sale.order.
 - [x] Docker compose + Makefile updated to mount and drive both addons; pre-commit's `make coverage` covers the bridge (97% combined).
 
-### Phase 3.3+ — Remaining bridges (pending)
+### Phase 3.3 — purchase.order bridge (landed)
 
-Each follows the same pattern as `pdfgeneratorapi_connector_sale`: new addon dir, manifest depending on the Odoo module, `_inherit` the mixin, seed dataset, view inheritance for the button, tests.
+- [x] New sibling addon `pdfgeneratorapi_connector_purchase`. Depends on `pdfgeneratorapi_connector` + `purchase`.
+- [x] Seed dataset for `purchase.order` (~30 lines: scalars including confirmation date / expected date / vendor reference / source document, currency, company, vendor block, totals, buyer, order lines as a list with product/qty/uom/price/discount/subtotal/total/date_planned).
+- [x] View inheritance adds **Generate custom PDF** button to the `purchase.order` form header when configured.
+- [x] Bridge tests: mixin exposure, action context, seed dataset shape, payload resolution, end-to-end wizard on a purchase.order.
+- [x] Makefile/compose/pyproject generalised: `BRIDGES` list is now space-separated and comma-joined via `$(subst $(space),,$(foreach ...))` so adding a bridge only needs one line in each file.
 
-- [ ] `pdfgeneratorapi_connector_purchase` (`purchase.order`)
+### Phase 3.4+ — Remaining bridges (pending)
+
+Each follows the same pattern as the purchase/sale bridges: new addon dir, manifest depending on the Odoo module, `_inherit` the mixin, seed dataset, view inheritance for the button, tests.
+
 - [ ] `pdfgeneratorapi_connector_stock` (`stock.picking` — delivery slips)
 - [ ] `pdfgeneratorapi_connector_mrp` (`mrp.production`)
 - [ ] `pdfgeneratorapi_connector_project` (`project.task`)
