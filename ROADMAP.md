@@ -187,12 +187,12 @@ Only wire this up if real-world templates regularly exceed ~30s:
 
 ## Cross-cutting concerns
 
-- [ ] i18n: extract translations via `make i18n`, contribute at minimum `es`, `pt_BR`, `it`, `de`, `fr` `.po` files.
-- [ ] Multi-company: currently uses a single set of `ir.config_parameter` values; if users want per-company workspaces, add a `res.company` extension.
-- [ ] Sub-workspace support: verify that setting the `sub` claim to a sub-workspace identifier actually routes templates correctly.
-- [ ] Rate limiting / retry with backoff on 429 responses.
-- [ ] Log redaction: ensure we never log the API secret or the raw JWT (currently the secret is in `ir.config_parameter`, visible only to `base.group_system`, but audit the log output).
-- [ ] Attachment cleanup policy: should we delete old generated PDFs on re-generation, keep all versions, or let the user decide via a setting?
+- [x] **i18n** (`54ff98a`): every addon ships a `.pot` + 8 fully-translated `.po` files (es / pt_BR / it / de / fr / cs / sk / et). `make i18n-export` / `i18n-translate` / `i18n-check` targets + `scripts/i18n_translate.py` holds the translation dicts.
+- [x] **Multi-company** (`07803f4`): `res.company` extension with the five credential fields. Per-company value wins, global ICP is fallback. `pdfgen.document.mixin.pdfgen_config()` + `build_pdfgen_client()` give every wizard a single read path. Post-migrate copies existing ICP values onto each company for a transparent upgrade. Manifest bumped to `19.0.2.0.0`.
+- [x] **Sub-workspace support** (`a44e6bc`): unit test locks in verbatim-forward of the Workspace Identifier into the JWT `sub` claim; README + Settings help text document the sub-workspace format.
+- [x] **Rate limiting / retry** (`9e33b94`): 3 retries on 429 / 502 / 503 / 504 + connection errors, honouring `Retry-After` (integer seconds or HTTP-date) with exponential-backoff fallback, per-sleep cap 10s, total cap 30s. Non-retryable 4xx still fail fast.
+- [x] **Log redaction** (`6da77fb`): `_redact()` masks values after secret-sounding keys (token / secret / authorization / bearer / jwt / api_key / password) before the WARN log. Applied before the 500-char truncation so a token straddling the boundary still gets caught.
+- [x] **Attachment cleanup policy** (`35b6304`): new Settings switch `Keep all versions` (default) vs `Replace previous pdfgen PDFs on the record`. Replace only touches attachments whose `description` starts with `pdfgen:` — manual uploads never get cleaned.
 
 ---
 
