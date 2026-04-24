@@ -73,6 +73,20 @@ class JwtMintingTests(unittest.TestCase):
         t2 = self.client._jwt()
         self.assertNotEqual(t1, t2)
 
+    def test_sub_workspace_identifier_forwarded_verbatim(self):
+        """pdfgeneratorapi.com routes sub-workspace traffic via the JWT `sub`
+        claim. Whatever the admin types into Workspace Identifier must land
+        in the JWT unchanged — no transformation, escaping, or splitting."""
+        identifier = "master@domain.com:sub-workspace-slug"
+        client = PdfGenApiClient(
+            base_url="https://example.test/api/v4",
+            api_key="k",
+            api_secret="s",
+            workspace_identifier=identifier,
+        )
+        payload = json.loads(_b64url_decode(client._jwt().split(".")[1]))
+        self.assertEqual(payload["sub"], identifier)
+
 
 class RequestTests(unittest.TestCase):
     def setUp(self):

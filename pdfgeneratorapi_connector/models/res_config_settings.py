@@ -37,8 +37,13 @@ class ResConfigSettings(models.TransientModel):
     pdfgen_workspace_identifier = fields.Char(
         string="Workspace Identifier",
         config_parameter="pdfgen.workspace_identifier",
-        help="Your account email for regular workspaces, or the sub-workspace "
-        "identifier for sub-workspaces.",
+        help=(
+            "Your account email for regular workspaces, or a sub-workspace "
+            "identifier (format per the pdfgeneratorapi.com workspace settings "
+            "page — typically `parent@domain.com:slug`) for sub-workspaces. "
+            "The value is forwarded verbatim into the JWT `sub` claim so pdfgen "
+            "routes requests to the right workspace."
+        ),
     )
     pdfgen_show_secret = fields.Boolean(
         string="Show secret",
