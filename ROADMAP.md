@@ -113,11 +113,14 @@ Each follows the same pattern as the purchase/sale bridges: new addon dir, manif
 - [x] New **Template Editor** menu entry under the PDF Generator API root (admin only).
 - [x] 16 Odoo tests (URL storage, shape variants, error paths, create flow, extract helpers) + 4 host unit tests for the new client methods. Combined coverage 97%.
 
-### Phase 4.2 — postMessage handshake (deferred)
+### Phase 4.2 — postMessage handshake (landed)
 
-- [ ] Listen for `message` events from the iframe (template-saved, template-closed).
-- [ ] Refresh the list view / cached template name when the editor reports a save.
-- [ ] Verify `event.origin` against the configured pdfgen base URL before trusting any payload.
+- [x] `pdfgen_editor_iframe` widget registers a `window.message` listener on mount, cleans up on unmount.
+- [x] Every incoming event is dropped unless `event.origin` matches the iframe's current src origin — rejects spoofed save events from other pages.
+- [x] Matches the event-type key from either `data.type` or `data.event` (pdfgen's exact shape isn't fully documented, so we accept both common patterns and log the raw payload at `console.debug` level for ongoing discovery).
+- [x] Save-type event (anything whose type substring-matches `/save/i`) → success notification "Template saved."
+- [x] Close-type event → info notification "Editor closed." + clears `editor_url` so the iframe collapses.
+- [x] 6 Hoot tests covering mount, origin validation, save dispatch, close dispatch, unknown-shape rejection, and the `event` key variant.
 
 ---
 
