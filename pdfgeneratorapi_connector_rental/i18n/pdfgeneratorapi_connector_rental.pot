@@ -1,0 +1,21 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pdfgeneratorapi_connector_rental
+#
+# The rental bridge is a pure-data addon — it extends the sale bridge's
+# sale.order dataset with rental-specific placeholder paths. Placeholder
+# paths themselves are API-facing keys, not translated. This .pot stays
+# empty until a user-facing string is added.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260409\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-24 17:00+0000\n"
+"PO-Revision-Date: 2026-04-24 17:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"

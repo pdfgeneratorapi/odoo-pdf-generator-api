@@ -21,7 +21,7 @@ ODOO_COVERAGE_FILE_HOST := $(REPO_ROOT)/$(MODULE)/.coverage.odoo
 
 .PHONY: help setup lint lint-ruff lint-pylint format test test-unit test-odoo \
         coverage coverage-unit coverage-odoo coverage-clean \
-        hooks upgrade
+        hooks upgrade i18n-export i18n-translate i18n-check
 
 help:
 	@echo "setup            - install dev tooling via uv"
@@ -31,6 +31,9 @@ help:
 	@echo "test             - run unit tests (host) + Odoo integration tests (container)"
 	@echo "coverage         - combined coverage (unit + Odoo), fail under threshold in pyproject"
 	@echo "upgrade          - upgrade all addons (main + bridges) in the running Odoo container"
+	@echo "i18n-export      - regenerate each addon's .pot from current source strings"
+	@echo "i18n-translate   - rewrite every .po from the .pot + translations in scripts/i18n_translate.py"
+	@echo "i18n-check       - msgfmt -cv every .po (fails on syntax errors / missing headers)"
 
 setup:
 	uv sync --group dev
@@ -103,3 +106,20 @@ upgrade:
 		--stop-after-init \
 		--no-http
 	cd $(COMPOSE_DIR) && docker compose restart $(ODOO_SERVICE)
+
+# i18n — uses the running Odoo container to export .pot files (reads the
+# installed module schema), then rewrites .po files from the translation dicts
+# in scripts/i18n_translate.py. The rental bridge can't be exported via Odoo
+# because it depends on sale_renting (Enterprise); its .pot is maintained by
+# hand and the translator script is idempotent on it.
+i18n-export:
+	cd $(COMPOSE_DIR) && $(foreach m,$(MODULE) $(BRIDGES),\
+		docker compose exec -T $(ODOO_SERVICE) odoo i18n export -d $(ODOO_DB) $(m) 2>&1 | tail -1 ; )
+
+i18n-translate:
+	uv run python scripts/i18n_translate.py
+
+i18n-check:
+	@err=0; for f in $(MODULE)/i18n/*.po $(foreach b,$(BRIDGES),$(b)/i18n/*.po) ; do \
+		if ! msgfmt -cv "$$f" -o /dev/null ; then err=1 ; fi ; \
+	done ; exit $$err
