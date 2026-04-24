@@ -21,7 +21,7 @@ the April 2026 strategy doc; checked items are landed on `main`.
 ### Open Phase 1 follow-ups
 
 - [ ] v18 parity: full manual smoke test on the `odoo18` service (install, Test Connection, template list, generate, attach).
-- [ ] Clean up remaining `pylint-odoo` warnings: `prefer-env-translation`, `translation-positional-used`, `attribute-string-redundant`. Run `make lint-pylint` to see the list.
+- [x] Clean up remaining `pylint-odoo` warnings (`e39d43b`) — superfluous manifest keys dropped, deprecated `description` replaced with per-addon `README.rst`, translation placeholders switched to named `%(status)s / %(body)s`, redundant `string=` kwargs removed. False-positive checks (import-error, duplicate-code, protected-access, too-many-public-methods, etc.) pinned off in `pyproject.toml`. `make lint-pylint` exits clean.
 - [ ] Surface `list_templates` errors to the UI instead of silently returning `[]` (currently users see an empty dropdown with no explanation).
 - [ ] CI: GitHub Actions workflow running `make lint` + `make coverage` on PRs. Needs a minimal odoo-in-docker harness in the runner.
 - [ ] Polish `README.rst` with install/config/usage screenshots — required for App Store submission.
