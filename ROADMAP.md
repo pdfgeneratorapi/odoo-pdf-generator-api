@@ -89,11 +89,17 @@ Per-doc-type bridge modules, each depending on the main `pdfgeneratorapi_connect
 - [x] Bridge tests: mixin exposure, action context, seed dataset shape, payload resolution, end-to-end wizard on a purchase.order.
 - [x] Makefile/compose/pyproject generalised: `BRIDGES` list is now space-separated and comma-joined via `$(subst $(space),,$(foreach ...))` so adding a bridge only needs one line in each file.
 
-### Phase 3.4+ — Remaining bridges (pending)
+### Phase 3.4 — stock.picking bridge (landed)
 
-Each follows the same pattern as the purchase/sale bridges: new addon dir, manifest depending on the Odoo module, `_inherit` the mixin, seed dataset, view inheritance for the button, tests.
+- [x] New sibling addon `pdfgeneratorapi_connector_stock`. Depends on `pdfgeneratorapi_connector` + `stock`.
+- [x] Seed dataset for `stock.picking` (~25 lines: scalars including reference / source document / scheduled + transfer dates / state / operation type / notes, source + destination locations, company, partner block with full-address expression, responsible user, and move lines as a list with product / description / demand / done / uom — iterating `move_ids` so each product appears once even when split across lots/serials).
+- [x] View inheritance adds **Generate custom PDF** button to the `stock.picking` form header when configured.
+- [x] Bridge tests: mixin exposure, action context, seed dataset shape, payload resolution, end-to-end wizard on a stock.picking. 5 tests, all green.
 
-- [ ] `pdfgeneratorapi_connector_stock` (`stock.picking` — delivery slips)
+### Phase 3.5+ — Remaining bridges (pending)
+
+Each follows the same pattern as the purchase/sale/stock bridges.
+
 - [ ] `pdfgeneratorapi_connector_mrp` (`mrp.production`)
 - [ ] `pdfgeneratorapi_connector_project` (`project.task`)
 - [ ] Rental flows (`sale.order` with `is_rental=True` in v18+, or `rental.order` in earlier/Enterprise variants)

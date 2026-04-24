@@ -1,7 +1,7 @@
 ODOO_SERVICE ?= odoo
 ODOO_DB ?= odoo
 MODULE := pdfgeneratorapi_connector
-BRIDGES := pdfgeneratorapi_connector_sale pdfgeneratorapi_connector_purchase
+BRIDGES := pdfgeneratorapi_connector_sale pdfgeneratorapi_connector_purchase pdfgeneratorapi_connector_stock
 comma := ,
 empty :=
 space := $(empty) $(empty)

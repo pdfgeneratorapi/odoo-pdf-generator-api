@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="dataset_stock_picking" model="pdfgen.model.dataset">
+        <field name="name">Stock Transfer</field>
+        <field name="model_id" ref="stock.model_stock_picking"/>
+    </record>
+
+    <!-- Scalars -->
+    <record id="dataset_line_reference" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">10</field>
+        <field name="placeholder_path">reference</field>
+        <field name="odoo_field_path">name</field>
+    </record>
+    <record id="dataset_line_origin" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">20</field>
+        <field name="placeholder_path">source_document</field>
+        <field name="odoo_field_path">origin</field>
+    </record>
+    <record id="dataset_line_scheduled_date" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">30</field>
+        <field name="placeholder_path">scheduled_date</field>
+        <field name="odoo_field_path">scheduled_date</field>
+    </record>
+    <record id="dataset_line_date_done" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">40</field>
+        <field name="placeholder_path">transfer_date</field>
+        <field name="odoo_field_path">date_done</field>
+    </record>
+    <record id="dataset_line_state" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">50</field>
+        <field name="placeholder_path">state</field>
+        <field name="odoo_field_path">state</field>
+    </record>
+    <record id="dataset_line_operation_type" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">60</field>
+        <field name="placeholder_path">operation_type</field>
+        <field name="odoo_field_path">picking_type_id.name</field>
+    </record>
+    <record id="dataset_line_note" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">70</field>
+        <field name="placeholder_path">notes</field>
+        <field name="odoo_field_path">note</field>
+    </record>
+
+    <!-- Location block -->
+    <record id="dataset_line_location_source" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">100</field>
+        <field name="placeholder_path">locations.source</field>
+        <field name="odoo_field_path">location_id.complete_name</field>
+    </record>
+    <record id="dataset_line_location_destination" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">110</field>
+        <field name="placeholder_path">locations.destination</field>
+        <field name="odoo_field_path">location_dest_id.complete_name</field>
+    </record>
+
+    <!-- Company block -->
+    <record id="dataset_line_company_name" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">200</field>
+        <field name="placeholder_path">company.name</field>
+        <field name="odoo_field_path">company_id.partner_id.name</field>
+    </record>
+    <record id="dataset_line_company_email" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">210</field>
+        <field name="placeholder_path">company.email</field>
+        <field name="odoo_field_path">company_id.partner_id.email</field>
+    </record>
+    <record id="dataset_line_company_phone" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">220</field>
+        <field name="placeholder_path">company.phone</field>
+        <field name="odoo_field_path">company_id.partner_id.phone</field>
+    </record>
+    <record id="dataset_line_company_vat" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">230</field>
+        <field name="placeholder_path">company.vat</field>
+        <field name="odoo_field_path">company_id.partner_id.vat</field>
+    </record>
+
+    <!-- Partner block (delivery recipient or vendor, depending on picking type) -->
+    <record id="dataset_line_partner_name" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">300</field>
+        <field name="placeholder_path">partner.name</field>
+        <field name="odoo_field_path">partner_id.name</field>
+    </record>
+    <record id="dataset_line_partner_email" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">310</field>
+        <field name="placeholder_path">partner.email</field>
+        <field name="odoo_field_path">partner_id.email</field>
+    </record>
+    <record id="dataset_line_partner_phone" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">320</field>
+        <field name="placeholder_path">partner.phone</field>
+        <field name="odoo_field_path">partner_id.phone</field>
+    </record>
+    <record id="dataset_line_partner_street" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">330</field>
+        <field name="placeholder_path">partner.street</field>
+        <field name="odoo_field_path">partner_id.street</field>
+    </record>
+    <record id="dataset_line_partner_city" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">340</field>
+        <field name="placeholder_path">partner.city</field>
+        <field name="odoo_field_path">partner_id.city</field>
+    </record>
+    <record id="dataset_line_partner_zip" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">350</field>
+        <field name="placeholder_path">partner.zip</field>
+        <field name="odoo_field_path">partner_id.zip</field>
+    </record>
+    <record id="dataset_line_partner_country_code" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">360</field>
+        <field name="placeholder_path">partner.country_code</field>
+        <field name="odoo_field_path">partner_id.country_id.code</field>
+    </record>
+    <record id="dataset_line_partner_full_address" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">370</field>
+        <field name="placeholder_path">partner.full_address</field>
+        <field name="expression">{partner_id.street}, {partner_id.city} {partner_id.zip}</field>
+    </record>
+
+    <!-- Responsible (warehouse worker) -->
+    <record id="dataset_line_responsible" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">500</field>
+        <field name="placeholder_path">responsible.name</field>
+        <field name="odoo_field_path">user_id.name</field>
+    </record>
+
+    <!-- Moves (one line per product on the transfer).
+         Iterates stock.move rather than stock.move.line so each product
+         appears once even when split across multiple lots / serial numbers. -->
+    <record id="dataset_line_lines" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="sequence">600</field>
+        <field name="placeholder_path">lines</field>
+        <field name="is_list" eval="True"/>
+        <field name="odoo_field_path">move_ids</field>
+    </record>
+    <record id="dataset_line_lines_product" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">10</field>
+        <field name="placeholder_path">product</field>
+        <field name="odoo_field_path">product_id.display_name</field>
+    </record>
+    <record id="dataset_line_lines_description" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">20</field>
+        <field name="placeholder_path">description</field>
+        <field name="odoo_field_path">description_picking</field>
+    </record>
+    <record id="dataset_line_lines_demand" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">30</field>
+        <field name="placeholder_path">demand</field>
+        <field name="odoo_field_path">product_uom_qty</field>
+    </record>
+    <record id="dataset_line_lines_done" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">40</field>
+        <field name="placeholder_path">done</field>
+        <field name="odoo_field_path">quantity</field>
+    </record>
+    <record id="dataset_line_lines_uom" model="pdfgen.model.dataset.line">
+        <field name="dataset_id" ref="dataset_stock_picking"/>
+        <field name="parent_id" ref="dataset_line_lines"/>
+        <field name="sequence">50</field>
+        <field name="placeholder_path">uom</field>
+        <field name="odoo_field_path">product_uom.name</field>
+    </record>
+
+</odoo>
