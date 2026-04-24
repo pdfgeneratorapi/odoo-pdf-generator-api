@@ -140,7 +140,7 @@ class RequestTests(unittest.TestCase):
         with patch.object(_client_module.requests, "request") as mock_req:
             mock_req.side_effect = _client_module.requests.Timeout()
             with self.assertRaises(PdfGenApiError) as ctx:
-                self.client.ping()
+                self.client._request("GET", "/x", retries=0)
         self.assertEqual(ctx.exception.status, 0)
         self.assertIn("timed out", str(ctx.exception).lower())
 
@@ -165,7 +165,7 @@ class RequestTests(unittest.TestCase):
         with patch.object(_client_module.requests, "request") as mock_req:
             mock_req.side_effect = _client_module.requests.RequestException("dns boom")
             with self.assertRaises(PdfGenApiError) as ctx:
-                self.client.ping()
+                self.client._request("GET", "/x", retries=0)
         self.assertEqual(ctx.exception.status, 0)
         self.assertIn("dns boom", str(ctx.exception))
 
@@ -280,6 +280,156 @@ class RequestTests(unittest.TestCase):
             workspace_identifier="w",
         )
         self.assertEqual(c.base_url, _client_module.DEFAULT_BASE_URL.rstrip("/"))
+
+
+class RetryTests(unittest.TestCase):
+    """Retry loop in _request for 429 / 5xx gateway errors + network blips."""
+
+    def setUp(self):
+        self.client = PdfGenApiClient(
+            base_url="https://example.test/api/v4",
+            api_key="k",
+            api_secret="s",
+            workspace_identifier="w",
+        )
+
+    def _mock_response(self, *, ok=True, status=200, json_body=None, text="", headers=None):
+        resp = MagicMock()
+        resp.ok = ok
+        resp.status_code = status
+        resp.text = text or (json.dumps(json_body) if json_body is not None else "")
+        resp.content = resp.text.encode()
+        resp.json.return_value = json_body
+        resp.headers = headers or {}
+        return resp
+
+    def test_429_twice_then_200_succeeds(self):
+        responses = [
+            self._mock_response(ok=False, status=429, text="slow down"),
+            self._mock_response(ok=False, status=429, text="slow down"),
+            self._mock_response(ok=True, json_body={"response": "ok"}),
+        ]
+        with (
+            patch.object(_client_module.requests, "request", side_effect=responses) as mock_req,
+            patch.object(_client_module.time, "sleep") as mock_sleep,
+        ):
+            result = self.client.ping()
+        self.assertEqual(result, {"response": "ok"})
+        self.assertEqual(mock_req.call_count, 3)
+        self.assertEqual(mock_sleep.call_count, 2)
+
+    def test_retry_after_integer_header_is_honored(self):
+        responses = [
+            self._mock_response(ok=False, status=429, text="wait", headers={"Retry-After": "5"}),
+            self._mock_response(ok=True, json_body={"response": "ok"}),
+        ]
+        with (
+            patch.object(_client_module.requests, "request", side_effect=responses),
+            patch.object(_client_module.time, "sleep") as mock_sleep,
+        ):
+            self.client.ping()
+        # First (and only) sleep honors the header verbatim, up to cap.
+        (waited,), _ = mock_sleep.call_args
+        self.assertAlmostEqual(waited, 5.0, places=3)
+
+    def test_retry_after_capped_at_max_single_wait(self):
+        responses = [
+            self._mock_response(ok=False, status=429, text="wait", headers={"Retry-After": "9999"}),
+            self._mock_response(ok=True, json_body={"response": "ok"}),
+        ]
+        with (
+            patch.object(_client_module.requests, "request", side_effect=responses),
+            patch.object(_client_module.time, "sleep") as mock_sleep,
+        ):
+            self.client.ping()
+        (waited,), _ = mock_sleep.call_args
+        self.assertLessEqual(waited, _client_module.MAX_SINGLE_WAIT_SECONDS)
+
+    def test_500_fails_immediately(self):
+        with (
+            patch.object(
+                _client_module.requests,
+                "request",
+                return_value=self._mock_response(ok=False, status=500, text="boom"),
+            ) as mock_req,
+            patch.object(_client_module.time, "sleep") as mock_sleep,
+            self.assertRaises(PdfGenApiError) as ctx,
+        ):
+            self.client.ping()
+        self.assertEqual(ctx.exception.status, 500)
+        self.assertEqual(mock_req.call_count, 1)
+        mock_sleep.assert_not_called()
+
+    def test_503_retries_then_gives_up(self):
+        responses = [self._mock_response(ok=False, status=503, text="down") for _ in range(4)]
+        with (
+            patch.object(_client_module.requests, "request", side_effect=responses) as mock_req,
+            patch.object(_client_module.time, "sleep"),
+            self.assertRaises(PdfGenApiError) as ctx,
+        ):
+            self.client.ping()
+        self.assertEqual(ctx.exception.status, 503)
+        # DEFAULT_RETRIES=3 → 4 total attempts.
+        self.assertEqual(mock_req.call_count, 4)
+
+    def test_timeout_then_success(self):
+        with (
+            patch.object(
+                _client_module.requests,
+                "request",
+                side_effect=[
+                    _client_module.requests.Timeout(),
+                    self._mock_response(ok=True, json_body={"response": "ok"}),
+                ],
+            ) as mock_req,
+            patch.object(_client_module.time, "sleep"),
+        ):
+            result = self.client.ping()
+        self.assertEqual(result, {"response": "ok"})
+        self.assertEqual(mock_req.call_count, 2)
+
+    def test_retries_zero_disables_loop(self):
+        with (
+            patch.object(
+                _client_module.requests,
+                "request",
+                return_value=self._mock_response(ok=False, status=503, text="down"),
+            ) as mock_req,
+            patch.object(_client_module.time, "sleep") as mock_sleep,
+            self.assertRaises(PdfGenApiError),
+        ):
+            self.client._request("GET", "/x", retries=0)
+        self.assertEqual(mock_req.call_count, 1)
+        mock_sleep.assert_not_called()
+
+    def test_non_retryable_4xx_fails_fast(self):
+        with (
+            patch.object(
+                _client_module.requests,
+                "request",
+                return_value=self._mock_response(ok=False, status=422, text="bad"),
+            ) as mock_req,
+            patch.object(_client_module.time, "sleep") as mock_sleep,
+            self.assertRaises(PdfGenApiError),
+        ):
+            self.client.ping()
+        self.assertEqual(mock_req.call_count, 1)
+        mock_sleep.assert_not_called()
+
+    def test_parse_retry_after_integer(self):
+        self.assertAlmostEqual(_client_module._parse_retry_after("5"), 5.0)
+        self.assertAlmostEqual(_client_module._parse_retry_after("0"), 0.0)
+
+    def test_parse_retry_after_negative_clamped_to_zero(self):
+        self.assertEqual(_client_module._parse_retry_after("-1"), 0.0)
+
+    def test_parse_retry_after_http_date(self):
+        # Always-past date should produce 0 (clamped).
+        parsed = _client_module._parse_retry_after("Wed, 21 Oct 2015 07:28:00 GMT")
+        self.assertEqual(parsed, 0.0)
+
+    def test_parse_retry_after_garbage_returns_none(self):
+        self.assertIsNone(_client_module._parse_retry_after("soon-ish"))
 
 
 class RedactionTests(unittest.TestCase):

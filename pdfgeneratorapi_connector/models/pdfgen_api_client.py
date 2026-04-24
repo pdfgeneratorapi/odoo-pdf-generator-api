@@ -22,6 +22,14 @@ DEFAULT_BASE_URL = "https://us1.pdfgeneratorapi.com/api/v4"
 DEFAULT_TIMEOUT = 60
 JWT_TTL_SECONDS = 30
 
+# Retry policy for _request. 429 and the three "gateway-ish" 5xx codes are
+# retried with exponential backoff. Everything else either succeeds on first
+# try or fails fast — no point retrying 401/403/404/422/500 (non-gateway).
+DEFAULT_RETRIES = 3
+RETRYABLE_STATUSES = frozenset({429, 502, 503, 504})
+MAX_SINGLE_WAIT_SECONDS = 10
+MAX_TOTAL_WAIT_SECONDS = 30
+
 # Matches `<secret-key>: <value>` / `<secret-key>="<value>"` / etc. across
 # typical log formats. We redact the value so error bodies logged at WARN
 # can't leak tokens even if pdfgen echoes them back in a 4xx/5xx payload.
@@ -45,6 +53,31 @@ def _redact(text):
     if not text:
         return text
     return _REDACT_RE.sub(r"\1<redacted>", text)
+
+
+def _parse_retry_after(header_value):
+    """Parse a `Retry-After` header. Returns float seconds or None on junk.
+
+    RFC 7231 allows either a non-negative integer (seconds) or an HTTP-date.
+    We try integer first, then email.utils.parsedate_to_datetime for the
+    date form. Clamp negative values to 0.
+    """
+    header_value = header_value.strip()
+    try:
+        seconds = float(header_value)
+        return max(0.0, seconds)
+    except ValueError:
+        pass
+    try:
+        from email.utils import parsedate_to_datetime
+
+        target = parsedate_to_datetime(header_value)
+        if target is None:
+            return None
+        delta = target.timestamp() - time.time()
+        return max(0.0, delta)
+    except (TypeError, ValueError):
+        return None
 
 
 class PdfGenApiError(Exception):
@@ -104,42 +137,112 @@ class PdfGenApiClient:
         )
         return (signing_input + b"." + signature).decode()
 
-    def _request(self, method, path, params=None, json_body=None):
+    def _request(self, method, path, params=None, json_body=None, retries=DEFAULT_RETRIES):
+        """HTTP call with retry + backoff on transient failures.
+
+        Retries on connection errors, timeouts, and responses with status in
+        RETRYABLE_STATUSES (429 / 502 / 503 / 504). Honors `Retry-After` when
+        present; otherwise uses exponential backoff (2 ** attempt seconds)
+        with ±20% jitter, capped at MAX_SINGLE_WAIT_SECONDS per sleep and
+        MAX_TOTAL_WAIT_SECONDS overall. Non-retryable 4xx and 5xx still fail
+        on first response.
+        """
         url = f"{self.base_url}{path}"
-        try:
-            response = requests.request(
+        elapsed_wait = 0.0
+        last_error = None
+        last_response = None
+        # attempts run 0..retries inclusive; `retries=3` → up to 4 tries total,
+        # matching the industry convention that "3 retries" means "3 retries
+        # after the initial attempt". We cap at `retries` to keep the API
+        # small: callers pass retries=0 to opt out entirely.
+        attempts = max(1, retries + 1)
+        for attempt in range(attempts):
+            try:
+                response = requests.request(
+                    method,
+                    url,
+                    params=params,
+                    json=json_body,
+                    timeout=self.timeout,
+                    headers={
+                        "Authorization": f"Bearer {self._jwt()}",
+                        "Accept": "application/json",
+                        "User-Agent": "pdfgeneratorapi-odoo-connector/1.0",
+                    },
+                )
+            except requests.Timeout as e:
+                last_error = PdfGenApiError(0, "", "Request timed out")
+                last_error.__cause__ = e
+                last_response = None
+            except requests.RequestException as e:
+                last_error = PdfGenApiError(0, "", f"Network error: {e}")
+                last_error.__cause__ = e
+                last_response = None
+            else:
+                if response.ok:
+                    if not response.content:
+                        return None
+                    try:
+                        return response.json()
+                    except ValueError:
+                        return response.content
+                last_error = None
+                last_response = response
+                if response.status_code not in RETRYABLE_STATUSES:
+                    break
+            # Retryable error (exception or retryable status). Sleep unless
+            # this was our last attempt.
+            if attempt + 1 >= attempts:
+                break
+            wait = self._retry_delay(attempt, last_response)
+            if elapsed_wait + wait > MAX_TOTAL_WAIT_SECONDS:
+                wait = max(0, MAX_TOTAL_WAIT_SECONDS - elapsed_wait)
+                if wait == 0:
+                    break
+            _logger.info(
+                "PDF Generator API %s %s → retry %d/%d after %.1fs",
                 method,
-                url,
-                params=params,
-                json=json_body,
-                timeout=self.timeout,
-                headers={
-                    "Authorization": f"Bearer {self._jwt()}",
-                    "Accept": "application/json",
-                    "User-Agent": "pdfgeneratorapi-odoo-connector/1.0",
-                },
+                path,
+                attempt + 1,
+                attempts - 1,
+                wait,
             )
-        except requests.Timeout as e:
-            raise PdfGenApiError(0, "", "Request timed out") from e
-        except requests.RequestException as e:
-            raise PdfGenApiError(0, "", f"Network error: {e}") from e
-        if not response.ok:
-            # Redact before truncating so a token straddling the 500-char
-            # boundary is still caught by the regex.
+            time.sleep(wait)
+            elapsed_wait += wait
+
+        # Exhausted retries (or hit a non-retryable status). Surface the same
+        # error shape as before the retry was added.
+        if last_response is not None:
             _logger.warning(
                 "PDF Generator API %s %s → %s %s",
                 method,
                 path,
-                response.status_code,
-                _redact(response.text)[:500],
+                last_response.status_code,
+                _redact(last_response.text)[:500],
             )
-            raise PdfGenApiError(response.status_code, response.text)
-        if not response.content:
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return response.content
+            raise PdfGenApiError(last_response.status_code, last_response.text)
+        raise last_error
+
+    @staticmethod
+    def _retry_delay(attempt, response):
+        """Compute how long to wait before the next retry.
+
+        Prefers `Retry-After` from the response (integer seconds or HTTP-date).
+        Falls back to exponential `2 ** attempt` with ±20% jitter. Capped at
+        MAX_SINGLE_WAIT_SECONDS so a misbehaving server with a huge Retry-After
+        can't wedge the caller.
+        """
+        import random
+
+        if response is not None:
+            header = response.headers.get("Retry-After", "") if response.headers else ""
+            if header:
+                parsed = _parse_retry_after(header)
+                if parsed is not None:
+                    return min(parsed, MAX_SINGLE_WAIT_SECONDS)
+        base = 2**attempt
+        jitter = base * 0.2 * (random.random() * 2 - 1)
+        return max(0, min(base + jitter, MAX_SINGLE_WAIT_SECONDS))
 
     def ping(self):
         """Validate both auth and workspace existence."""
