@@ -68,11 +68,12 @@
                                 <label for="pdfgen_editor_web_url" class="o_form_label fw-bold" string="Editor Web URL (optional)"/>
                                 <div class="text-muted small mb-2">
                                     Override for the template editor's browser URL. Leave empty to derive from API Base URL.
-                                    Set this only when Odoo reaches the API via a hostname the browser can't resolve
-                                    (Docker service name, private VPC endpoint, …). Example: <code>http://localhost:8080</code>.
+                                    Set this when Odoo reaches the API via a hostname the browser can't resolve
+                                    (Docker service name, private VPC endpoint, …) or when your company runs a dedicated
+                                    PDF Generator API deployment on its own domain. Example: <code>https://mydomain.com/editor</code>.
                                 </div>
                                 <div class="col-lg-9 col-12 ps-0">
-                                    <field name="pdfgen_editor_web_url" class="w-100" placeholder="e.g. http://localhost:8080"/>
+                                    <field name="pdfgen_editor_web_url" class="w-100" placeholder="e.g. https://mydomain.com/editor"/>
                                 </div>
                             </div>
                         </div>

@@ -563,8 +563,9 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.res_config_settings_view_form
 msgid ""
 "Override for the template editor's browser URL. Leave empty to derive from API Base URL.\n"
-"                                    Set this only when Odoo reaches the API via a hostname the browser can't resolve\n"
-"                                    (Docker service name, private VPC endpoint, …). Example: <code>http://localhost:8080</code>."
+"                                    Set this when Odoo reaches the API via a hostname the browser can't resolve\n"
+"                                    (Docker service name, private VPC endpoint, …) or when your company runs a dedicated\n"
+"                                    PDF Generator API deployment on its own domain. Example: <code>https://mydomain.com/editor</code>."
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
@@ -890,7 +891,7 @@ msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.res_config_settings_view_form
-msgid "e.g. http://localhost:8080"
+msgid "e.g. https://mydomain.com/editor"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
