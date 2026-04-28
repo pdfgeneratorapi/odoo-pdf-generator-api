@@ -82,16 +82,46 @@ class PdfgenDocumentMixin(models.AbstractModel):
             },
         }
 
-    def action_open_pdfgen_wizard_from_list(self):
-        """Entry point for the list-view header button. Same wizard as the
-        form-view button; rejects multi-selection with a friendly hint until
-        the Phase 5 batch flow lands.
+    def action_view_pdfgen_async_jobs_from_list(self):
+        """Open the Async Jobs list filtered to the selected records.
+
+        When invoked from a list-view header button the recordset is the
+        current selection, so we scope the jobs view to those rows. With
+        no selection (form-view button or programmatic call on an empty
+        recordset) we fall back to all jobs for the model.
         """
-        if len(self) != 1:
-            raise UserError(
-                self.env._(
-                    "Select exactly one record to generate a custom PDF. "
-                    "Batch generation is on the roadmap."
-                )
-            )
-        return self.action_open_pdfgen_wizard()
+        domain = [("res_model", "=", self._name)]
+        if self.ids:
+            domain.append(("res_id", "in", self.ids))
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.env._("Async PDF Jobs"),
+            "res_model": "pdfgen.async.job",
+            "view_mode": "list,form",
+            "domain": domain,
+            "target": "current",
+        }
+
+    def action_open_pdfgen_wizard_from_list(self):
+        """Entry point for the list-view header button.
+
+        Single record → opens the existing sync wizard.
+        Multiple records → opens the async dispatch wizard which fans out
+        one `/documents/generate/async` call per record and tracks them in
+        `pdfgen.async.job`.
+        """
+        if not self:
+            raise UserError(self.env._("Select at least one record."))
+        if len(self) == 1:
+            return self.action_open_pdfgen_wizard()
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.env._("Generate custom PDFs"),
+            "res_model": "pdfgen.async.dispatch.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "active_model": self._name,
+                "active_ids": self.ids,
+            },
+        }

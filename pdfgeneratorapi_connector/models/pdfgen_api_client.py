@@ -276,6 +276,45 @@ class PdfGenApiClient:
         }
         return self._request("POST", "/documents/generate", json_body=body)
 
+    def generate_async(
+        self, template_id, data, callback_url, name=None, output="base64", fmt="pdf"
+    ):
+        """Dispatch an async generation job and return pdfgen's job id.
+
+        Body shape mirrors `/documents/generate` plus a `callback.url` field
+        pdfgen POSTs back to once the PDF is ready. The exact key name is
+        the only piece tied to pdfgen's docs — the rest of the body / the
+        envelope extractor are unchanging.
+        """
+        body = {
+            "template": {"id": int(template_id), "data": data},
+            "format": fmt,
+            "output": output,
+            "name": name or f"template-{template_id}",
+            "callback": {"url": callback_url},
+        }
+        response = self._request("POST", "/documents/generate/async", json_body=body)
+        return self._extract_async_job_id(response)
+
+    @staticmethod
+    def _extract_async_job_id(response):
+        """Pull the async-job id out of pdfgen's response envelope.
+
+        Tolerant of both `{"response": "<id>"}` and the more typical
+        `{"response": {"id": "<id>", ...}}` shapes.
+        """
+        if isinstance(response, str):
+            return response
+        if isinstance(response, dict):
+            value = response.get("response")
+            if isinstance(value, str):
+                return value
+            if isinstance(value, dict):
+                for key in ("id", "job_id", "uuid"):
+                    if value.get(key):
+                        return str(value[key])
+        return None
+
     def open_editor(self, template_id, data=None, language=None):
         """Call `POST /templates/{id}/editor` (openEditor) and return the signed
         URL pointing at the embedded template editor.

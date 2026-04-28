@@ -34,3 +34,11 @@ class ResCompany(models.Model):
         string="PDF Generator Editor Web URL",
         help="Leave blank to inherit the global Settings value.",
     )
+    pdfgen_webhook_secret = fields.Char(
+        string="PDF Generator Webhook Secret",
+        help="Leave blank to inherit the global Settings value.",
+    )
+    pdfgen_webhook_base_url = fields.Char(
+        string="PDF Generator Webhook Base URL",
+        help="Leave blank to inherit the global Settings value.",
+    )

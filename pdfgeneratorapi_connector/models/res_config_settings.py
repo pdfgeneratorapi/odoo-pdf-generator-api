@@ -1,4 +1,6 @@
-from odoo import _, fields, models
+import secrets
+
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 from .pdfgen_api_client import DEFAULT_BASE_URL, PdfGenApiClient, PdfGenApiError
@@ -67,6 +69,54 @@ class ResConfigSettings(models.TransientModel):
         default=False,
         help="Toggle to reveal the API secret in plaintext.",
     )
+    pdfgen_show_webhook_secret = fields.Boolean(
+        string="Show webhook secret",
+        default=False,
+        help="Toggle to reveal the webhook secret in plaintext.",
+    )
+    pdfgen_webhook_base_url = fields.Char(
+        string="Webhook Base URL",
+        config_parameter="pdfgen.webhook_base_url",
+        help=(
+            "Public base URL of this Odoo (scheme + host) so pdfgeneratorapi.com "
+            "can call back when an async job finishes — e.g. "
+            "https://odoo.example.com or an ngrok tunnel for local dev. Leave "
+            "blank to fall back to the System Parameter `web.base.url`."
+        ),
+    )
+    pdfgen_webhook_secret = fields.Char(
+        string="Webhook Secret",
+        config_parameter="pdfgen.webhook_secret",
+        help=(
+            "Shared secret used to sign each async job's callback URL. Auto-"
+            "filled with a random value on first save if left blank — only "
+            "rotate it if you suspect leakage. The same secret derives the "
+            "per-job token the webhook receiver verifies before accepting a "
+            "delivery."
+        ),
+    )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._pdfgen_ensure_webhook_secret()
+        return records
+
+    def write(self, vals):
+        result = super().write(vals)
+        if "pdfgen_webhook_secret" in vals:
+            self._pdfgen_ensure_webhook_secret()
+        return result
+
+    def _pdfgen_ensure_webhook_secret(self):
+        """Mint a random webhook secret on first save when admin left it blank.
+
+        Stored on the same `pdfgen.webhook_secret` ICP key the field is
+        bound to. `set_param` is sudo-safe and idempotent.
+        """
+        icp = self.env["ir.config_parameter"].sudo()
+        if not icp.get_param("pdfgen.webhook_secret"):
+            icp.set_param("pdfgen.webhook_secret", secrets.token_urlsafe(32))
 
     def _get_pdfgen_client(self):
         """Build a client from what's on the unsaved Settings form.

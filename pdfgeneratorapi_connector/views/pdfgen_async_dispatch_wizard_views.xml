@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pdfgen_async_dispatch_wizard_form" model="ir.ui.view">
+        <field name="name">pdfgen.async.dispatch.wizard.form</field>
+        <field name="model">pdfgen.async.dispatch.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate custom PDFs">
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        <field name="record_count" readonly="1" class="oe_inline"/>
+                        <span> record(s) will be dispatched to pdfgeneratorapi.com.
+                              You'll be redirected to the Async Jobs list to follow progress.</span>
+                    </div>
+                    <group>
+                        <field name="res_model" readonly="1"/>
+                        <field name="res_ids" invisible="1"/>
+                        <field name="dataset_id" readonly="1"/>
+                        <field name="template_id"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_dispatch"
+                            type="object"
+                            string="Dispatch"
+                            class="btn-primary"
+                            invisible="not template_id"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

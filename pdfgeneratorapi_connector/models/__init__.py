@@ -5,6 +5,7 @@ from . import pdfgen_document_mixin  # noqa: I001
 from . import (
     account_move,
     pdfgen_api_client,
+    pdfgen_async_job,
     pdfgen_model_dataset,
     pdfgen_resolver,
     res_company,

@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator API Connector",
-    "version": "19.0.2.0.0",
+    "version": "19.0.3.0.0",
     "category": "Accounting",
     "summary": "Generate invoices, quotes and other documents via pdfgeneratorapi.com",
     "author": "PDF Generator API",
@@ -15,6 +15,8 @@
         "views/pdfgen_template_editor_wizard_views.xml",
         "views/pdfgen_model_dataset_views.xml",
         "views/generate_pdf_wizard_views.xml",
+        "views/pdfgen_async_dispatch_wizard_views.xml",
+        "views/pdfgen_async_job_views.xml",
         "views/account_move_views.xml",
         "views/menu.xml",
         "data/pdfgen_model_dataset_account_move.xml",

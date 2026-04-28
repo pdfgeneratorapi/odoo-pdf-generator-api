@@ -94,6 +94,63 @@
                             <field name="pdfgen_attachment_cleanup" widget="radio"/>
                         </setting>
                     </block>
+                    <block title="Async webhook"
+                           name="pdfgen_webhook_block"
+                           help="Where pdfgeneratorapi.com calls back when an async generation finishes. Required for the multi-record list-view dispatch flow.">
+                        <div class="row">
+                            <div class="col-12 mb-4">
+                                <label for="pdfgen_webhook_base_url" class="o_form_label fw-bold" string="Webhook Base URL"/>
+                                <div class="text-muted small mb-2">
+                                    Public origin (scheme + host) of this Odoo so pdfgeneratorapi.com can reach
+                                    <code>/pdfgen/webhook/deliver</code>. Leave blank to fall back to the system parameter
+                                    <code>web.base.url</code>. For local dev, point this at your ngrok tunnel.
+                                </div>
+                                <div class="col-lg-9 col-12 ps-0">
+                                    <field name="pdfgen_webhook_base_url" class="w-100" placeholder="e.g. https://abcd-1234.ngrok-free.app"/>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-4">
+                                <label for="pdfgen_webhook_secret" class="o_form_label fw-bold" string="Webhook Secret"/>
+                                <div class="text-muted small mb-2">
+                                    Signs each callback URL with an HMAC-derived per-job token. Auto-filled with a 32-byte random
+                                    value on first save when blank — only rotate if you suspect leakage.
+                                </div>
+                                <div class="col-lg-9 col-12 ps-0">
+                                    <div class="d-flex align-items-center gap-3 w-100">
+                                        <div class="flex-grow-1">
+                                            <field name="pdfgen_webhook_secret"
+                                                   password="True"
+                                                   invisible="pdfgen_show_webhook_secret"
+                                                   class="w-100"
+                                                   placeholder="auto-generated on save"/>
+                                            <field name="pdfgen_webhook_secret"
+                                                   invisible="not pdfgen_show_webhook_secret"
+                                                   class="w-100"
+                                                   placeholder="auto-generated on save"/>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                            <field name="pdfgen_show_webhook_secret"
+                                                   widget="boolean_toggle"
+                                                   nolabel="1"
+                                                   options="{'autosave': False}"/>
+                                            <span class="text-muted small text-nowrap">
+                                                <i class="fa fa-eye me-1" invisible="pdfgen_show_webhook_secret"/>
+                                                <i class="fa fa-eye-slash me-1" invisible="not pdfgen_show_webhook_secret"/>
+                                                <span invisible="pdfgen_show_webhook_secret">Show</span>
+                                                <span invisible="not pdfgen_show_webhook_secret">Hide</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </block>
+                    <!-- Mirror the top-bar Save/Discard so users don't have to scroll back up
+                         after editing the (long) PDF Generator API settings panel. -->
+                    <div class="d-flex gap-2 justify-content-end py-3 px-3 border-top mt-3">
+                        <button name="cancel" type="object" string="Discard" class="btn btn-secondary"/>
+                        <button name="execute" type="object" string="Save" class="btn btn-primary"/>
+                    </div>
                 </app>
             </xpath>
         </field>

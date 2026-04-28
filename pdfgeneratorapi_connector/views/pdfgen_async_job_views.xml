@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pdfgen_async_job_list" model="ir.ui.view">
+        <field name="name">pdfgen.async.job.list</field>
+        <field name="model">pdfgen.async.job</field>
+        <field name="arch" type="xml">
+            <list string="Async PDF Jobs" default_order="create_date desc">
+                <field name="create_date" string="Created"/>
+                <field name="name"/>
+                <field name="template_name"/>
+                <field name="res_display" string="Source"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'pending'"
+                       decoration-warning="state == 'dispatched'"
+                       decoration-success="state == 'completed'"
+                       decoration-danger="state == 'failed'"/>
+                <field name="dispatched_at" optional="hide"/>
+                <field name="completed_at" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pdfgen_async_job_form" model="ir.ui.view">
+        <field name="name">pdfgen.async.job.form</field>
+        <field name="model">pdfgen.async.job</field>
+        <field name="arch" type="xml">
+            <form string="Async PDF Job">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,dispatched,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="template_id"/>
+                            <field name="template_name"/>
+                            <field name="dataset_id"/>
+                        </group>
+                        <group>
+                            <field name="res_model"/>
+                            <field name="res_id"/>
+                            <field name="res_display"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="pdfgen_job_id"/>
+                            <field name="dispatched_at"/>
+                            <field name="completed_at"/>
+                        </group>
+                        <group>
+                            <field name="attachment_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Error" invisible="not error">
+                        <field name="error" nolabel="1" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pdfgen_async_job_search" model="ir.ui.view">
+        <field name="name">pdfgen.async.job.search</field>
+        <field name="model">pdfgen.async.job</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="template_name"/>
+                <field name="pdfgen_job_id"/>
+                <filter name="filter_pending" string="Pending"
+                        domain="[('state', '=', 'pending')]"/>
+                <filter name="filter_dispatched" string="Dispatched"
+                        domain="[('state', '=', 'dispatched')]"/>
+                <filter name="filter_completed" string="Completed"
+                        domain="[('state', '=', 'completed')]"/>
+                <filter name="filter_failed" string="Failed"
+                        domain="[('state', '=', 'failed')]"/>
+                <separator/>
+                <filter name="group_state" string="State"
+                        context="{'group_by': 'state'}"/>
+                <filter name="group_template" string="Template"
+                        context="{'group_by': 'template_name'}"/>
+                <filter name="group_create_date" string="Created"
+                        context="{'group_by': 'create_date:day'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pdfgen_async_job" model="ir.actions.act_window">
+        <field name="name">Async Jobs</field>
+        <field name="res_model">pdfgen.async.job</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pdfgen_async_job_search"/>
+        <field name="context">{"search_default_filter_dispatched": 1}</field>
+    </record>
+</odoo>

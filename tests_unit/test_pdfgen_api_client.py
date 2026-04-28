@@ -241,6 +241,43 @@ class RequestTests(unittest.TestCase):
         # Host rewritten; signed token preserved verbatim.
         self.assertEqual(url, "http://localhost:8080/editor/42?token=SIGNED")
 
+    def test_generate_async_posts_async_endpoint(self):
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(json_body={"response": {"id": "job-7"}})
+            job_id = self.client.generate_async(
+                template_id=42,
+                data={"k": "v"},
+                callback_url="https://odoo.example.com/pdfgen/webhook/deliver?j=1&t=tok",
+                name="invoice.pdf",
+            )
+        args, kwargs = mock_req.call_args
+        self.assertEqual(args[0], "POST")
+        self.assertEqual(args[1], "https://example.test/api/v4/documents/generate/async")
+        self.assertEqual(
+            kwargs["json"],
+            {
+                "template": {"id": 42, "data": {"k": "v"}},
+                "format": "pdf",
+                "output": "base64",
+                "name": "invoice.pdf",
+                "callback": {
+                    "url": "https://odoo.example.com/pdfgen/webhook/deliver?j=1&t=tok",
+                },
+            },
+        )
+        self.assertEqual(job_id, "job-7")
+
+    def test_extract_async_job_id_variants(self):
+        extract = PdfGenApiClient._extract_async_job_id
+        self.assertEqual(extract("job-7"), "job-7")
+        self.assertEqual(extract({"response": "job-8"}), "job-8")
+        self.assertEqual(extract({"response": {"id": "job-9"}}), "job-9")
+        self.assertEqual(extract({"response": {"id": 42}}), "42")
+        self.assertEqual(extract({"response": {"job_id": "abc"}}), "abc")
+        self.assertEqual(extract({"response": {"uuid": "u"}}), "u")
+        self.assertIsNone(extract({"response": {}}))
+        self.assertIsNone(extract(99))
+
     def test_extract_editor_url_variants(self):
         extract = PdfGenApiClient._extract_editor_url
         self.assertEqual(extract("https://x"), "https://x")

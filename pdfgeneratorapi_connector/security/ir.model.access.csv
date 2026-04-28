@@ -6,3 +6,6 @@ access_pdfgen_model_dataset_user,pdfgen.model.dataset user,model_pdfgen_model_da
 access_pdfgen_model_dataset_admin,pdfgen.model.dataset admin,model_pdfgen_model_dataset,base.group_system,1,1,1,1
 access_pdfgen_model_dataset_line_user,pdfgen.model.dataset.line user,model_pdfgen_model_dataset_line,base.group_user,1,0,0,0
 access_pdfgen_model_dataset_line_admin,pdfgen.model.dataset.line admin,model_pdfgen_model_dataset_line,base.group_system,1,1,1,1
+access_pdfgen_async_job_user,pdfgen.async.job user,model_pdfgen_async_job,base.group_user,1,1,1,0
+access_pdfgen_async_job_admin,pdfgen.async.job admin,model_pdfgen_async_job,base.group_system,1,1,1,1
+access_pdfgen_async_dispatch_wizard_user,pdfgen.async.dispatch.wizard user,model_pdfgen_async_dispatch_wizard,base.group_user,1,1,1,1

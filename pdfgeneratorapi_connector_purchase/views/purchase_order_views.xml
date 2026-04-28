@@ -27,6 +27,10 @@
                             type="object"
                             string="Generate custom PDF"
                             class="btn-primary"/>
+                    <button name="action_view_pdfgen_async_jobs_from_list"
+                            type="object"
+                            string="View Async Jobs"
+                            class="btn-secondary"/>
                 </header>
             </xpath>
         </field>

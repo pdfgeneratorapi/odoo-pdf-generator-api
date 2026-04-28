@@ -169,13 +169,24 @@ Bonus bridges: `_purchase` (Phase 3.3), `_stock` (Phase 3.4).
 
 ---
 
-## Phase 6 — Async single-doc (if needed)
+## Phase 6 — Async dispatch from list view (landed)
 
-Only wire this up if real-world templates regularly exceed ~30s:
+Selecting N rows in a list view (account.move, sale.order,
+purchase.order, stock.picking, mrp.production) and clicking
+**Generate custom PDF** now fans out one `POST /documents/generate/async`
+per record with a signed callback URL pointing at this Odoo. Each
+finished PDF lands as an `ir.attachment` on its source record via the
+webhook receiver, with idempotent retry handling.
 
-- [ ] Switch `action_generate` to `POST /documents/generate/async` when template has an `async: true` flag or when config threshold is exceeded.
-- [ ] Poll or webhook for completion.
-- [ ] Progress indicator on the wizard.
+- [x] `PdfGenApiClient.generate_async(template_id, data, callback_url, ...)` — POSTs `/documents/generate/async`, returns the pdfgen job id from a tolerant envelope extractor.
+- [x] Two new Settings fields: `pdfgen_webhook_base_url` (public origin of this Odoo) and `pdfgen_webhook_secret` (auto-filled with `secrets.token_urlsafe(32)` on first save). Per-company override + ICP fallback, same pattern as the credentials.
+- [x] `pdfgen.async.job` model — pending / dispatched / completed / failed states, owns `callback_url()` (HMAC-signed) and `verify_token()` so dispatcher and receiver share one source of truth for the callback contract.
+- [x] **PDF Generator API > Async Jobs** menu (list + form view, badge-coloured state, search filters per state).
+- [x] `pdfgen.async.dispatch.wizard` — opened with `active_model` + `active_ids`, asks for a template, fans out the async dispatch, redirects to the just-created jobs.
+- [x] `pdfgen.document.mixin.action_open_pdfgen_wizard_from_list` — single-record path unchanged, multi-record path opens the dispatch wizard (replaces the previous "Phase 5 batch is on the roadmap" UserError).
+- [x] `/pdfgen/webhook/deliver` controller (auth=public, csrf=False, type=http) — verifies HMAC token, cross-checks pdfgen's body id against the stored `pdfgen_job_id`, decodes base64, attaches PDF, posts to chatter, idempotent on second delivery.
+- [x] Tests: 7 host-unit assertions on `generate_async` + the envelope extractor; 5 Odoo tests on the job model; 5 on the dispatch wizard; 7 HttpCase tests on the webhook controller (valid token, tampered token, unknown job, pdfgen-id mismatch, idempotent re-delivery, error payload, missing payload).
+- [x] Local-dev: `ngrok` service added to `/Users/brunofarias/code/ar/odoo/docker-compose.yml` so `docker compose up -d ngrok` boots a public tunnel for callbacks; README documents the `NGROK_AUTHTOKEN` env var + the inspector URL workflow.
 
 ---
 

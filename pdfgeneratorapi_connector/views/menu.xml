@@ -19,6 +19,13 @@
               groups="base.group_system"
               sequence="30"/>
 
+    <menuitem id="menu_pdfgen_async_jobs"
+              name="Async Jobs"
+              parent="menu_pdfgen_root"
+              action="action_pdfgen_async_job"
+              groups="base.group_user"
+              sequence="40"/>
+
     <menuitem id="menu_pdfgen_settings"
               name="Settings"
               parent="menu_pdfgen_root"
