@@ -31,7 +31,7 @@ class TestTemplateEditorWizard(TransactionCase):
         wizard = self._new_wizard(template_id="42")
         with self._patch_client(client):
             wizard.action_open_editor()
-        client.open_editor.assert_called_once_with("42")
+        client.open_editor.assert_called_once_with("42", data=None)
         self.assertEqual(wizard.editor_url, "https://us1.pdfgeneratorapi.com/editor/42?token=abc")
 
     def test_open_editor_without_template_raises(self):
@@ -68,7 +68,7 @@ class TestTemplateEditorWizard(TransactionCase):
         with self._patch_client(client):
             wizard.action_create_template()
         client.create_template.assert_called_once_with("Brand new")
-        client.open_editor.assert_called_once_with("99")
+        client.open_editor.assert_called_once_with("99", data=None)
         self.assertEqual(wizard.template_id, "99")
         self.assertEqual(wizard.editor_url, "https://us1.pdfgeneratorapi.com/editor/99?token=xyz")
 
@@ -162,3 +162,86 @@ class TestTemplateEditorWizard(TransactionCase):
         with self._patch_client(client):
             sel = self.env["pdfgen.template.editor.wizard"]._selection_template_id()
         self.assertEqual(sel, [])
+
+    def _new_partner_dataset(self):
+        partner_model = self.env.ref("base.model_res_partner")
+        dataset = self.env["pdfgen.model.dataset"].create(
+            {"name": "Partner dataset", "model_id": partner_model.id}
+        )
+        self.env["pdfgen.model.dataset.line"].create(
+            {
+                "dataset_id": dataset.id,
+                "placeholder_path": "name",
+                "odoo_field_path": "name",
+            }
+        )
+        return dataset
+
+    def test_open_editor_passes_resolved_data(self):
+        dataset = self._new_partner_dataset()
+        partner = self.env["res.partner"].create({"name": "Acme"})
+        client = MagicMock()
+        client.open_editor.return_value = "https://us1.pdfgeneratorapi.com/editor/42?token=abc"
+        wizard = self._new_wizard(
+            template_id="42",
+            dataset_id=dataset.id,
+            sample_record_id=partner.id,
+        )
+        with self._patch_client(client):
+            wizard.action_open_editor()
+        client.open_editor.assert_called_once_with("42", data={"name": "Acme"})
+
+    def test_open_editor_no_data_without_record(self):
+        dataset = self._new_partner_dataset()
+        client = MagicMock()
+        client.open_editor.return_value = "https://us1.pdfgeneratorapi.com/editor/42?token=abc"
+        wizard = self._new_wizard(template_id="42", dataset_id=dataset.id)
+        with self._patch_client(client):
+            wizard.action_open_editor()
+        client.open_editor.assert_called_once_with("42", data=None)
+
+    def test_open_editor_no_data_when_record_gone(self):
+        dataset = self._new_partner_dataset()
+        partner = self.env["res.partner"].create({"name": "Tmp"})
+        partner_id = partner.id
+        partner.unlink()
+        client = MagicMock()
+        client.open_editor.return_value = "https://us1.pdfgeneratorapi.com/editor/42?token=abc"
+        wizard = self._new_wizard(
+            template_id="42",
+            dataset_id=dataset.id,
+            sample_record_id=partner_id,
+        )
+        with self._patch_client(client):
+            wizard.action_open_editor()
+        client.open_editor.assert_called_once_with("42", data=None)
+
+    def test_action_open_sample_record_returns_form_action(self):
+        dataset = self._new_partner_dataset()
+        partner = self.env["res.partner"].create({"name": "Acme"})
+        wizard = self._new_wizard(dataset_id=dataset.id, sample_record_id=partner.id)
+        action = wizard.action_open_sample_record()
+        self.assertEqual(action["type"], "ir.actions.act_window")
+        self.assertEqual(action["res_model"], "res.partner")
+        self.assertEqual(action["res_id"], partner.id)
+        self.assertEqual(action["target"], "new")
+
+    def test_action_open_sample_record_without_record_raises(self):
+        dataset = self._new_partner_dataset()
+        wizard = self._new_wizard(dataset_id=dataset.id)
+        with self.assertRaises(UserError):
+            wizard.action_open_sample_record()
+
+    def test_onchange_dataset_clears_sample(self):
+        dataset_a = self._new_partner_dataset()
+        users_model = self.env.ref("base.model_res_users")
+        dataset_b = self.env["pdfgen.model.dataset"].create(
+            {"name": "Users dataset", "model_id": users_model.id}
+        )
+        partner = self.env["res.partner"].create({"name": "Acme"})
+        wizard = self.env["pdfgen.template.editor.wizard"].new(
+            {"dataset_id": dataset_a.id, "sample_record_id": partner.id}
+        )
+        wizard.dataset_id = dataset_b
+        wizard._onchange_dataset_id()
+        self.assertFalse(wizard.sample_record_id)

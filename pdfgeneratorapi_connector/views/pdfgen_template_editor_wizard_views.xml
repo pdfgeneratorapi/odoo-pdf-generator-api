@@ -6,23 +6,52 @@
         <field name="model">pdfgen.template.editor.wizard</field>
         <field name="arch" type="xml">
             <form string="Template Editor" class="o_pdfgen_template_editor_form">
-                <!-- Single-line toolbar: edit existing / create new, kept compact
-                     so the iframe below has maximum canvas. -->
-                <div class="o_pdfgen_template_editor_toolbar d-flex flex-wrap gap-2 align-items-center py-2 px-3 border-bottom">
+                <!-- Hidden field outside the grid: drives Many2oneReference's
+                     model resolution but doesn't render visually. -->
+                <field name="sample_model" invisible="1"/>
+                <!-- 6-column auto-sized grid: label / field / button per side.
+                     Each column auto-fits the widest cell across both rows, so
+                     "Edit:" lines up with "Dataset:", their fields align, and
+                     "Open" aligns under "View". Same logic on the right:
+                     "New:"/"Record:" labels, fields, and "Create"/"View"
+                     buttons all align. The border-start on the right-side
+                     label cells gives a visual divider between the two halves. -->
+                <div class="o_pdfgen_template_editor_toolbar py-2 px-3 border-bottom"
+                     style="display: grid; grid-template-columns: auto auto auto auto auto auto; column-gap: 0.5rem; row-gap: 0.25rem; align-items: center; justify-content: start;">
                     <span class="small text-muted fw-bold">Edit:</span>
-                    <field name="template_id" nolabel="1" class="oe_inline"/>
+                    <field name="template_id" nolabel="1" class="oe_inline o_pdfgen_toolbar_field"/>
                     <button name="action_open_editor"
                             type="object"
                             string="Open"
                             class="btn btn-primary btn-sm"
                             invisible="not template_id"/>
-                    <div class="vr mx-2"/>
-                    <span class="small text-muted fw-bold">New:</span>
-                    <field name="new_template_name" nolabel="1" class="oe_inline"/>
+                    <span class="small text-muted fw-bold ps-3 border-start">New:</span>
+                    <field name="new_template_name" nolabel="1" class="oe_inline o_pdfgen_toolbar_field"/>
                     <button name="action_create_template"
                             type="object"
                             string="Create"
                             class="btn btn-secondary btn-sm"/>
+
+                    <span class="small text-muted fw-bold">Dataset:</span>
+                    <field name="dataset_id" nolabel="1" class="oe_inline o_pdfgen_toolbar_field"/>
+                    <span/> <!-- col-3 spacer (no left-side button on row 2) -->
+                    <span class="small text-muted fw-bold ps-3 border-start"
+                          invisible="not dataset_id">Record:</span>
+                    <field name="sample_record_id"
+                           nolabel="1"
+                           class="oe_inline o_pdfgen_toolbar_field"
+                           options="{'no_open': True}"
+                           invisible="not dataset_id"/>
+                    <button name="action_open_sample_record"
+                            type="object"
+                            string="View"
+                            title="Go to the source record"
+                            class="btn btn-light btn-sm"
+                            invisible="not sample_record_id"/>
+                </div>
+                <div class="px-3 pb-2 small text-muted"
+                     invisible="not dataset_id or sample_record_id">
+                    Pick a record to preview the template with real data.
                 </div>
 
                 <!-- Editor pane. Flex-fills all viewport space below the toolbar. -->

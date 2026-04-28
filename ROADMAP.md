@@ -149,6 +149,13 @@ Bonus bridges: `_purchase` (Phase 3.3), `_stock` (Phase 3.4).
 - [x] Close-type event → info notification "Editor closed." + clears `editor_url` so the iframe collapses.
 - [x] 6 Hoot tests covering mount, origin validation, save dispatch, close dispatch, unknown-shape rejection, and the `event` key variant.
 
+### Phase 4.3 — Real Odoo data in the editor preview (landed)
+
+- [x] Dataset + sample-record pickers added to the wizard toolbar (`dataset_id` Many2one, `sample_record_id` Many2oneReference scoped by `sample_model` related from the dataset).
+- [x] `_resolve_sample_data` resolves the picked record via `dataset.resolve_payload(record)` — same primitive used by the coverage wizard's preview path. Logs+swallows resolution failures so the editor always opens; falls back to pdfgenapi.com's dummy data when no record is picked or the record is gone.
+- [x] Onchange clears `sample_record_id` when the dataset changes so a stale id from the previous model can't leak through.
+- [x] 4 new Odoo tests (data passthrough, dataset-only fallback, deleted-record fallback, onchange clears sample) plus updates to existing call-site assertions.
+
 ---
 
 ## Phase 5 — Batch generation

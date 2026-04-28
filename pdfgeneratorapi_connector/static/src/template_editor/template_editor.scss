@@ -18,6 +18,16 @@
 
     .o_pdfgen_template_editor_toolbar {
         background: var(--bs-body-bg, white);
+
+        // Force every input/value cell in the toolbar grid to the same width
+        // so Selection (`<select>`) and Many2one (`<input>`) widgets, which
+        // have different native paddings, line up vertically across rows.
+        .o_pdfgen_toolbar_field,
+        .o_pdfgen_toolbar_field .o_input,
+        .o_pdfgen_toolbar_field .o_field_widget {
+            width: 220px;
+            min-width: 220px;
+        }
     }
 
     .o_pdfgen_template_editor_pane .o_field_widget {

@@ -33,6 +33,25 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
         default="New template",
         help="Used when clicking Create new template.",
     )
+    dataset_id = fields.Many2one(
+        "pdfgen.model.dataset",
+        domain=[("active", "=", True)],
+        string="Dataset",
+        help=(
+            "When set together with a Sample record, the resolved Odoo data is "
+            "sent to the editor as preview data so you can design against your "
+            "real records."
+        ),
+    )
+    sample_model = fields.Char(related="dataset_id.model", readonly=True)
+    sample_record_id = fields.Many2oneReference(
+        string="Sample record",
+        model_field="sample_model",
+        help=(
+            "Pick a record of the dataset's model. Its resolved payload is sent "
+            "to the editor's preview pane so the template renders against real data."
+        ),
+    )
     editor_url = fields.Char(
         string="Editor URL",
         readonly=True,
@@ -41,6 +60,10 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
             "Not cached between actions — each Open editor click mints a fresh one."
         ),
     )
+
+    @api.onchange("dataset_id")
+    def _onchange_dataset_id(self):
+        self.sample_record_id = False
 
     @api.model
     def _build_client(self):
@@ -71,13 +94,38 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
             result.append((str(tid), name))
         return result
 
+    def _resolve_sample_data(self):
+        """Build the openEditor `data` payload from the picked dataset+record.
+
+        Returns None when either is missing or the record can't be resolved —
+        the editor then falls back to pdfgenapi.com's own dummy preview data.
+        """
+        self.ensure_one()
+        if not (self.dataset_id and self.sample_record_id and self.sample_model):
+            return None
+        if self.sample_model not in self.env:
+            return None
+        record = self.env[self.sample_model].browse(self.sample_record_id).exists()
+        if not record:
+            return None
+        try:
+            return self.dataset_id.resolve_payload(record)
+        except Exception as e:
+            _logger.warning(
+                "template editor: resolve_payload failed for %s(%s): %s",
+                self.sample_model,
+                self.sample_record_id,
+                e,
+            )
+            return None
+
     def action_open_editor(self):
         self.ensure_one()
         if not self.template_id:
             raise UserError(_("Pick a template first."))
         client = self._build_client()
         try:
-            url = client.open_editor(self.template_id)
+            url = client.open_editor(self.template_id, data=self._resolve_sample_data())
         except PdfGenApiError as e:
             raise UserError(
                 _(
@@ -93,6 +141,23 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
         # button method; the OWL iframe widget's useEffect fires with the new
         # URL and swaps the <iframe src>. Keeps the user on the same page.
         return False
+
+    def action_open_sample_record(self):
+        """Open the picked sample record in a side dialog so the user can sanity-check
+        which record's data is feeding the editor preview.
+        """
+        self.ensure_one()
+        if not (self.sample_model and self.sample_record_id):
+            raise UserError(_("Pick a sample record first."))
+        if self.sample_model not in self.env:
+            raise UserError(_("Model %s is not available.", self.sample_model))
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": self.sample_model,
+            "res_id": self.sample_record_id,
+            "view_mode": "form",
+            "target": "new",
+        }
 
     def action_create_template(self):
         self.ensure_one()
