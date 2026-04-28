@@ -185,7 +185,7 @@ Only wire this up if real-world templates regularly exceed ~30s:
 - [x] Proper icon (currently placeholder).
 - [ ] Screenshots: settings page, wizard, generated PDF attached to invoice.
 - [ ] Privacy policy section for App Store review (what data leaves Odoo, over TLS, to which region).
-- [ ] Run `pylint-odoo` at the P-level strict setting — App Store reviewers do.
+- [x] Run `pylint-odoo` at the P-level strict setting — App Store reviewers do. Wired into pre-commit (`make lint-pylint`) so the strict odoolint set runs on every commit.
 - [ ] Submit to Odoo App Store for v19. Tag `19.0.1.0.0`.
 - [ ] Backport to `18.0` branch, submit separately.
 - [ ] Backport to `17.0` branch (deferred per initial plan).

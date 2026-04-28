@@ -36,7 +36,6 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
     dataset_id = fields.Many2one(
         "pdfgen.model.dataset",
         domain=[("active", "=", True)],
-        string="Dataset",
         help=(
             "When set together with a Sample record, the resolved Odoo data is "
             "sent to the editor as preview data so you can design against your "
