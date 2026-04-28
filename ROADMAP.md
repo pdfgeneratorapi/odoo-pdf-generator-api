@@ -158,7 +158,7 @@ Bonus bridges: `_purchase` (Phase 3.3), `_stock` (Phase 3.4).
 
 ---
 
-## Phase 5 — Batch generation
+## Phase 5 — Batch generation (for the future, postponed for now)
 
 - [ ] Batch flow from list view: select N invoices → pick template → single PDF with all of them.
 - [ ] Use `POST /documents/generate/batch` (sync) for small batches (≤10).
