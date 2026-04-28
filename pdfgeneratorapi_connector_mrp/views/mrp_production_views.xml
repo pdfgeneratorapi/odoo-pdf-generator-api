@@ -15,4 +15,20 @@
             </xpath>
         </field>
     </record>
+
+    <record id="mrp_production_list_view_pdfgen" model="ir.ui.view">
+        <field name="name">mrp.production.list.pdfgen</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <header>
+                    <button name="action_open_pdfgen_wizard_from_list"
+                            type="object"
+                            string="Generate custom PDF"
+                            class="btn-primary"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
 </odoo>

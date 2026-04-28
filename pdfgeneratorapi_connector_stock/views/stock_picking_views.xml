@@ -15,4 +15,20 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_picking_list_pdfgen" model="ir.ui.view">
+        <field name="name">stock.picking.list.pdfgen</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <header>
+                    <button name="action_open_pdfgen_wizard_from_list"
+                            type="object"
+                            string="Generate custom PDF"
+                            class="btn-primary"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
 </odoo>

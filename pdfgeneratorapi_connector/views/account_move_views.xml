@@ -17,4 +17,23 @@
             </xpath>
         </field>
     </record>
+
+    <!-- Customer-invoices list: surface the same Generate custom PDF action
+         in the header toolbar. Only fires for a single selection; the
+         mixin method shows a friendly hint when more rows are picked. -->
+    <record id="view_out_invoice_list_pdfgen" model="ir.ui.view">
+        <field name="name">account.move.list.pdfgen</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <header>
+                    <button name="action_open_pdfgen_wizard_from_list"
+                            type="object"
+                            string="Generate custom PDF"
+                            class="btn-primary"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
 </odoo>

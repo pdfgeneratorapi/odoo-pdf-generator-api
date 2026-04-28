@@ -81,3 +81,17 @@ class PdfgenDocumentMixin(models.AbstractModel):
                 "default_res_id": self.id,
             },
         }
+
+    def action_open_pdfgen_wizard_from_list(self):
+        """Entry point for the list-view header button. Same wizard as the
+        form-view button; rejects multi-selection with a friendly hint until
+        the Phase 5 batch flow lands.
+        """
+        if len(self) != 1:
+            raise UserError(
+                self.env._(
+                    "Select exactly one record to generate a custom PDF. "
+                    "Batch generation is on the roadmap."
+                )
+            )
+        return self.action_open_pdfgen_wizard()

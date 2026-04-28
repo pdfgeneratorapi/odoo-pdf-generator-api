@@ -1,4 +1,5 @@
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.exceptions import UserError
 from odoo.tests.common import tagged
 
 
@@ -41,3 +42,15 @@ class TestAccountMovePdfgen(AccountTestInvoicingCommon):
         self.assertEqual(action["target"], "new")
         self.assertEqual(action["context"]["default_res_model"], "account.move")
         self.assertEqual(action["context"]["default_res_id"], self.invoice.id)
+
+    def test_action_from_list_single_returns_action(self):
+        action = self.invoice.action_open_pdfgen_wizard_from_list()
+        self.assertEqual(action["type"], "ir.actions.act_window")
+        self.assertEqual(action["res_model"], "pdfgen.generate.wizard")
+        self.assertEqual(action["context"]["default_res_id"], self.invoice.id)
+
+    def test_action_from_list_multi_raises(self):
+        another = self.init_invoice("out_invoice", products=self.product_a, post=True)
+        recordset = self.invoice | another
+        with self.assertRaises(UserError):
+            recordset.action_open_pdfgen_wizard_from_list()
