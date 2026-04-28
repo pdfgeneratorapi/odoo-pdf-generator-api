@@ -175,7 +175,7 @@ Only wire this up if real-world templates regularly exceed ~30s:
 ## Phase 7 — Distribution & App Store
 
 - [ ] `static/description/index.html` — App Store listing page (features, screenshots).
-- [ ] Proper icon (currently placeholder).
+- [x] Proper icon (currently placeholder).
 - [ ] Screenshots: settings page, wizard, generated PDF attached to invoice.
 - [ ] Privacy policy section for App Store review (what data leaves Odoo, over TLS, to which region).
 - [ ] Run `pylint-odoo` at the P-level strict setting — App Store reviewers do.
