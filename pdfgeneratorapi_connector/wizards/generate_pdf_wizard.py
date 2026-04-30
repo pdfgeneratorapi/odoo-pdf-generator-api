@@ -42,6 +42,15 @@ class GeneratePdfWizard(models.TransientModel):
         selection="_selection_template_id",
         required=True,
     )
+    auto_download = fields.Boolean(
+        default=False,
+        help=(
+            "When True, action_generate returns an ir.actions.act_url that "
+            "downloads the just-created attachment in addition to attaching "
+            "it to the source record. Set via context default from the "
+            "split-button's `Generate and Download` dropdown item."
+        ),
+    )
 
     @api.depends("res_model", "res_id")
     def _compute_res_display_name(self):
@@ -176,6 +185,12 @@ class GeneratePdfWizard(models.TransientModel):
                 body=_("Generated custom PDF via pdfgeneratorapi.com."),
                 attachment_ids=[attachment.id],
             )
+        if self.auto_download:
+            return {
+                "type": "ir.actions.act_url",
+                "url": f"/web/content/{attachment.id}?download=true",
+                "target": "download",
+            }
         return {"type": "ir.actions.act_window_close"}
 
     @staticmethod

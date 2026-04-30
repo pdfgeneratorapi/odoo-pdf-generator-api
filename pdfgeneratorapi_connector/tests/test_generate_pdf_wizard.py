@@ -84,6 +84,42 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         self.assertTrue(attachment)
         self.assertEqual(base64.b64decode(attachment.datas), b"%PDF-1.4 fake pdf bytes")
 
+    def test_action_generate_returns_download_url_when_auto_download(self):
+        client = MagicMock()
+        client.generate.return_value = {"response": PDF_B64}
+        wizard = self.env["pdfgen.generate.wizard"].create(
+            {
+                "res_model": "account.move",
+                "res_id": self.invoice.id,
+                "template_id": "42",
+                "auto_download": True,
+            }
+        )
+        with self._patch_client(client):
+            action = wizard.action_generate()
+        attachment = self.env["ir.attachment"].search(
+            [("res_model", "=", "account.move"), ("res_id", "=", self.invoice.id)],
+            limit=1,
+        )
+        self.assertTrue(attachment)
+        self.assertEqual(action["type"], "ir.actions.act_url")
+        self.assertEqual(action["target"], "download")
+        self.assertEqual(action["url"], f"/web/content/{attachment.id}?download=true")
+
+    def test_default_auto_download_from_context(self):
+        wizard = (
+            self.env["pdfgen.generate.wizard"]
+            .with_context(default_auto_download=True)
+            .create(
+                {
+                    "res_model": "account.move",
+                    "res_id": self.invoice.id,
+                    "template_id": "42",
+                }
+            )
+        )
+        self.assertTrue(wizard.auto_download)
+
     def test_action_generate_requires_dataset(self):
         # Archive the seed dataset to exercise the "no dataset" branch.
         dataset = self.env.ref("pdfgeneratorapi_connector.dataset_account_move")
