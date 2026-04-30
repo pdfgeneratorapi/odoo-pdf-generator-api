@@ -120,3 +120,74 @@ class TestModelDataset(AccountTestInvoicingCommon):
         )
         # Invalid parent path → target_model falls back to the dataset's root model.
         self.assertEqual(child.target_model, "res.partner")
+
+    def test_selection_default_template_returns_live_list(self):
+        from unittest.mock import MagicMock, patch
+
+        client = MagicMock()
+        client.list_templates.return_value = {
+            "response": [{"id": 1, "name": "Invoice"}, {"id": 2, "name": "Quote"}]
+        }
+        with patch(
+            "odoo.addons.pdfgeneratorapi_connector.models.pdfgen_model_dataset.build_pdfgen_client",
+            return_value=client,
+        ):
+            sel = self.env["pdfgen.model.dataset"]._selection_default_template_id()
+        self.assertEqual(sel, [("1", "Invoice"), ("2", "Quote")])
+
+    def test_selection_default_template_swallows_unconfigured(self):
+        # Wipe creds → build_pdfgen_client raises UserError → empty list.
+        icp = self.env["ir.config_parameter"].sudo()
+        for key in ("pdfgen.api_key", "pdfgen.api_secret", "pdfgen.workspace_identifier"):
+            icp.set_param(key, "")
+        self.env.company.write(
+            {
+                "pdfgen_api_key": False,
+                "pdfgen_api_secret": False,
+                "pdfgen_workspace_identifier": False,
+            }
+        )
+        sel = self.env["pdfgen.model.dataset"]._selection_default_template_id()
+        self.assertEqual(sel, [])
+
+    def test_selection_default_template_swallows_api_errors(self):
+        from unittest.mock import MagicMock, patch
+
+        from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (
+            PdfGenApiError,
+        )
+
+        client = MagicMock()
+        client.list_templates.side_effect = PdfGenApiError(503, "down")
+        with patch(
+            "odoo.addons.pdfgeneratorapi_connector.models.pdfgen_model_dataset.build_pdfgen_client",
+            return_value=client,
+        ):
+            sel = self.env["pdfgen.model.dataset"]._selection_default_template_id()
+        self.assertEqual(sel, [])
+
+    def test_selection_default_template_handles_non_list_response(self):
+        from unittest.mock import MagicMock, patch
+
+        client = MagicMock()
+        client.list_templates.return_value = {"response": "oops"}
+        with patch(
+            "odoo.addons.pdfgeneratorapi_connector.models.pdfgen_model_dataset.build_pdfgen_client",
+            return_value=client,
+        ):
+            sel = self.env["pdfgen.model.dataset"]._selection_default_template_id()
+        self.assertEqual(sel, [])
+
+    def test_selection_default_template_skips_entries_without_id(self):
+        from unittest.mock import MagicMock, patch
+
+        client = MagicMock()
+        client.list_templates.return_value = {
+            "response": [{"name": "no-id"}, {"id": 7, "name": "Real"}]
+        }
+        with patch(
+            "odoo.addons.pdfgeneratorapi_connector.models.pdfgen_model_dataset.build_pdfgen_client",
+            return_value=client,
+        ):
+            sel = self.env["pdfgen.model.dataset"]._selection_default_template_id()
+        self.assertEqual(sel, [("7", "Real")])

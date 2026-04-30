@@ -1,7 +1,13 @@
+import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 from . import pdfgen_resolver
+from .pdfgen_api_client import PdfGenApiError
+from .pdfgen_document_mixin import build_pdfgen_client
+
+_logger = logging.getLogger(__name__)
 
 
 class PdfGenModelDataset(models.Model):
@@ -21,11 +27,44 @@ class PdfGenModelDataset(models.Model):
     )
     model = fields.Char(related="model_id.model", store=True, readonly=True)
     active = fields.Boolean(default=True)
+    default_template_id = fields.Selection(
+        selection="_selection_default_template_id",
+        string="Default template",
+        help=(
+            "Template the Send wizard auto-generates a pdfgen PDF with when a "
+            "record has no pdfgen attachment yet. Pick from your live "
+            "pdfgeneratorapi.com templates. Leave blank to disable auto-"
+            "generation for this model."
+        ),
+    )
     line_ids = fields.One2many(
         "pdfgen.model.dataset.line",
         "dataset_id",
         string="Field Mappings",
     )
+
+    @api.model
+    def _selection_default_template_id(self):
+        try:
+            client = build_pdfgen_client(self.env)
+        except UserError:
+            return []
+        try:
+            response = client.list_templates(per_page=100)
+        except PdfGenApiError as e:
+            _logger.warning("list_templates failed: %s / %s", e.status, e.body)
+            return []
+        templates = response.get("response", response) if isinstance(response, dict) else response
+        if not isinstance(templates, list):
+            return []
+        result = []
+        for t in templates:
+            tid = t.get("id")
+            name = t.get("name") or f"Template {tid}"
+            if tid is None:
+                continue
+            result.append((str(tid), name))
+        return result
 
     _sql_constraints = [
         (

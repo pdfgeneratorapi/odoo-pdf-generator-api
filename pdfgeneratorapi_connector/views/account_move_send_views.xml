@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_move_send_wizard_form_pdfgen" model="ir.ui.view">
+        <field name="name">account.move.send.wizard.form.pdfgen</field>
+        <field name="model">account.move.send.wizard</field>
+        <field name="inherit_id" ref="account.account_move_send_wizard_form"/>
+        <field name="arch" type="xml">
+            <!-- Append a pdfgen panel inside the wizard form (the parent has
+                 no <sheet>; it's a flat <form>). Visible only when the
+                 model has an active dataset. -->
+            <xpath expr="//form" position="inside">
+                <group string="PDF Generator API"
+                       name="pdfgen_section"
+                       invisible="not pdfgen_configured">
+                    <field name="pdfgen_configured" invisible="1"/>
+                    <field name="pdfgen_use_custom" widget="boolean_toggle"/>
+                    <field name="pdfgen_template_id"
+                           invisible="not pdfgen_use_custom"
+                           required="pdfgen_use_custom"/>
+                    <field name="pdfgen_error"
+                           invisible="not pdfgen_error"
+                           readonly="1"
+                           class="text-danger"/>
+                </group>
+                <div invisible="not pdfgen_use_custom or not pdfgen_template_id"
+                     class="o_pdfgen_send_preview border rounded p-3 mb-3">
+                    <div class="text-muted small mb-2">Preview</div>
+                    <field name="pdfgen_preview_html" nolabel="1" readonly="1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

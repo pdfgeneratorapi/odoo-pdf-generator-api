@@ -7,6 +7,7 @@ from . import (
     test_model_dataset,
     test_multi_company,
     test_res_config_settings,
+    test_send_mixin,
     test_template_editor_wizard,
     test_webhook_controller,
 )

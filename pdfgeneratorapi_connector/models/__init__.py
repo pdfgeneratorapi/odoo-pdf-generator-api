@@ -2,6 +2,7 @@
 # Odoo's module-loader registers classes during import, so the mixin must
 # exist in the registry before account_move references it by name.
 from . import pdfgen_document_mixin  # noqa: I001
+from . import pdfgen_send_mixin
 from . import (
     account_move,
     pdfgen_api_client,

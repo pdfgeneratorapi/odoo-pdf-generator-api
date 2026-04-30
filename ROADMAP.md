@@ -149,6 +149,21 @@ Bonus bridges: `_purchase` (Phase 3.3), `_stock` (Phase 3.4).
 - [x] Close-type event → info notification "Editor closed." + clears `editor_url` so the iframe collapses.
 - [x] 6 Hoot tests covering mount, origin validation, save dispatch, close dispatch, unknown-shape rejection, and the `event` key variant.
 
+### Phase 4.5 — Send: substitute the standard report with the latest pdfgen PDF (account.move) (landed)
+
+When a user clicks **Send** on a customer invoice, the Send wizard now
+exposes a **PDF Generator API** section. When toggled on (defaults to on
+if a recent pdfgen attachment exists or the dataset has a configured
+default template), the standard placeholder PDF is replaced with the
+latest pdfgen attachment — or freshly generated synchronously from the
+dataset's default template — and a live HTML preview renders in the
+modal so the user can inspect the output before sending.
+
+- [x] `pdfgen.model.dataset.default_template_id` — Selection field, live from the API. Pick once per dataset; used as the auto-generation template when a record has no pdfgen attachment yet.
+- [x] `pdfgen.send.mixin` — abstract helper holding latest-wins detection, template-resolution chain, HTML preview rendering, sync PDF generation. Designed so the bridge addons (sale.order, purchase.order, stock.picking) can inherit it once Odoo's `mail.compose.message` override path is wired up — deferred to a follow-up since v18/19 only ship a dedicated Send wizard for `account.move`.
+- [x] `account.move.send.wizard` inheritance — adds `pdfgen_use_custom`, `pdfgen_template_id`, `pdfgen_preview_html`, `pdfgen_error` fields. Overrides `_compute_mail_attachments_widget` to drop the placeholder and inject the pdfgen attachment when the toggle is on. Failures surface in `pdfgen_error` and force the toggle off so the user can fall back to the standard report.
+- [x] 14 new Odoo tests on the mixin (latest-wins logic, template chain, preview rendering, sync generation, substitution mutator). Pre-commit gate (ruff + pylint-odoo strict + 95% coverage) passes.
+
 ### Phase 4.4 — Generate-and-download split button (landed)
 
 The form-view header's **Generate custom PDF** button is now a Bootstrap
