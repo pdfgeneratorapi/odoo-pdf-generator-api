@@ -147,6 +147,28 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
 
     # ---------------------------------------------------- preview render
 
+    def test_preview_embeds_existing_pdfgen_attachment(self):
+        wiz = self._wizard()
+        att = self._attach(description="pdfgen:template:42")
+        # No client mock needed — preview should reuse the attachment.
+        with patch(_BUILD_CLIENT) as build:
+            html = wiz._pdfgen_render_preview_html("42", self.invoice)
+        self.assertIn(f"/web/content/{att.id}", html)
+        self.assertIn("<iframe", html)
+        build.assert_not_called()
+
+    def test_preview_falls_back_to_api_when_template_changed(self):
+        # Existing attachment was for template "old"; user picks "new" → no
+        # iframe shortcut, falls through to the HTML API render path.
+        wiz = self._wizard()
+        self._attach(description="pdfgen:template:old")
+        client = MagicMock()
+        client.generate.return_value = {"response": HTML_B64}
+        with patch(_BUILD_CLIENT, return_value=client):
+            html = wiz._pdfgen_render_preview_html("new", self.invoice)
+        self.assertIn("Preview", html)
+        client.generate.assert_called_once()
+
     def test_preview_html_decodes_response(self):
         wiz = self._wizard()
         client = MagicMock()
@@ -384,3 +406,71 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
         self.assertFalse(any(w.get("placeholder") for w in out))
         # Pdfgen attachment present
         self.assertTrue(any(w["id"] == latest.id for w in out))
+
+    def test_apply_substitution_strips_existing_standard_report(self):
+        wiz = self._wizard()
+        pdfgen_att = self._attach(description="pdfgen:template:42")
+        wiz.pdfgen_use_custom = True
+        wiz.pdfgen_template_id = "42"
+        widget = [
+            {
+                "id": "placeholder_invoice.pdf",
+                "name": "invoice.pdf",
+                "mimetype": "application/pdf",
+                "placeholder": True,
+            },
+            # Pre-existing standard-report attachment from invoice post.
+            {
+                "id": 1234,
+                "name": "INV-2026-001.pdf",
+                "mimetype": "application/pdf",
+                "placeholder": False,
+                "protect_from_deletion": True,
+            },
+        ]
+        out = wiz._pdfgen_apply_substitution(widget)
+        # Only our pdfgen attachment should survive — both the placeholder
+        # AND the existing standard report are stripped.
+        self.assertEqual([w["id"] for w in out], [pdfgen_att.id])
+
+    def test_apply_substitution_promotes_invoice_pdf_report_id(self):
+        wiz = self._wizard()
+        pdfgen_att = self._attach(description="pdfgen:template:42")
+        wiz.pdfgen_use_custom = True
+        wiz.pdfgen_template_id = "42"
+        wiz._pdfgen_apply_substitution([])
+        self.invoice.invalidate_recordset(["invoice_pdf_report_id"])
+        self.assertEqual(self.invoice.invoice_pdf_report_id, pdfgen_att)
+
+    # -------------------------------------- _compute_mail_attachments_widget
+
+    def test_compute_widget_swaps_in_pdfgen_when_toggled_on(self):
+        # Create a real (saved) wizard so the compute fires and writes back.
+        wiz = (
+            self.env["account.move.send.wizard"]
+            .with_context(active_ids=[self.invoice.id], default_move_id=self.invoice.id)
+            .create({"move_id": self.invoice.id})
+        )
+        att = self._attach(description="pdfgen:template:42")
+        wiz.pdfgen_use_custom = True
+        wiz.pdfgen_template_id = "42"
+        # Reading the field triggers the recompute via the depends.
+        widget = wiz.mail_attachments_widget or []
+        self.assertTrue(any(w.get("id") == att.id for w in widget))
+        self.assertFalse(any(w.get("placeholder") for w in widget))
+
+    def test_compute_widget_records_user_error_and_disables_toggle(self):
+        wiz = (
+            self.env["account.move.send.wizard"]
+            .with_context(active_ids=[self.invoice.id], default_move_id=self.invoice.id)
+            .create({"move_id": self.invoice.id})
+        )
+        # No pdfgen attachment, no template → _pdfgen_apply_substitution
+        # raises UserError (no template picked); the compute should swallow
+        # it into pdfgen_error and flip the toggle off.
+        wiz.pdfgen_use_custom = True
+        wiz.pdfgen_template_id = False
+        # Force the compute by reading.
+        _ = wiz.mail_attachments_widget
+        self.assertFalse(wiz.pdfgen_use_custom)
+        self.assertTrue(wiz.pdfgen_error)

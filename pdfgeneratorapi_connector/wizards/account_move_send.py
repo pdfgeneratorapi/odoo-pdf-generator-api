@@ -116,24 +116,55 @@ class AccountMoveSendWizard(models.TransientModel):
             wiz.pdfgen_error = False
 
     def _pdfgen_apply_substitution(self, widget):
-        """Drop the standard report placeholder and inject the pdfgen
-        attachment (existing latest, or freshly generated)."""
+        """Make the pdfgen PDF the move's official report and reflect that
+        in the wizard's attachment widget.
+
+        Steps, in order so each one has a consistent view of state:
+
+          1. Find / mint the pdfgen attachment for the chosen template.
+          2. Point `move.invoice_pdf_report_id` at it — Odoo's `Document
+             Preview` pane and `_get_invoice_extra_attachments` both read
+             this field.
+          3. Strip the placeholder entry (the to-be-generated standard
+             report) and any pre-existing extra-attachment entries that
+             aren't manual user uploads. Keep template / manual / dynamic
+             entries untouched.
+          4. Append the pdfgen attachment as the sole protected PDF.
+        """
         self.ensure_one()
         if not self.pdfgen_template_id:
             raise UserError(_("Pick a template to use the pdfgen PDF."))
-        latest = self._pdfgen_latest_pdfgen_attachment(self.move_id)
+        # Pin the move recordset locally — `ir.attachment.create` below
+        # invalidates wizard caches, and re-reading `self.move_id` on a
+        # NewId wizard would re-trigger default_get (and crash without
+        # active_ids in context).
+        move = self.move_id
+        latest = self._pdfgen_latest_pdfgen_attachment(move)
         if not latest or (
             self.pdfgen_template_id
             and latest.description
             and not latest.description.endswith(f":{self.pdfgen_template_id}")
         ):
-            # Either no pdfgen attachment yet, or it was rendered with a
-            # different template — generate a fresh one now.
-            latest = self._pdfgen_generate_attachment(self.pdfgen_template_id, self.move_id)
-        # Strip the placeholder PDF entry (the standard report Odoo would
-        # otherwise render at send time) — leave manual / extra / dynamic
-        # entries untouched.
-        out = [w for w in widget if not (w.get("placeholder") and not w.get("dynamic_report"))]
+            latest = self._pdfgen_generate_attachment(self.pdfgen_template_id, move)
+        # 2. Transfer the `invoice_pdf_report_file` res_field claim from
+        # the standard report to our pdfgen attachment so Odoo's
+        # computed `invoice_pdf_report_id` resolves to ours and the
+        # form-view preview pane reflects it.
+        self._pdfgen_promote_attachment(move, latest)
+        # 3. Strip placeholder + non-manual existing-PDF entries.
+        out = []
+        for w in widget:
+            is_placeholder = w.get("placeholder") and not w.get("dynamic_report")
+            is_existing_pdf = (
+                not w.get("placeholder")
+                and not w.get("manual")
+                and w.get("mimetype") == "application/pdf"
+                and w.get("protect_from_deletion")
+            )
+            if is_placeholder or is_existing_pdf:
+                continue
+            out.append(w)
+        # 4. Inject the pdfgen attachment.
         out.append(
             {
                 "id": latest.id,

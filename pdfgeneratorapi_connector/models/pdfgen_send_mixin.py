@@ -57,12 +57,19 @@ class PdfgenSendMixin(models.AbstractModel):
     def _pdfgen_latest_pdfgen_attachment(self, record):
         if not record:
             return self.env["ir.attachment"]
+        # The trailing res_field clause matches everything but suppresses
+        # ir.attachment._search's implicit `res_field=False` filter — we
+        # promote our attachment via res_field for canonical-PDF binding
+        # and still need to find it here.
         return self.env["ir.attachment"].search(
             [
                 ("res_model", "=", record._name),
                 ("res_id", "=", record.id),
                 ("description", "=like", "pdfgen:%"),
                 ("mimetype", "=", "application/pdf"),
+                "|",
+                ("res_field", "=", False),
+                ("res_field", "!=", False),
             ],
             order="create_date desc, id desc",
             limit=1,
@@ -79,6 +86,9 @@ class PdfgenSendMixin(models.AbstractModel):
                 "|",
                 ("description", "=", False),
                 ("description", "not like", "pdfgen:%"),
+                "|",
+                ("res_field", "=", False),
+                ("res_field", "!=", False),
             ],
             order="create_date desc, id desc",
             limit=1,
@@ -115,12 +125,32 @@ class PdfgenSendMixin(models.AbstractModel):
     # -------------------------------------------------------- preview / render
 
     def _pdfgen_render_preview_html(self, template_id, record):
-        """Render the chosen template against the record as HTML for the
-        modal preview. Empty string on any failure — preview is best-effort
-        and shouldn't block the user from sending.
+        """Build the modal preview body.
+
+        Strategy: if a pdfgen attachment for this template already exists on
+        the record, embed the actual PDF in an iframe — that's faster than
+        re-rendering, and shows exactly what the email recipient will get.
+        Otherwise call the API for an HTML preview rendered against the
+        chosen template + dataset payload.
+
+        Empty string on any failure so the modal stays usable.
         """
         if not (template_id and record):
             return ""
+        latest = self._pdfgen_latest_pdfgen_attachment(record)
+        if latest and latest.description and latest.description.endswith(f":{template_id}"):
+            return (
+                f'<iframe src="/web/content/{latest.id}?download=false" '
+                f'style="width:100%; min-height:500px; border:0;" '
+                f'title="pdfgen preview"></iframe>'
+            )
+        return self._pdfgen_render_preview_html_via_api(template_id, record)
+
+    def _pdfgen_render_preview_html_via_api(self, template_id, record):
+        """API-rendered HTML fallback for the preview modal — used when no
+        live pdfgen attachment matches the chosen template. Empty string
+        on any failure.
+        """
         dataset = self._pdfgen_dataset(record)
         if not dataset:
             return ""
@@ -197,6 +227,12 @@ class PdfgenSendMixin(models.AbstractModel):
                     ("res_model", "=", record._name),
                     ("res_id", "=", record.id),
                     ("description", "=like", "pdfgen:%"),
+                    # Bypass ir.attachment._search's implicit res_field=False
+                    # filter — Send promotes attachments via res_field, and
+                    # cleanup must still find them.
+                    "|",
+                    ("res_field", "=", False),
+                    ("res_field", "!=", False),
                 ]
             ).unlink()
         return self.env["ir.attachment"].create(
@@ -210,6 +246,54 @@ class PdfgenSendMixin(models.AbstractModel):
                 "description": f"pdfgen:template:{template_id}",
             }
         )
+
+    def _pdfgen_promote_attachment(self, record, attachment):
+        """Make `attachment` the record's canonical PDF attachment.
+
+        Odoo binds the form-view "Document Preview" pane and the Send
+        wizard's `_get_invoice_extra_attachments` to a computed Many2one
+        (`invoice_pdf_report_id` on account.move) that resolves through
+        an attachment whose `res_field` matches the related Binary field
+        (`invoice_pdf_report_file`). Writing to the Many2one directly is
+        a no-op — there's no inverse. Instead we transfer the `res_field`
+        claim from the existing standard-report attachment to ours, and
+        invalidate the cache so the computed Many2one re-resolves.
+
+        The previous standard-report attachment is kept (just unbound from
+        the binary-field claim) so the user retains an audit trail.
+        """
+        if not (record and attachment):
+            return
+        binary_field = self._pdfgen_canonical_binary_field(record)
+        if not binary_field:
+            return
+        Att = self.env["ir.attachment"].sudo()
+        existing = Att.search(
+            [
+                ("res_model", "=", record._name),
+                ("res_id", "=", record.id),
+                ("res_field", "=", binary_field),
+                ("id", "!=", attachment.id),
+            ]
+        )
+        if existing:
+            existing.write({"res_field": False})
+        if attachment.res_field != binary_field:
+            attachment.sudo().write({"res_field": binary_field})
+        # Bust the cache so the computed Many2one (invoice_pdf_report_id)
+        # picks up our attachment on the next read.
+        record.invalidate_recordset()
+
+    @staticmethod
+    def _pdfgen_canonical_binary_field(record):
+        """Name of the Binary field whose attachment becomes the model's
+        canonical PDF (drives Odoo's preview pane + extras collection).
+
+        Override per model to extend support beyond account.move.
+        """
+        if "invoice_pdf_report_file" in record._fields:
+            return "invoice_pdf_report_file"
+        return None
 
     @staticmethod
     def _pdfgen_extract_payload(response):

@@ -40,6 +40,7 @@ class GeneratePdfWizard(models.TransientModel):
     )
     template_id = fields.Selection(
         selection="_selection_template_id",
+        default=lambda self: self._default_template_id(),
         required=True,
     )
     auto_download = fields.Boolean(
@@ -51,6 +52,20 @@ class GeneratePdfWizard(models.TransientModel):
             "split-button's `Generate and Download` dropdown item."
         ),
     )
+
+    @api.model
+    def _default_template_id(self):
+        """Pre-fill from the dataset's default_template_id when the wizard
+        opens — saves the user a click when they already configured a
+        per-model default.
+        """
+        res_model = self.env.context.get("default_res_model")
+        if not res_model:
+            return False
+        dataset = self.env["pdfgen.model.dataset"].search(
+            [("model", "=", res_model), ("active", "=", True)], limit=1
+        )
+        return dataset.default_template_id or False
 
     @api.depends("res_model", "res_id")
     def _compute_res_display_name(self):
@@ -179,6 +194,12 @@ class GeneratePdfWizard(models.TransientModel):
                 "description": f"pdfgen:template:{self.template_id}",
             }
         )
+        # Note: Generate doesn't promote the attachment to the model's
+        # canonical-PDF binary field — that swap is reserved for the Send
+        # flow (`account.move.send.wizard._pdfgen_apply_substitution`).
+        # Generate is primarily for one-off downloads, and promoting here
+        # would interact awkwardly with Odoo's per-field attachment cache
+        # and the cleanup policy.
         # Only post to the chatter if the source model supports it.
         if hasattr(record, "message_post"):
             record.message_post(

@@ -189,6 +189,20 @@ class TestPdfgenAsyncDispatchWizard(TransactionCase):
             sel = self.env["pdfgen.async.dispatch.wizard"]._selection_template_id()
         self.assertEqual(sel, [])
 
+    def test_default_get_pulls_template_from_dataset_default(self):
+        dataset = self._new_dataset()
+        self.env.cr.execute(
+            "UPDATE pdfgen_model_dataset SET default_template_id=%s WHERE id=%s",
+            ("88", dataset.id),
+        )
+        dataset.invalidate_recordset()
+        defaults = (
+            self.env["pdfgen.async.dispatch.wizard"]
+            .with_context(active_model="res.partner", active_ids=[1])
+            .default_get(["res_model", "res_ids", "template_id"])
+        )
+        self.assertEqual(defaults["template_id"], "88")
+
     def test_default_get_pulls_active_ids_from_context(self):
         wiz = (
             self.env["pdfgen.async.dispatch.wizard"]

@@ -84,6 +84,25 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         self.assertTrue(attachment)
         self.assertEqual(base64.b64decode(attachment.datas), b"%PDF-1.4 fake pdf bytes")
 
+    def test_template_id_defaults_from_dataset_default(self):
+        # Set the seeded dataset's default template via SQL (Selection's
+        # dynamic getter is empty without a live API).
+        dataset = self.env.ref("pdfgeneratorapi_connector.dataset_account_move")
+        self.env.cr.execute(
+            "UPDATE pdfgen_model_dataset SET default_template_id=%s WHERE id=%s",
+            ("77", dataset.id),
+        )
+        dataset.invalidate_recordset()
+        wizard = (
+            self.env["pdfgen.generate.wizard"]
+            .with_context(
+                default_res_model="account.move",
+                default_res_id=self.invoice.id,
+            )
+            .create({})
+        )
+        self.assertEqual(wizard.template_id, "77")
+
     def test_action_generate_returns_download_url_when_auto_download(self):
         client = MagicMock()
         client.generate.return_value = {"response": PDF_B64}

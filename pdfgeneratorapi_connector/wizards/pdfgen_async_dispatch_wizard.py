@@ -40,6 +40,7 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
     )
     template_id = fields.Selection(
         selection="_selection_template_id",
+        default=lambda self: self._default_template_id(),
         required=True,
     )
     dataset_id = fields.Many2one(
@@ -58,6 +59,18 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
         if active_ids:
             defaults.setdefault("res_ids", ",".join(str(i) for i in active_ids))
         return defaults
+
+    @api.model
+    def _default_template_id(self):
+        # Pre-fill template_id from the dataset's default_template_id when
+        # the wizard opens — list-view dispatch sets active_model in context.
+        active_model = self.env.context.get("active_model")
+        if not active_model:
+            return False
+        dataset = self.env["pdfgen.model.dataset"].search(
+            [("model", "=", active_model), ("active", "=", True)], limit=1
+        )
+        return dataset.default_template_id or False
 
     @api.depends("res_ids")
     def _compute_record_count(self):
