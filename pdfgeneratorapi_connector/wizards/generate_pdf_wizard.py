@@ -169,8 +169,11 @@ class GeneratePdfWizard(models.TransientModel):
             raise UserError(_("API returned invalid base64: %s", e)) from e
 
         # Honor the attachment cleanup policy before creating the fresh one.
-        # Only deletes attachments we created ourselves (description starts with
-        # "pdfgen:"), so manually uploaded PDFs on the same record survive.
+        # Only deletes attachments we created ourselves (description starts
+        # with "pdfgen:"), so manually uploaded PDFs on the same record
+        # survive. The trailing res_field clause bypasses
+        # ir.attachment._search's implicit res_field=False filter, since
+        # we promote prior generations via res_field below.
         icp = self.env["ir.config_parameter"].sudo()
         if icp.get_param("pdfgen.attachment_cleanup") == "replace":
             self.env["ir.attachment"].search(
@@ -178,6 +181,9 @@ class GeneratePdfWizard(models.TransientModel):
                     ("res_model", "=", self.res_model),
                     ("res_id", "=", self.res_id),
                     ("description", "=like", "pdfgen:%"),
+                    "|",
+                    ("res_field", "=", False),
+                    ("res_field", "!=", False),
                 ]
             ).unlink()
 
@@ -194,12 +200,11 @@ class GeneratePdfWizard(models.TransientModel):
                 "description": f"pdfgen:template:{self.template_id}",
             }
         )
-        # Note: Generate doesn't promote the attachment to the model's
-        # canonical-PDF binary field — that swap is reserved for the Send
-        # flow (`account.move.send.wizard._pdfgen_apply_substitution`).
-        # Generate is primarily for one-off downloads, and promoting here
-        # would interact awkwardly with Odoo's per-field attachment cache
-        # and the cleanup policy.
+        # Promote to the model's canonical-PDF binary field so the form-view
+        # Document Preview pane (and the Send wizard's extras) pick up the
+        # pdfgen PDF as the official report. The mixin handles the res_field
+        # swap (taking the claim from any existing standard-report attachment).
+        self.env["pdfgen.send.mixin"]._pdfgen_promote_attachment(record, attachment)
         # Only post to the chatter if the source model supports it.
         if hasattr(record, "message_post"):
             record.message_post(
@@ -212,7 +217,11 @@ class GeneratePdfWizard(models.TransientModel):
                 "url": f"/web/content/{attachment.id}?download=true",
                 "target": "download",
             }
-        return {"type": "ir.actions.act_window_close"}
+        # soft_reload re-fetches the current form view so the Document
+        # Preview pane (which reads from invoice_pdf_report_id, computed on
+        # ir.attachment.res_field) reflects the just-promoted pdfgen PDF
+        # without a full browser reload.
+        return {"type": "ir.actions.client", "tag": "soft_reload"}
 
     @staticmethod
     def _extract_pdf_payload(response):

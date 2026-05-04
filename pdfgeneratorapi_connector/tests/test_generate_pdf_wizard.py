@@ -72,12 +72,17 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         # Built from the seed dataset for account.move.
         self.assertEqual(data["invoice_number"], self.invoice.name)
         self.assertEqual(data["customer"]["name"], self.invoice.partner_id.name)
-        self.assertEqual(action, {"type": "ir.actions.act_window_close"})
+        self.assertEqual(action, {"type": "ir.actions.client", "tag": "soft_reload"})
         attachment = self.env["ir.attachment"].search(
             [
                 ("res_model", "=", "account.move"),
                 ("res_id", "=", self.invoice.id),
                 ("mimetype", "=", "application/pdf"),
+                # Bypass ir.attachment._search's implicit res_field=False
+                # filter — Generate promotes via `invoice_pdf_report_file`.
+                "|",
+                ("res_field", "=", False),
+                ("res_field", "!=", False),
             ],
             limit=1,
         )
@@ -117,7 +122,13 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
         with self._patch_client(client):
             action = wizard.action_generate()
         attachment = self.env["ir.attachment"].search(
-            [("res_model", "=", "account.move"), ("res_id", "=", self.invoice.id)],
+            [
+                ("res_model", "=", "account.move"),
+                ("res_id", "=", self.invoice.id),
+                "|",
+                ("res_field", "=", False),
+                ("res_field", "!=", False),
+            ],
             limit=1,
         )
         self.assertTrue(attachment)
@@ -261,6 +272,11 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
                 ("res_model", "=", "account.move"),
                 ("res_id", "=", self.invoice.id),
                 ("description", "=like", "pdfgen:%"),
+                # Bypass implicit res_field=False filter — promoted attachments
+                # have res_field set to the model's canonical-PDF binary field.
+                "|",
+                ("res_field", "=", False),
+                ("res_field", "!=", False),
             ],
         )
 
