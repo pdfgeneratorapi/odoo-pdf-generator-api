@@ -1,4 +1,15 @@
-ODOO_SERVICE ?= odoo
+# Route the Odoo container by the branch we're on so the pre-commit hook
+# tests against the matching major version. Override with `ODOO_SERVICE=...`
+# on the command line to force a specific service.
+GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null)
+ifeq ($(GIT_BRANCH),18.0)
+    DEFAULT_ODOO_SERVICE := odoo18
+else ifeq ($(GIT_BRANCH),17.0)
+    DEFAULT_ODOO_SERVICE := odoo17
+else
+    DEFAULT_ODOO_SERVICE := odoo
+endif
+ODOO_SERVICE ?= $(DEFAULT_ODOO_SERVICE)
 ODOO_DB ?= odoo
 MODULE := pdfgeneratorapi_connector
 BRIDGES := pdfgeneratorapi_connector_sale pdfgeneratorapi_connector_purchase pdfgeneratorapi_connector_stock pdfgeneratorapi_connector_mrp
