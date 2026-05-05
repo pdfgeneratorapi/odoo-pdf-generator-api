@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>PDF Generator API Connector</title>
+<style>
+  .pdfgen-listing {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1f2937;
+    line-height: 1.55;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 16px 48px;
+  }
+  .pdfgen-listing * { box-sizing: border-box; }
+  .pdfgen-listing h1, .pdfgen-listing h2, .pdfgen-listing h3 { color: #0f172a; margin: 0 0 12px; }
+  .pdfgen-listing h1 { font-size: 36px; line-height: 1.15; font-weight: 700; }
+  .pdfgen-listing h2 { font-size: 26px; font-weight: 700; margin-top: 0; }
+  .pdfgen-listing h3 { font-size: 18px; font-weight: 600; }
+  .pdfgen-listing p { margin: 0 0 12px; font-size: 15px; }
+  .pdfgen-listing a { color: #02998a; text-decoration: none; }
+  .pdfgen-listing a:hover { text-decoration: underline; }
+  .pdfgen-listing code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #0f172a;
+  }
+
+  .pdfgen-hero {
+    background: linear-gradient(135deg, #02D1AE 0%, #02998a 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 48px 40px;
+    margin: 24px 0 40px;
+  }
+  .pdfgen-hero h1 { color: #fff; margin-bottom: 16px; }
+  .pdfgen-hero p { font-size: 18px; opacity: .95; margin-bottom: 0; max-width: 640px; }
+  .pdfgen-hero .pdfgen-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: .85;
+    margin-bottom: 12px;
+  }
+
+  .pdfgen-section { margin: 40px 0; }
+  .pdfgen-section + .pdfgen-section { border-top: 1px solid #e5e7eb; padding-top: 40px; }
+
+  .pdfgen-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .pdfgen-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 22px 22px 18px;
+    background: #fff;
+  }
+  .pdfgen-card .pdfgen-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(2, 209, 174, .12);
+    color: #02998a;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .pdfgen-card p { font-size: 14px; color: #475569; margin-bottom: 0; }
+
+  .pdfgen-steps {
+    counter-reset: step;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .pdfgen-step {
+    border-left: 3px solid #02D1AE;
+    padding: 4px 0 4px 18px;
+    counter-increment: step;
+    position: relative;
+  }
+  .pdfgen-step h3::before {
+    content: counter(step) ". ";
+    color: #02998a;
+  }
+  .pdfgen-step p { font-size: 14px; color: #475569; margin-bottom: 0; }
+
+  .pdfgen-screenshots {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .pdfgen-screenshot {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    aspect-ratio: 16 / 10;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 13px;
+    overflow: hidden;
+  }
+  .pdfgen-screenshot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .pdfgen-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .pdfgen-table th, .pdfgen-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+  }
+  .pdfgen-table th { background: #f8fafc; font-weight: 600; color: #0f172a; }
+  .pdfgen-yes { color: #047857; font-weight: 600; }
+  .pdfgen-no { color: #b91c1c; font-weight: 600; }
+
+  .pdfgen-callout {
+    background: #f8fafc;
+    border-left: 4px solid #02D1AE;
+    border-radius: 6px;
+    padding: 16px 18px;
+    font-size: 14px;
+    color: #334155;
+  }
+  .pdfgen-callout p:last-child { margin-bottom: 0; }
+
+  .pdfgen-footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+    color: #64748b;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media (max-width: 720px) {
+    .pdfgen-grid, .pdfgen-steps, .pdfgen-screenshots { grid-template-columns: 1fr; }
+    .pdfgen-hero { padding: 32px 24px; }
+    .pdfgen-hero h1 { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="pdfgen-listing">
+
+  <section class="pdfgen-hero">
+    <div class="pdfgen-eyebrow">Connector for Odoo Invoicing &amp; Accounting</div>
+    <h1>Replace Odoo's invoice PDF with your own design — no QWeb required</h1>
+    <p>This connector plugs <a href="https://pdfgeneratorapi.com" style="color:#fff;text-decoration:underline;">pdfgeneratorapi.com</a> into your existing Odoo Invoicing app. Add a <strong>Generate custom PDF</strong> button to invoices, design templates with a visual editor, and the Send wizard automatically emails your custom PDF instead of the default Odoo report.</p>
+  </section>
+
+  <section class="pdfgen-section">
+    <h2>What it adds to Odoo</h2>
+    <p>This is an <strong>extension</strong>, not a standalone app — it enhances Odoo's built-in Invoicing and Accounting modules with custom PDF rendering powered by pdfgeneratorapi.com. After install, you get:</p>
+    <ul style="font-size:15px;padding-left:20px;margin:12px 0;">
+      <li>A new <strong>Generate custom PDF</strong> split-button on the invoice form (next to <em>Send</em> and <em>Print</em>).</li>
+      <li>A <strong>Settings → PDF Generator API</strong> page to enter credentials and pick defaults.</li>
+      <li>Send-by-email substitution: when you click <em>Send</em>, customers receive the latest pdfgen PDF instead of Odoo's standard report.</li>
+      <li>Background batch generation with a webhook callback for hundreds of invoices at once.</li>
+    </ul>
+    <p style="font-size:14px;color:#64748b;margin-top:8px;">Ships with a ready-to-use dataset for <code>account.move</code> (customer invoices, vendor bills, credit notes). The same machinery extends to any Odoo model via a per-model mapping wizard.</p>
+  </section>
+
+  <section class="pdfgen-section">
+    <h2>Where it appears in Odoo</h2>
+    <div class="pdfgen-grid">
+      <div class="pdfgen-card">
+        <div class="pdfgen-icon">①</div>
+        <h3>Invoice form view</h3>
+        <p>A new <strong>Generate custom PDF</strong> split-button next to <em>Send</em>, <em>Print</em>, and <em>Pay</em>. Click to render with your default template, or open the dropdown to pick a different one.</p>
+      </div>
+      <div class="pdfgen-card">
+        <div class="pdfgen-icon">②</div>
+        <h3>Send &amp; Print wizard</h3>
+        <p>When a pdfgen PDF exists on the record, the <em>Send</em> wizard substitutes it for Odoo's standard invoice report — your customer receives your design, not the default.</p>
+      </div>
+      <div class="pdfgen-card">
+        <div class="pdfgen-icon">③</div>
+        <h3>Chatter audit trail</h3>
+        <p>Every generation logs a message: <em>"Generated custom PDF via pdfgeneratorapi.com"</em> — sync or async, you have a full audit trail in the record's chatter.</p>
+      </div>
+      <div class="pdfgen-card">
+        <div class="pdfgen-icon">④</div>
+        <h3>Settings &amp; configuration menu</h3>
+        <p>A <strong>PDF Generator API</strong> section under <em>Settings</em>, plus a top-level menu for templates, datasets, and async job monitoring.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pdfgen-section">
+    <h2>Key features</h2>
+    <div class="pdfgen-grid">
+
+      <div class="pdfgen-card">
+        <div class="pdfgen-icon">✎</div>
+        <h3>Drag-and-drop template editor</h3>
+        <p>Open the pdfgeneratorapi.com editor inside Odoo. Design templates visually — no QWeb, no XML overrides, no developer required.</p>
+      </div>
+
+      <div class="pdfgen-card">
+        <div class="pdfgen-icon">⇄</div>
+        <h3>Smart field mapping</h3>
+        <p>Per-model datasets map Odoo fields to template placeholders, including repeated sections (line items, taxes). Editable from the UI — no code.</p>
+      </div>
+
+      <div class="pdfgen-card">
+        <div class="pdfgen-icon">✉</div>
+        <h3>Send-by-email integration</h3>
+        <p>The Send &amp; Print wizard automatically substitutes the standard Odoo report with the latest pdfgen PDF — customers receive your custom design, not the default invoice.</p>
+      </div>
+
+      <div class="pdfgen-card">
+        <div class="pdfgen-icon">⚡</div>
+        <h3>Async batch dispatch</h3>
+        <p>Generate PDFs for hundreds of records in one click. Per-record async jobs with a webhook callback keep Odoo responsive while pdfgeneratorapi.com renders in the background.</p>
+      </div>
+
+      <div class="pdfgen-card">
+        <div class="pdfgen-icon">⌖</div>
+        <h3>Coverage diagnostics</h3>
+        <p>Built-in wizard inspects your template's placeholders and reports which ones are mapped, unmapped, or unused — catch broken templates before customers do.</p>
+      </div>
+
+      <div class="pdfgen-card">
+        <div class="pdfgen-icon">⛨</div>
+        <h3>Multi-company &amp; secure</h3>
+        <p>Per-company API credentials, JWT-signed requests (HS256), webhook signature verification. Falls back to global Settings when company-level keys are blank.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="pdfgen-section">
+    <h2>How it works</h2>
+    <div class="pdfgen-steps">
+      <div class="pdfgen-step">
+        <h3>Connect your workspace</h3>
+        <p>Paste your pdfgeneratorapi.com API key, secret, and workspace identifier in <em>Settings → PDF Generator API</em>. Click <strong>Test Connection</strong> to verify.</p>
+      </div>
+      <div class="pdfgen-step">
+        <h3>Design or import a template</h3>
+        <p>Open the visual editor inside Odoo. Drag fields from the palette, style headers, add line tables, and preview against a real Odoo record.</p>
+      </div>
+      <div class="pdfgen-step">
+        <h3>Generate from any record</h3>
+        <p>Click <strong>Generate custom PDF</strong> on an invoice (or any supported model). The PDF is attached and downloaded automatically.</p>
+      </div>
+      <div class="pdfgen-step">
+        <h3>Send to customers</h3>
+        <p>The Send wizard picks the latest pdfgen PDF instead of the default report — no extra steps, no manual swap.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pdfgen-section">
+    <h2>Screenshots</h2>
+    <div class="pdfgen-screenshots">
+      <div class="pdfgen-screenshot">Settings &amp; connection test</div>
+      <div class="pdfgen-screenshot">Generate PDF wizard</div>
+      <div class="pdfgen-screenshot">Template editor</div>
+      <div class="pdfgen-screenshot">Field mapping &amp; coverage</div>
+    </div>
+  </section>
+
+  <section class="pdfgen-section">
+    <h2>Hosting compatibility</h2>
+    <table class="pdfgen-table">
+      <thead>
+        <tr><th>Hosting</th><th>Install</th><th>Outbound HTTPS</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Odoo.sh</td><td class="pdfgen-yes">Yes</td><td class="pdfgen-yes">Yes</td></tr>
+        <tr><td>Odoo on-premise (Enterprise)</td><td class="pdfgen-yes">Yes</td><td class="pdfgen-yes">Yes</td></tr>
+        <tr><td>Odoo Community</td><td class="pdfgen-yes">Yes</td><td class="pdfgen-yes">Yes</td></tr>
+        <tr><td>Odoo Online (SaaS)</td><td class="pdfgen-no">No</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:13px;color:#64748b;margin-top:10px;">Odoo Online does not allow third-party apps; this module cannot run there.</p>
+  </section>
+
+  <section class="pdfgen-section">
+    <h2>Configuration</h2>
+    <ol style="padding-left:20px;font-size:15px;">
+      <li>Sign up at <a href="https://pdfgeneratorapi.com">pdfgeneratorapi.com</a> and copy your <strong>API key</strong>, <strong>API secret</strong>, and <strong>workspace identifier</strong> (usually your account email).</li>
+      <li>In Odoo, open <strong>Settings → PDF Generator API</strong>.</li>
+      <li>Paste the credentials and click <strong>Test Connection</strong>.</li>
+      <li>Open any invoice and click <strong>Generate custom PDF</strong>.</li>
+    </ol>
+  </section>
+
+  <section class="pdfgen-section">
+    <h2>Privacy &amp; data flow</h2>
+    <div class="pdfgen-callout">
+      <p>When you generate a PDF, record data is transmitted to pdfgeneratorapi.com over HTTPS: invoice number, dates, state, currency, company and customer details (name, address, VAT), line items (description, quantity, price, taxes), totals, payment reference, and notes.</p>
+      <p>Requests are signed with a short-lived JWT (HS256) using your API secret. <strong>No data leaves Odoo outside an explicit Generate action.</strong></p>
+    </div>
+  </section>
+
+  <div class="pdfgen-footer">
+    <span>© PDF Generator API — licensed under LGPL-3</span>
+    <span><a href="https://pdfgeneratorapi.com">pdfgeneratorapi.com</a></span>
+  </div>
+
+</div>
+</body>
+</html>
