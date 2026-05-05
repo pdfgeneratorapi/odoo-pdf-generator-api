@@ -100,12 +100,14 @@ class PdfGenApiClient:
         workspace_identifier,
         timeout=DEFAULT_TIMEOUT,
         editor_web_url=None,
+        partner_id=None,
     ):
         self.base_url = (base_url or DEFAULT_BASE_URL).rstrip("/")
         self.api_key = api_key
         self.api_secret = api_secret
         self.workspace = workspace_identifier
         self.timeout = timeout
+        self.partner_id = partner_id
         # Browser-facing host for the editor. When None, we derive from base_url
         # by stripping the /api/vN suffix — correct for pdfgeneratorapi.com's
         # hosted service. Needed as an explicit override when the API is reached
@@ -121,16 +123,14 @@ class PdfGenApiClient:
         header = self._b64url(
             json.dumps({"alg": "HS256", "typ": "JWT"}, separators=(",", ":")).encode()
         )
-        payload = self._b64url(
-            json.dumps(
-                {
-                    "iss": self.api_key,
-                    "sub": self.workspace,
-                    "exp": int(time.time()) + ttl,
-                },
-                separators=(",", ":"),
-            ).encode()
-        )
+        claims = {
+            "iss": self.api_key,
+            "sub": self.workspace,
+            "exp": int(time.time()) + ttl,
+        }
+        if self.partner_id:
+            claims["partner_id"] = self.partner_id
+        payload = self._b64url(json.dumps(claims, separators=(",", ":")).encode())
         signing_input = header + b"." + payload
         signature = self._b64url(
             hmac.new(self.api_secret.encode(), signing_input, hashlib.sha256).digest()

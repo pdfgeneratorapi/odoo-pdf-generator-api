@@ -73,6 +73,21 @@ class JwtMintingTests(unittest.TestCase):
         t2 = self.client._jwt()
         self.assertNotEqual(t1, t2)
 
+    def test_partner_id_absent_when_not_provided(self):
+        payload = json.loads(_b64url_decode(self.client._jwt().split(".")[1]))
+        self.assertNotIn("partner_id", payload)
+
+    def test_partner_id_included_when_provided(self):
+        client = PdfGenApiClient(
+            base_url="https://example.test/api/v4",
+            api_key="k",
+            api_secret="s",
+            workspace_identifier="me@example.com",
+            partner_id="odoo_v19",
+        )
+        payload = json.loads(_b64url_decode(client._jwt().split(".")[1]))
+        self.assertEqual(payload["partner_id"], "odoo_v19")
+
     def test_sub_workspace_identifier_forwarded_verbatim(self):
         """pdfgeneratorapi.com routes sub-workspace traffic via the JWT `sub`
         claim. Whatever the admin types into Workspace Identifier must land

@@ -7,7 +7,7 @@ Also hosts the shared pdfgen config-read helper used by every wizard —
 per-company value if set, else global `ir.config_parameter` fallback.
 """
 
-from odoo import _, api, fields, models
+from odoo import _, api, fields, models, release
 from odoo.exceptions import UserError
 
 from .pdfgen_api_client import DEFAULT_BASE_URL, PdfGenApiClient
@@ -46,6 +46,7 @@ def build_pdfgen_client(env):
         api_secret=secret,
         workspace_identifier=workspace,
         editor_web_url=pdfgen_config(env, "editor_web_url") or None,
+        partner_id=f"odoo_v{release.version_info[0]}",
     )
 
 
