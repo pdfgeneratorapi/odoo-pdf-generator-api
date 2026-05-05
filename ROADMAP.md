@@ -219,7 +219,7 @@ webhook receiver, with idempotent retry handling.
 
 ## Phase 7 — Distribution & App Store
 
-- [ ] `static/description/index.html` — App Store listing page (features, screenshots).
+- [x] `static/description/index.html` — App Store listing page (features, screenshots).
 - [x] Proper icon (currently placeholder).
 - [ ] Screenshots: settings page, wizard, generated PDF attached to invoice.
 - [ ] Privacy policy section for App Store review (what data leaves Odoo, over TLS, to which region).
