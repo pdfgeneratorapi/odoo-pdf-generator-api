@@ -31,6 +31,7 @@
             "pdfgeneratorapi_connector/static/src/template_editor/editor_iframe_field.js",
             "pdfgeneratorapi_connector/static/src/template_editor/editor_iframe_field.xml",
             "pdfgeneratorapi_connector/static/src/template_editor/template_editor.scss",
+            "pdfgeneratorapi_connector/static/src/settings/settings.scss",
         ],
         "web.assets_unit_tests": [
             "pdfgeneratorapi_connector/static/tests/**/*.test.js",

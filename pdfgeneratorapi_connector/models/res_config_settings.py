@@ -54,14 +54,13 @@ class ResConfigSettings(models.TransientModel):
         ],
         string="Attachment cleanup",
         config_parameter="pdfgen.attachment_cleanup",
-        default="keep",
+        default="replace",
         help=(
             "What to do with previously-generated PDFs on the same record when "
-            "the user clicks Generate again. `Keep` leaves every version "
-            "attached (default); `Replace` deletes pdfgen-generated PDFs on "
-            "that record before attaching the new one. Only attachments created "
-            "by this connector are affected — manually uploaded PDFs are never "
-            "touched."
+            "the user clicks Generate again. `Replace` deletes pdfgen-generated "
+            "PDFs on that record before attaching the new one (default); `Keep` "
+            "leaves every version attached. Only attachments created by this "
+            "connector are affected — manually uploaded PDFs are never touched."
         ),
     )
     pdfgen_show_secret = fields.Boolean(

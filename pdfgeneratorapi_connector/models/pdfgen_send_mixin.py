@@ -219,9 +219,10 @@ class PdfgenSendMixin(models.AbstractModel):
             raise UserError(_("API returned invalid base64: %s", e)) from e
 
         # Honour the same Replace/Keep cleanup policy the sync wizard uses,
-        # so the two flows interoperate.
+        # so the two flows interoperate. Default to `replace` when the param
+        # is unset so fresh installs match the field's default.
         icp = self.env["ir.config_parameter"].sudo()
-        if icp.get_param("pdfgen.attachment_cleanup") == "replace":
+        if icp.get_param("pdfgen.attachment_cleanup", "replace") == "replace":
             self.env["ir.attachment"].search(
                 [
                     ("res_model", "=", record._name),

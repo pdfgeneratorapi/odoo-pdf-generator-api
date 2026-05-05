@@ -175,7 +175,7 @@ class GeneratePdfWizard(models.TransientModel):
         # ir.attachment._search's implicit res_field=False filter, since
         # we promote prior generations via res_field below.
         icp = self.env["ir.config_parameter"].sudo()
-        if icp.get_param("pdfgen.attachment_cleanup") == "replace":
+        if icp.get_param("pdfgen.attachment_cleanup", "replace") == "replace":
             self.env["ir.attachment"].search(
                 [
                     ("res_model", "=", self.res_model),

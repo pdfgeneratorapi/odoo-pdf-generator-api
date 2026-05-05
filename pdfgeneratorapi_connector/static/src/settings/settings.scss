@@ -1,0 +1,25 @@
+// Native <details>/<summary> for each collapsible settings section.
+// The h2 inside summary inherits Odoo's `.app_settings_block h2` gray-bar
+// styling, so the toggle label sits inside the gray header on the right.
+.pdfgen_collapsible_details {
+    // Match the visual rhythm Odoo's <block> elements get from its settings
+    // SCSS — without it, the gray h2 headers of adjacent sections butt up
+    // against each other with no breathing room.
+    margin-top: 5px;
+    margin-bottom: 5px;
+    > summary {
+        list-style: none;
+        cursor: pointer;
+        &::-webkit-details-marker { display: none; }
+        &::marker { content: none; }
+    }
+    .pdfgen_collapsible_hide { display: none; }
+    &[open] {
+        .pdfgen_collapsible_show { display: none; }
+        .pdfgen_collapsible_hide { display: inline; }
+    }
+    .pdfgen_collapsible_toggle {
+        margin-right: 5px;
+        .fa { margin-left: 0.25rem; }
+    }
+}

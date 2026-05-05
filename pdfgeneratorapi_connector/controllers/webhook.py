@@ -158,7 +158,7 @@ def _attach_pdf(job, pdf_b64):
         raise UserError(_("Source record no longer exists for job %s.", job.id))
 
     icp = env["ir.config_parameter"].sudo()
-    if icp.get_param("pdfgen.attachment_cleanup") == "replace":
+    if icp.get_param("pdfgen.attachment_cleanup", "replace") == "replace":
         env["ir.attachment"].sudo().search(
             [
                 ("res_model", "=", job.res_model),
