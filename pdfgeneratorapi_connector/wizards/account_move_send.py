@@ -89,7 +89,7 @@ class AccountMoveSendWizard(models.TransientModel):
         return self.env["pdfgen.model.dataset"]._selection_default_template_id()
 
     @api.depends(
-        "template_id",
+        "mail_template_id",
         "invoice_edi_format",
         "extra_edis",
         "pdf_report_id",

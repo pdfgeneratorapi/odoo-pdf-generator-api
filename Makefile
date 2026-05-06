@@ -1,16 +1,24 @@
-# Route the Odoo container by the branch we're on so the pre-commit hook
-# tests against the matching major version. Override with `ODOO_SERVICE=...`
-# on the command line to force a specific service.
+# Route the Odoo container *and* its database by the current git branch so
+# the pre-commit hook tests against the matching major version. A schema
+# created by v19 is not loadable by v18, so each major needs its own DB.
+# Override with `ODOO_SERVICE=...` / `ODOO_DB=...` on the command line.
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null)
 ifeq ($(GIT_BRANCH),18.0)
     DEFAULT_ODOO_SERVICE := odoo18
+    DEFAULT_ODOO_DB := odoo18
 else ifeq ($(GIT_BRANCH),17.0)
     DEFAULT_ODOO_SERVICE := odoo17
+    DEFAULT_ODOO_DB := odoo17
 else
     DEFAULT_ODOO_SERVICE := odoo
+    DEFAULT_ODOO_DB := odoo
 endif
 ODOO_SERVICE ?= $(DEFAULT_ODOO_SERVICE)
-ODOO_DB ?= odoo
+ODOO_DB ?= $(DEFAULT_ODOO_DB)
+# Docker Desktop ships compose as the v2 plugin (`docker compose`), but on
+# some setups the plugin isn't loaded — fall back to the standalone v1
+# `docker-compose` binary when the subcommand isn't recognized.
+DOCKER_COMPOSE ?= $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
 MODULE := pdfgeneratorapi_connector
 BRIDGES := pdfgeneratorapi_connector_sale pdfgeneratorapi_connector_purchase pdfgeneratorapi_connector_stock pdfgeneratorapi_connector_mrp
 comma := ,
@@ -70,7 +78,7 @@ test-unit:
 	uv run pytest tests_unit -v
 
 test-odoo:
-	cd $(COMPOSE_DIR) && docker compose exec -T $(ODOO_SERVICE) odoo \
+	cd $(COMPOSE_DIR) && $(DOCKER_COMPOSE) exec -T $(ODOO_SERVICE) odoo \
 		-d $(ODOO_DB) \
 		-u $(MODULES) \
 		--test-enable \
@@ -88,7 +96,7 @@ coverage-unit: coverage-clean
 	uv run coverage run --data-file=.coverage.unit -m pytest tests_unit -q
 
 coverage-odoo:
-	cd $(COMPOSE_DIR) && docker compose exec -T $(ODOO_SERVICE) bash -c \
+	cd $(COMPOSE_DIR) && $(DOCKER_COMPOSE) exec -T $(ODOO_SERVICE) bash -c \
 		"pip install --quiet --user --break-system-packages 'coverage[toml]>=7' >/dev/null && \
 		 cd /mnt/extra-addons/$(MODULE) && \
 		 /var/lib/odoo/.local/bin/coverage run \
@@ -111,12 +119,12 @@ coverage: coverage-unit coverage-odoo
 	uv run coverage report
 
 upgrade:
-	cd $(COMPOSE_DIR) && docker compose exec -T $(ODOO_SERVICE) odoo \
+	cd $(COMPOSE_DIR) && $(DOCKER_COMPOSE) exec -T $(ODOO_SERVICE) odoo \
 		-d $(ODOO_DB) \
 		-u $(MODULES) \
 		--stop-after-init \
 		--no-http
-	cd $(COMPOSE_DIR) && docker compose restart $(ODOO_SERVICE)
+	cd $(COMPOSE_DIR) && $(DOCKER_COMPOSE) restart $(ODOO_SERVICE)
 
 # i18n — uses the running Odoo container to export .pot files (reads the
 # installed module schema), then rewrites .po files from the translation dicts
@@ -125,7 +133,7 @@ upgrade:
 # hand and the translator script is idempotent on it.
 i18n-export:
 	cd $(COMPOSE_DIR) && $(foreach m,$(MODULE) $(BRIDGES),\
-		docker compose exec -T $(ODOO_SERVICE) odoo i18n export -d $(ODOO_DB) $(m) 2>&1 | tail -1 ; )
+		$(DOCKER_COMPOSE) exec -T $(ODOO_SERVICE) odoo i18n export -d $(ODOO_DB) $(m) 2>&1 | tail -1 ; )
 
 i18n-translate:
 	uv run python scripts/i18n_translate.py

@@ -30,6 +30,7 @@ class TestStockPickingPdfgen(TransactionCase):
                         0,
                         0,
                         {
+                            "name": cls.product.name,
                             "product_id": cls.product.id,
                             "product_uom_qty": 4.0,
                             "product_uom": cls.product.uom_id.id,

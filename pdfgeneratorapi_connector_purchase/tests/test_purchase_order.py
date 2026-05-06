@@ -28,7 +28,7 @@ class TestPurchaseOrderPdfgen(AccountTestInvoicingCommon):
                             "product_id": cls.product_a.id,
                             "name": cls.product_a.name,
                             "product_qty": 3.0,
-                            "product_uom_id": cls.product_a.uom_id.id,
+                            "product_uom": cls.product_a.uom_id.id,
                             "price_unit": 75.0,
                         },
                     ),
