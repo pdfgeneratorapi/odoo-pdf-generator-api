@@ -1,67 +1,33 @@
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.exceptions import UserError
-from odoo.tests.common import tagged
+"""Generic tests for the `pdfgen.model.dataset` model.
+
+The account-coupled assertions (seed-XML structure, payload resolution on
+an invoice, dataset-line `target_model` walks) live in the invoicing
+bridge — those depend on this addon's sibling `pdfgeneratorapi_connector_account`.
+What stays here is the framework-only surface: dataset creation defaults,
+expression-vs-path precedence, the `target_model` fall-back, and the
+`_selection_default_template_id` swallowing rules. All exercised against
+`res.partner`, which is always available from `base`.
+"""
+
+from unittest.mock import MagicMock, patch
+
+from odoo.tests.common import TransactionCase, tagged
 
 
 @tagged("post_install", "-at_install")
-class TestModelDataset(AccountTestInvoicingCommon):
+class TestModelDataset(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.move_model = cls.env.ref("account.model_account_move")
-        cls.invoice = cls.init_invoice("out_invoice", products=cls.product_a, post=True)
+        cls.partner_model = cls.env.ref("base.model_res_partner")
 
-    def _new_dataset(self, model_id=None):
-        # The seed data already creates one for account.move, so for ad-hoc
-        # cases we use res.partner to avoid the unique constraint.
-        partner_model = self.env.ref("base.model_res_partner")
+    def _new_dataset(self):
         return self.env["pdfgen.model.dataset"].create(
             {
                 "name": "Partner dataset",
-                "model_id": (model_id or partner_model.id),
+                "model_id": self.partner_model.id,
             }
         )
-
-    def test_seed_dataset_installed_for_account_move(self):
-        dataset = self.env.ref("pdfgeneratorapi_connector.dataset_account_move")
-        self.assertEqual(dataset.model, "account.move")
-        # ~30 root + children lines — guard against accidental deletions.
-        self.assertGreater(len(dataset.line_ids), 25)
-        placeholders = dataset.line_ids.mapped("placeholder_path")
-        self.assertIn("invoice_number", placeholders)
-        self.assertIn("customer.name", placeholders)
-        self.assertIn("lines", placeholders)
-        # List section has children.
-        lines_row = dataset.line_ids.filtered(lambda ln: ln.placeholder_path == "lines")
-        self.assertTrue(lines_row.is_list)
-        child_paths = lines_row.child_ids.mapped("placeholder_path")
-        self.assertIn("description", child_paths)
-        self.assertIn("quantity", child_paths)
-
-    def test_resolve_payload_on_seeded_invoice_dataset(self):
-        dataset = self.env.ref("pdfgeneratorapi_connector.dataset_account_move")
-        payload = dataset.resolve_payload(self.invoice)
-        self.assertEqual(payload["invoice_number"], self.invoice.name)
-        self.assertEqual(payload["customer"]["name"], self.invoice.partner_id.name)
-        self.assertEqual(payload["totals"]["total"], self.invoice.amount_total)
-        # Expression row in seed: customer.full_address → "{street}, {city} {zip}".
-        expected = (
-            f"{self.invoice.partner_id.street or ''}, "
-            f"{self.invoice.partner_id.city or ''} "
-            f"{self.invoice.partner_id.zip or ''}"
-        )
-        self.assertEqual(payload["customer"]["full_address"], expected)
-        # List section resolves with at least one invoice line.
-        self.assertGreater(len(payload["lines"]), 0)
-        # Each line item has the child placeholders defined in the seed.
-        first_line = payload["lines"][0]
-        self.assertIn("description", first_line)
-        self.assertIn("quantity", first_line)
-
-    def test_resolve_payload_rejects_wrong_model(self):
-        dataset = self.env.ref("pdfgeneratorapi_connector.dataset_account_move")
-        with self.assertRaises(UserError):
-            dataset.resolve_payload(self.partner_a)
 
     def test_expression_beats_odoo_field_path(self):
         dataset = self._new_dataset()
@@ -82,26 +48,12 @@ class TestModelDataset(AccountTestInvoicingCommon):
         self.assertEqual(payload["display"], "Acme")
 
     def test_name_defaults_from_model_on_create_when_blank(self):
-        partner_model = self.env.ref("base.model_res_partner")
-        dataset = self.env["pdfgen.model.dataset"].create({"model_id": partner_model.id})
+        dataset = self.env["pdfgen.model.dataset"].create({"model_id": self.partner_model.id})
         self.assertTrue(dataset.name)
 
-    def test_target_model_walks_parents_relation_path(self):
-        """Children of a list row scope to the iterated record's model."""
-        dataset = self.env.ref("pdfgeneratorapi_connector.dataset_account_move")
-        # Seeded list header: placeholder_path='lines', odoo_field_path='invoice_line_ids'.
-        lines_row = dataset.line_ids.filtered(lambda ln: ln.placeholder_path == "lines")
-        self.assertTrue(lines_row)
-        # Root row scopes to the dataset's model.
-        self.assertEqual(lines_row.target_model, "account.move")
-        # Any child of that row scopes to account.move.line.
-        child = lines_row.child_ids[0]
-        self.assertEqual(child.target_model, "account.move.line")
-
     def test_target_model_falls_back_when_parent_path_invalid(self):
-        partner_model = self.env.ref("base.model_res_partner")
         dataset = self.env["pdfgen.model.dataset"].create(
-            {"name": "X", "model_id": partner_model.id}
+            {"name": "X", "model_id": self.partner_model.id}
         )
         parent = self.env["pdfgen.model.dataset.line"].create(
             {
@@ -122,8 +74,6 @@ class TestModelDataset(AccountTestInvoicingCommon):
         self.assertEqual(child.target_model, "res.partner")
 
     def test_selection_default_template_returns_live_list(self):
-        from unittest.mock import MagicMock, patch
-
         client = MagicMock()
         client.list_templates.return_value = {
             "response": [{"id": 1, "name": "Invoice"}, {"id": 2, "name": "Quote"}]
@@ -151,8 +101,6 @@ class TestModelDataset(AccountTestInvoicingCommon):
         self.assertEqual(sel, [])
 
     def test_selection_default_template_swallows_api_errors(self):
-        from unittest.mock import MagicMock, patch
-
         from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (
             PdfGenApiError,
         )
@@ -167,8 +115,6 @@ class TestModelDataset(AccountTestInvoicingCommon):
         self.assertEqual(sel, [])
 
     def test_selection_default_template_handles_non_list_response(self):
-        from unittest.mock import MagicMock, patch
-
         client = MagicMock()
         client.list_templates.return_value = {"response": "oops"}
         with patch(
@@ -179,8 +125,6 @@ class TestModelDataset(AccountTestInvoicingCommon):
         self.assertEqual(sel, [])
 
     def test_selection_default_template_skips_entries_without_id(self):
-        from unittest.mock import MagicMock, patch
-
         client = MagicMock()
         client.list_templates.return_value = {
             "response": [{"name": "no-id"}, {"id": 7, "name": "Real"}]
@@ -191,3 +135,74 @@ class TestModelDataset(AccountTestInvoicingCommon):
         ):
             sel = self.env["pdfgen.model.dataset"]._selection_default_template_id()
         self.assertEqual(sel, [("7", "Real")])
+
+    # ------------------------------------------------------------------
+    # Header-button launchers on the dataset form
+    # ------------------------------------------------------------------
+
+    def test_first_sample_record_returns_existing_partner_id(self):
+        dataset = self._new_dataset()
+        self.env["res.partner"].create({"name": "Acme for sample"})
+        self.assertGreater(dataset._first_sample_record_id(), 0)
+
+    def test_first_sample_record_returns_zero_when_no_records(self):
+        """Edge case: dataset against a model whose table is empty."""
+        empty_model = self.env.ref("base.model_res_users_log")
+        dataset = self.env["pdfgen.model.dataset"].create(
+            {"name": "Empty fixture", "model_id": empty_model.id}
+        )
+        # Wipe just in case anything's been logged in this transaction.
+        self.env["res.users.log"].search([]).unlink()
+        self.assertEqual(dataset._first_sample_record_id(), 0)
+
+    def test_action_open_in_editor_returns_act_window_with_prefilled_context(self):
+        dataset = self._new_dataset()
+        # Ensure at least one partner exists so sample_record_id is prefilled too.
+        self.env["res.partner"].create({"name": "Acme for editor"})
+        action = dataset.action_open_in_editor()
+        self.assertEqual(action["type"], "ir.actions.act_window")
+        self.assertEqual(action["res_model"], "pdfgen.template.editor.wizard")
+        self.assertEqual(action["context"]["default_dataset_id"], dataset.id)
+        self.assertGreater(action["context"]["default_sample_record_id"], 0)
+        # No default_template_id on this dataset → context omits it.
+        self.assertNotIn("default_template_id", action["context"])
+
+    def test_action_open_in_editor_forwards_default_template(self):
+        dataset = self._new_dataset()
+        with patch.object(
+            type(dataset),
+            "_selection_default_template_id",
+            return_value=[("42", "Template 42")],
+        ):
+            dataset.default_template_id = "42"
+        action = dataset.action_open_in_editor()
+        self.assertEqual(action["context"]["default_template_id"], "42")
+
+    def test_action_open_preview_without_template_opens_wizard_for_manual_pick(self):
+        dataset = self._new_dataset()
+        action = dataset.action_open_preview()
+        self.assertEqual(action["type"], "ir.actions.act_window")
+        self.assertEqual(action["res_model"], "pdfgen.coverage.wizard")
+        self.assertEqual(action["target"], "new")
+        self.assertEqual(action["context"]["default_dataset_id"], dataset.id)
+
+    def test_action_open_preview_with_template_auto_renders(self):
+        """When the dataset has a default_template_id, action_open_preview
+        should create a coverage wizard and fire its `action_preview` so the
+        user lands on a rendered preview instead of an empty form.
+        """
+        dataset = self._new_dataset()
+        with patch.object(
+            type(dataset),
+            "_selection_default_template_id",
+            return_value=[("42", "Template 42")],
+        ):
+            dataset.default_template_id = "42"
+        with patch.object(
+            self.env["pdfgen.coverage.wizard"].__class__,
+            "action_preview",
+            return_value={"type": "ir.actions.act_window", "tag": "fake-reopen"},
+        ) as mock_preview:
+            action = dataset.action_open_preview()
+        mock_preview.assert_called_once()
+        self.assertEqual(action["tag"], "fake-reopen")

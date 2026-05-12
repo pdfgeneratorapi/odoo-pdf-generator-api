@@ -131,6 +131,10 @@ source = [
     "pdfgeneratorapi_connector",
     "/mnt/extra-addons/pdfgeneratorapi_connector",
 ]
+account_bridge = [
+    "pdfgeneratorapi_connector_account",
+    "/mnt/extra-addons/pdfgeneratorapi_connector_account",
+]
 sale_bridge = [
     "pdfgeneratorapi_connector_sale",
     "/mnt/extra-addons/pdfgeneratorapi_connector_sale",

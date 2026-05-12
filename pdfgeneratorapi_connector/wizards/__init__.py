@@ -1,5 +1,4 @@
 from . import (
-    account_move_send,
     generate_pdf_wizard,
     pdfgen_async_dispatch_wizard,
     pdfgen_coverage_wizard,

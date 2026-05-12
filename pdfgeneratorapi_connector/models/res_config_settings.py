@@ -95,6 +95,62 @@ class ResConfigSettings(models.TransientModel):
         ),
     )
 
+    # Bridge module toggles. Odoo's res.config.settings recognises the
+    # `module_<name>` prefix: `default_get` reads each field from
+    # `ir.module.module.state == 'installed'`, and `execute()` calls
+    # button_immediate_install/uninstall on Save — including transitive deps
+    # (e.g. ticking Rental pulls in the Sales bridge and `sale_renting`).
+    module_pdfgeneratorapi_connector_account = fields.Boolean(
+        string="Invoices & Credit Notes",
+        help=(
+            "Adds a Generate custom PDF button on account.move (customer "
+            "invoices, vendor bills, credit notes) and a Use pdfgen PDF "
+            "toggle on the invoice Send wizard. Installs the Accounting app "
+            "if not already present. Seeds a default placeholder dataset."
+        ),
+    )
+    module_pdfgeneratorapi_connector_sale = fields.Boolean(
+        string="Quotations & Sale Orders",
+        help=(
+            "Adds a Generate custom PDF button on sale.order and seeds a "
+            "default placeholder dataset. Installs the Sales app if not "
+            "already present. Unticking removes the bridge and its dataset; "
+            "templates on pdfgeneratorapi.com are untouched."
+        ),
+    )
+    module_pdfgeneratorapi_connector_purchase = fields.Boolean(
+        string="Purchase Orders",
+        help=(
+            "Adds a Generate custom PDF button on purchase.order and seeds a "
+            "default placeholder dataset. Installs the Purchase app if not "
+            "already present."
+        ),
+    )
+    module_pdfgeneratorapi_connector_stock = fields.Boolean(
+        string="Delivery Slips & Receipts",
+        help=(
+            "Adds a Generate custom PDF button on stock.picking and seeds a "
+            "default placeholder dataset. Installs the Inventory app if not "
+            "already present."
+        ),
+    )
+    module_pdfgeneratorapi_connector_mrp = fields.Boolean(
+        string="Manufacturing Orders",
+        help=(
+            "Adds a Generate custom PDF button on mrp.production and seeds a "
+            "default placeholder dataset. Installs the Manufacturing app if "
+            "not already present."
+        ),
+    )
+    module_pdfgeneratorapi_connector_rental = fields.Boolean(
+        string="Rental Orders",
+        help=(
+            "Adds a rental-specific dataset on top of the Sales bridge. "
+            "Ticking this also enables the Sales bridge and installs the "
+            "Rental app if not already present."
+        ),
+    )
+
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)

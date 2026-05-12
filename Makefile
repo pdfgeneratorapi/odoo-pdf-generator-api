@@ -12,7 +12,7 @@ endif
 ODOO_SERVICE ?= $(DEFAULT_ODOO_SERVICE)
 ODOO_DB ?= odoo
 MODULE := pdfgeneratorapi_connector
-BRIDGES := pdfgeneratorapi_connector_sale pdfgeneratorapi_connector_purchase pdfgeneratorapi_connector_stock pdfgeneratorapi_connector_mrp
+BRIDGES := pdfgeneratorapi_connector_account pdfgeneratorapi_connector_sale pdfgeneratorapi_connector_purchase pdfgeneratorapi_connector_stock pdfgeneratorapi_connector_mrp
 comma := ,
 empty :=
 space := $(empty) $(empty)
@@ -32,7 +32,10 @@ ODOO_COVERAGE_FILE_HOST := $(REPO_ROOT)/$(MODULE)/.coverage.odoo
 
 .PHONY: help setup lint lint-ruff lint-pylint format test test-unit test-odoo \
         coverage coverage-unit coverage-odoo coverage-clean \
-        hooks upgrade i18n-export i18n-translate i18n-check
+        hooks upgrade demo-seed i18n-export i18n-translate i18n-check
+
+# Default record count for `make demo-seed`. Override with `make demo-seed COUNT=10`.
+COUNT ?= 1
 
 help:
 	@echo "setup            - install dev tooling via uv"
@@ -40,6 +43,7 @@ help:
 	@echo "lint             - run ruff + pylint-odoo"
 	@echo "format           - apply ruff formatting + import sorting"
 	@echo "test             - run unit tests (host) + Odoo integration tests (container)"
+	@echo "demo-seed        - ensure >= COUNT records of every supported doc type (default COUNT=1; idempotent)"
 	@echo "coverage         - combined coverage (unit + Odoo), fail under threshold in pyproject"
 	@echo "upgrade          - upgrade all addons (main + bridges) in the running Odoo container"
 	@echo "i18n-export      - regenerate each addon's .pot from current source strings"
@@ -117,6 +121,20 @@ upgrade:
 		--stop-after-init \
 		--no-http
 	cd $(COMPOSE_DIR) && docker compose restart $(ODOO_SERVICE)
+
+# Local-dev seeder: ensure ≥ COUNT records of every pdfgen-supported
+# document type exist in the DB. Idempotent on COUNT — re-runs with the
+# same value are no-ops; bumping COUNT adds the difference.
+#
+# First-time path: the `-i pdfgen_demo_data` installs the demo addon (a
+# no-op once installed) and fires its post_init_hook which reads
+# PDFGEN_DEMO_COUNT from the env. The subsequent odoo-shell call invokes
+# `seed(env, count=$(COUNT))` directly so subsequent calls also honour
+# the requested count without needing to re-install.
+demo-seed:
+	cd $(COMPOSE_DIR) && docker compose exec -T -e PDFGEN_DEMO_COUNT=$(COUNT) $(ODOO_SERVICE) bash -lc \
+		"odoo -i pdfgen_demo_data -d $(ODOO_DB) --stop-after-init --no-http >/dev/null && \
+		 echo 'from odoo.addons.pdfgen_demo_data.hooks import seed; seed(env, count=$(COUNT)); env.cr.commit()' | odoo shell -d $(ODOO_DB) --no-http"
 
 # i18n — uses the running Odoo container to export .pot files (reads the
 # installed module schema), then rewrites .po files from the translation dicts

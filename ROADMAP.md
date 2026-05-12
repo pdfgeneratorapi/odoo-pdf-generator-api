@@ -17,6 +17,8 @@ the April 2026 strategy doc; checked items are landed on `main`.
 - [x] `POST /documents/generate` → `ir.attachment` on the invoice, posted to the chatter
 - [x] Docker compose: v19 + v18 services, shared network with pdfgeneratorapi backend
 - [x] Dev tooling: `uv`, `ruff`, `pylint-odoo`, `pre-commit` hook with 95% coverage gate
+- [x] Opt-in bridge selection: **Settings → PDF Generator API → Document types** exposes `module_pdfgeneratorapi_connector_{account,sale,purchase,stock,mrp,rental}` toggles. Each tick installs the bridge + seeds its default dataset; untick uninstalls cleanly. Bridges are not `auto_install` so users (e.g. rental-only shops) only get what they pick.
+- [x] Invoicing extracted into its own bridge (`pdfgeneratorapi_connector_account`). Base addon depends only on `base` + `mail` — pure framework (API client, mixins, dataset model, wizards, async jobs). A `pre_init_hook` re-homes the existing `ir.model.data` rows on upgrade so the invoice dataset survives without duplicating.
 
 ### Open Phase 1 follow-ups
 

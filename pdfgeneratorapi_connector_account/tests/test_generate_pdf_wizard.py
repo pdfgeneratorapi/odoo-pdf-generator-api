@@ -92,7 +92,7 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
     def test_template_id_defaults_from_dataset_default(self):
         # Set the seeded dataset's default template via SQL (Selection's
         # dynamic getter is empty without a live API).
-        dataset = self.env.ref("pdfgeneratorapi_connector.dataset_account_move")
+        dataset = self.env.ref("pdfgeneratorapi_connector_account.dataset_account_move")
         self.env.cr.execute(
             "UPDATE pdfgen_model_dataset SET default_template_id=%s WHERE id=%s",
             ("77", dataset.id),
@@ -152,7 +152,7 @@ class TestGeneratePdfWizard(AccountTestInvoicingCommon):
 
     def test_action_generate_requires_dataset(self):
         # Archive the seed dataset to exercise the "no dataset" branch.
-        dataset = self.env.ref("pdfgeneratorapi_connector.dataset_account_move")
+        dataset = self.env.ref("pdfgeneratorapi_connector_account.dataset_account_move")
         dataset.active = False
         wizard = self.env["pdfgen.generate.wizard"].create(
             {"res_model": "account.move", "res_id": self.invoice.id, "template_id": "999"}

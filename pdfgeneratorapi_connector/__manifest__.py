@@ -1,12 +1,12 @@
 {
     "name": "PDF Generator API Connector",
-    "version": "19.0.4.0.0",
-    "category": "Accounting",
-    "summary": "Generate invoices, quotes and other documents via pdfgeneratorapi.com",
+    "version": "19.0.5.0.0",
+    "category": "Productivity/Documents",
+    "summary": "Framework: generate custom PDFs of any record via pdfgeneratorapi.com",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
     "license": "LGPL-3",
-    "depends": ["base", "mail", "account"],
+    "depends": ["base", "mail"],
     "data": [
         "security/ir.model.access.csv",
         "data/ir_config_parameter.xml",
@@ -17,10 +17,7 @@
         "views/generate_pdf_wizard_views.xml",
         "views/pdfgen_async_dispatch_wizard_views.xml",
         "views/pdfgen_async_job_views.xml",
-        "views/account_move_views.xml",
-        "views/account_move_send_views.xml",
         "views/menu.xml",
-        "data/pdfgen_model_dataset_account_move.xml",
     ],
     "assets": {
         "web.assets_backend": [

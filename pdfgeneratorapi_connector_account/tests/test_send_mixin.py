@@ -31,7 +31,7 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
         icp.set_param("pdfgen.api_secret", "s")
         icp.set_param("pdfgen.workspace_identifier", "w")
         cls.invoice = cls.init_invoice("out_invoice", products=cls.product_a, post=True)
-        cls.dataset = cls.env.ref("pdfgeneratorapi_connector.dataset_account_move")
+        cls.dataset = cls.env.ref("pdfgeneratorapi_connector_account.dataset_account_move")
 
     def setUp(self):
         super().setUp()

@@ -18,12 +18,25 @@
         <field name="arch" type="xml">
             <form string="Field Dataset">
                 <header>
+                    <button name="action_open_in_editor"
+                            type="object"
+                            string="Open in Editor"
+                            class="btn-primary"
+                            invisible="not id"
+                            help="Launch the pdfgeneratorapi.com template editor with this dataset's resolved JSON as the sample data, so placeholder paths line up while you design the template."/>
+                    <button name="action_open_preview"
+                            type="object"
+                            string="Preview"
+                            class="btn-secondary"
+                            invisible="not id"
+                            help="Render the dataset against a real record (or the template's own sample data if no record exists) so you can see how the PDF looks before generating it for real."/>
                     <button name="%(action_pdfgen_coverage_wizard)d"
                             type="action"
-                            string="Check template coverage"
+                            string="Check coverage"
                             context="{'default_dataset_id': id}"
                             class="btn-secondary"
-                            invisible="not id"/>
+                            invisible="not id"
+                            help="Compare this dataset's placeholders against a template's expected fields. Highlights placeholders missing from the dataset and unused fields the template doesn't render."/>
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
