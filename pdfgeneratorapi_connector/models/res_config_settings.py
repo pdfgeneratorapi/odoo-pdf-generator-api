@@ -154,7 +154,7 @@ class ResConfigSettings(models.TransientModel):
     def action_pdfgen_test_connection(self):
         client = self._get_pdfgen_client()
         try:
-            workspace = client.ping()
+            client.ping()
         except PdfGenApiError as e:
             raise UserError(
                 _(
@@ -163,23 +163,13 @@ class ResConfigSettings(models.TransientModel):
                     body=(e.body or "no body")[:500],
                 )
             ) from e
-        name = ""
-        if isinstance(workspace, dict):
-            name = (
-                workspace.get("response", {}).get("name")
-                or workspace.get("name")
-                or workspace.get("identifier")
-                or ""
-            )
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
                 "type": "success",
                 "title": _("PDF Generator API"),
-                "message": _(
-                    "Connected to workspace: %s", name or self.pdfgen_workspace_identifier
-                ),
+                "message": _("Connected to workspace: %s", self.pdfgen_workspace_identifier),
                 "sticky": False,
             },
         }

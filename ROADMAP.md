@@ -11,7 +11,7 @@ the April 2026 strategy doc; checked items are landed on `main`.
 - [x] `res.config.settings` page with credentials + Show/Hide secret toggle
 - [x] Hand-rolled `PdfGenApiClient` (stdlib + `requests`, zero pip deps)
 - [x] JWT HS256 minting (fresh token per request)
-- [x] `Test Connection` button hitting `GET /workspaces/{id}`
+- [x] `Test Connection` button hitting `GET /templates?per_page=1` (works for regular workspace users; `/workspaces/{id}` is master-only and rejected non-master accounts with a 403)
 - [x] `Generate custom PDF` button on `account.move`
 - [x] Wizard with live `GET /templates` (first 100)
 - [x] `POST /documents/generate` → `ir.attachment` on the invoice, posted to the chatter

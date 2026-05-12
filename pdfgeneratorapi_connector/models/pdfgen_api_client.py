@@ -245,8 +245,16 @@ class PdfGenApiClient:
         return max(0, min(base + jitter, MAX_SINGLE_WAIT_SECONDS))
 
     def ping(self):
-        """Validate both auth and workspace existence."""
-        return self._request("GET", f"/workspaces/{self.workspace}")
+        """Validate auth + workspace by listing one template.
+
+        `/workspaces/{id}` is restricted to master-user credentials, so it
+        rejects regular workspace users with a 403 even when the JWT and
+        workspace identifier are correct. `/templates` is reachable by any
+        authenticated workspace (master or sub), so it makes a better health
+        check — a 200 proves the API key/secret and `sub` claim resolve to a
+        real workspace, without requiring elevated permissions.
+        """
+        return self._request("GET", "/templates", params={"per_page": 1, "page": 1})
 
     def list_templates(self, per_page=100, page=1, name=None, tags=None, access=None):
         params = {"per_page": per_page, "page": page}

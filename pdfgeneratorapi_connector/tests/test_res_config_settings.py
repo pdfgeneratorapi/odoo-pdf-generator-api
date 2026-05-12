@@ -56,12 +56,12 @@ class TestResConfigSettings(TransactionCase):
     def test_test_connection_success_returns_notification(self):
         config = self._make_config()
         fake_client = MagicMock()
-        fake_client.ping.return_value = {"response": {"name": "My Workspace"}}
+        fake_client.ping.return_value = {"response": [], "meta": {"total": 0}}
         with patch.object(type(config), "_get_pdfgen_client", return_value=fake_client):
             result = config.action_pdfgen_test_connection()
         self.assertEqual(result["tag"], "display_notification")
         self.assertEqual(result["params"]["type"], "success")
-        self.assertIn("My Workspace", result["params"]["message"])
+        self.assertIn("me@example.com", result["params"]["message"])
 
     def test_test_connection_failure_raises_user_error(self):
         from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (

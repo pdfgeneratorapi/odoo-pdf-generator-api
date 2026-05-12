@@ -121,13 +121,16 @@ class RequestTests(unittest.TestCase):
         resp.json.return_value = json_body
         return resp
 
-    def test_ping_calls_workspaces_endpoint(self):
+    def test_ping_calls_templates_endpoint(self):
+        # `/workspaces/{id}` is master-user-only; ping uses `/templates` with a
+        # minimal page so regular workspace users can validate their config too.
         with patch.object(_client_module.requests, "request") as mock_req:
-            mock_req.return_value = self._mock_response(json_body={"response": {"id": 1}})
+            mock_req.return_value = self._mock_response(json_body={"response": []})
             self.client.ping()
         args, kwargs = mock_req.call_args
         self.assertEqual(args[0], "GET")
-        self.assertEqual(args[1], "https://example.test/api/v4/workspaces/w")
+        self.assertEqual(args[1], "https://example.test/api/v4/templates")
+        self.assertEqual(kwargs["params"], {"per_page": 1, "page": 1})
         self.assertIn("Authorization", kwargs["headers"])
         self.assertTrue(kwargs["headers"]["Authorization"].startswith("Bearer "))
 
