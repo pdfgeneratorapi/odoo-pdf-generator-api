@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator API Connector",
-    "version": "19.0.5.0.0",
+    "version": "19.0.6.0.0",
     "category": "Productivity/Documents",
     "summary": "Framework: generate custom PDFs of any record via pdfgeneratorapi.com",
     "author": "PDF Generator API",
