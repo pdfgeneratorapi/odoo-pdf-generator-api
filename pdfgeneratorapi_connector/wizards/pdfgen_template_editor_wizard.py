@@ -60,9 +60,42 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
         ),
     )
 
+    # Magic selection value meaning "I want to create a new template instead
+    # of editing an existing one." Picked up by `action_open_editor` and
+    # rerouted to `action_create_template`.
+    NEW_TEMPLATE_VALUE = "__new__"
+
     @api.onchange("dataset_id")
     def _onchange_dataset_id(self):
-        self.sample_record_id = False
+        # Auto-pick the first record of the dataset's model so the editor
+        # renders against real data without the user having to dig out a
+        # specific record. Falls back cleanly when the dataset's model has
+        # zero records or isn't accessible — `_resolve_sample_data` then
+        # returns None and the editor uses pdfgen's own dummy payload.
+        if not self.dataset_id:
+            self.sample_record_id = False
+            return
+        self.sample_record_id = self.dataset_id._first_sample_record_id() or False
+
+    @api.onchange("template_id")
+    def _onchange_template_id(self):
+        # Keep `new_template_name` reset until the user actually picks the
+        # magic "+ Create new template" entry — that way switching between
+        # existing templates doesn't strand a half-typed name in the form.
+        if self.template_id != self.NEW_TEMPLATE_VALUE:
+            self.new_template_name = False
+
+    def _compute_display_name(self):
+        """Force a friendly breadcrumb label.
+
+        TransientModels with no `name` field fall back to
+        `<model>,NewId_<n>` in the breadcrumb (and in the browser tab),
+        which leaks the technical model name to users. This wizard is
+        always a singleton from the user's perspective, so a constant
+        label is correct.
+        """
+        for rec in self:
+            rec.display_name = "Template Editor"
 
     @api.model
     def _build_client(self):
@@ -72,6 +105,12 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
 
     @api.model
     def _selection_template_id(self):
+        # When the API is unreachable / unconfigured we return an empty list:
+        # the user has no way to create a template without working creds, so
+        # showing the "+ Create new template" affordance would just bait
+        # them into a 401. Once the list call succeeds — even if it returns
+        # zero templates — we prepend the magic entry so a fresh workspace
+        # can mint its first template directly from the dropdown.
         try:
             client = self._build_client()
         except UserError:
@@ -84,7 +123,7 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
         templates = response.get("response", response) if isinstance(response, dict) else response
         if not isinstance(templates, list):
             return []
-        result = []
+        result = [(self.NEW_TEMPLATE_VALUE, "+ Create new template…")]
         for t in templates:
             tid = t.get("id")
             name = t.get("name") or f"Template {tid}"
@@ -122,6 +161,13 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
         self.ensure_one()
         if not self.template_id:
             raise UserError(_("Pick a template first."))
+        if self.template_id == self.NEW_TEMPLATE_VALUE:
+            # Magic dropdown entry — branch to the creation path which mints
+            # a new template, swaps the dropdown's value to the real id, then
+            # calls back into us for the actual editor URL.
+            if not (self.new_template_name or "").strip():
+                raise UserError(_("Type a name for the new template."))
+            return self.action_create_template()
         client = self._build_client()
         try:
             url = client.open_editor(self.template_id, data=self._resolve_sample_data())

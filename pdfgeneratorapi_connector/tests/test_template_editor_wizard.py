@@ -103,14 +103,60 @@ class TestTemplateEditorWizard(TransactionCase):
             wizard.action_create_template()
         self.assertIn("no id", str(ctx.exception).lower())
 
+    def test_open_editor_routes_magic_value_to_create_path(self):
+        """Picking the '+ Create new template' dropdown entry and clicking
+        Open should mint the template (via the create API) and then open
+        the editor — single button, no separate Create step."""
+        client = MagicMock()
+        client.create_template.return_value = {"response": {"id": 77, "name": "Magic"}}
+        client.open_editor.return_value = "https://us1.pdfgeneratorapi.com/editor/77?token=ok"
+        wizard = self._new_wizard(template_id="__new__", new_template_name="Magic")
+        with self._patch_client(client):
+            wizard.action_open_editor()
+        client.create_template.assert_called_once_with("Magic")
+        self.assertEqual(wizard.template_id, "77")
+        self.assertEqual(wizard.editor_url, "https://us1.pdfgeneratorapi.com/editor/77?token=ok")
+
+    def test_open_editor_magic_value_without_name_raises(self):
+        """Magic dropdown entry needs an accompanying name — otherwise the
+        Open button should fail loudly instead of trying to create an
+        anonymous template."""
+        wizard = self._new_wizard(template_id="__new__", new_template_name="")
+        with self.assertRaises(UserError) as ctx:
+            wizard.action_open_editor()
+        self.assertIn("name", str(ctx.exception).lower())
+
+    def test_onchange_template_id_clears_stale_name(self):
+        """Switching from '+ Create new template' to a real template should
+        wipe any half-typed new name, so it doesn't lurk in the form and
+        re-trigger creation on the next Open click."""
+        wizard = self._new_wizard(template_id="__new__", new_template_name="left over")
+        wizard.template_id = "1"
+        wizard._onchange_template_id()
+        self.assertFalse(wizard.new_template_name)
+
     def test_selection_live_from_api(self):
+        """API list call succeeds → magic '+ Create new template' entry comes
+        first, followed by every live template in order."""
         client = MagicMock()
         client.list_templates.return_value = {
             "response": [{"id": 1, "name": "Invoice"}, {"id": 2, "name": "Quote"}],
         }
         with self._patch_client(client):
             sel = self.env["pdfgen.template.editor.wizard"]._selection_template_id()
-        self.assertEqual(sel, [("1", "Invoice"), ("2", "Quote")])
+        self.assertEqual(sel[0][0], "__new__")
+        self.assertIn("Create new template", sel[0][1])
+        self.assertEqual(sel[1:], [("1", "Invoice"), ("2", "Quote")])
+
+    def test_selection_shows_create_affordance_on_empty_workspace(self):
+        """Even when the workspace has zero templates the dropdown surfaces
+        the '+ Create new template' entry so a fresh setup can mint its
+        first template without leaving the editor."""
+        client = MagicMock()
+        client.list_templates.return_value = {"response": []}
+        with self._patch_client(client):
+            sel = self.env["pdfgen.template.editor.wizard"]._selection_template_id()
+        self.assertEqual(sel, [("__new__", "+ Create new template…")])
 
     def test_selection_empty_when_unconfigured(self):
         icp = self.env["ir.config_parameter"].sudo()
@@ -232,7 +278,10 @@ class TestTemplateEditorWizard(TransactionCase):
         with self.assertRaises(UserError):
             wizard.action_open_sample_record()
 
-    def test_onchange_dataset_clears_sample(self):
+    def test_onchange_dataset_autopicks_first_record_of_new_model(self):
+        """Switching dataset auto-fills `sample_record_id` with the first
+        record of the new dataset's model so the editor renders against
+        real data without the user picking a record manually."""
         dataset_a = self._new_partner_dataset()
         users_model = self.env.ref("base.model_res_users")
         dataset_b = self.env["pdfgen.model.dataset"].create(
@@ -243,5 +292,22 @@ class TestTemplateEditorWizard(TransactionCase):
             {"dataset_id": dataset_a.id, "sample_record_id": partner.id}
         )
         wizard.dataset_id = dataset_b
+        wizard._onchange_dataset_id()
+        # Test DB always has at least the admin user, so this is non-zero.
+        self.assertTrue(wizard.sample_record_id)
+        self.assertEqual(
+            self.env["res.users"].browse(wizard.sample_record_id).exists(),
+            self.env["res.users"].browse(wizard.sample_record_id),
+        )
+
+    def test_onchange_dataset_clears_sample_when_dataset_unset(self):
+        """Clearing the dataset wipes the sample record too — without a model
+        to scope against, a leftover record id would be meaningless."""
+        dataset = self._new_partner_dataset()
+        partner = self.env["res.partner"].create({"name": "Acme"})
+        wizard = self.env["pdfgen.template.editor.wizard"].new(
+            {"dataset_id": dataset.id, "sample_record_id": partner.id}
+        )
+        wizard.dataset_id = False
         wizard._onchange_dataset_id()
         self.assertFalse(wizard.sample_record_id)

@@ -2,9 +2,18 @@
 <templates xml:space="preserve">
 
     <t t-name="pdfgeneratorapi_connector.PdfgenEditorIframeField">
+        <!--
+          sandbox: opt INTO scripts/forms/cookies/popups/modals/downloads
+          and keep `allow-top-navigation` OFF so iframe links can't navigate
+          the parent Odoo page. Tested: dropping `allow-modals` to suppress
+          the editor's beforeunload prompt also lets internal navigations
+          go through silently, destroying unsaved work — keep the prompt as
+          the user's safety net.
+        -->
         <iframe t-ref="iframe"
                 class="o_pdfgen_editor_iframe w-100 border-0"
                 allow="clipboard-read; clipboard-write"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
                 style="height: calc(100vh - 100px); display: block;"/>
     </t>
 
