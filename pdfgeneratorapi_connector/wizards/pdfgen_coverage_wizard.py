@@ -76,26 +76,12 @@ class PdfgenCoverageWizard(models.TransientModel):
 
     @api.model
     def _selection_template_id(self):
-        try:
-            client = self._build_client()
-        except UserError:
-            return []
-        try:
-            response = client.list_templates(per_page=100)
-        except PdfGenApiError as e:
-            _logger.warning("list_templates failed: %s / %s", e.status, e.body)
-            return []
-        templates = response.get("response", response) if isinstance(response, dict) else response
-        if not isinstance(templates, list):
-            return []
-        result = []
-        for t in templates:
-            tid = t.get("id")
-            name = t.get("name") or f"Template {tid}"
-            if tid is None:
-                continue
-            result.append((str(tid), name))
-        return result
+        # include_library=False: the coverage check reads the template's
+        # sample data via `GET /templates/{id}/data`, which only exists for
+        # account templates — library templates can't be analysed here.
+        from ..models.pdfgen_document_mixin import pdfgen_template_selection
+
+        return pdfgen_template_selection(self.env, self._build_client, include_library=False)
 
     def _template_placeholder_paths(self, data):
         """Flatten the template-data response into a set of canonical paths.

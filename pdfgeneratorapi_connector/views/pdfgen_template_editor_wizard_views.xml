@@ -27,12 +27,20 @@
                      button then creates-then-opens. -->
                 <div class="o_pdfgen_template_editor_toolbar py-2 px-3 border-bottom d-flex flex-wrap align-items-center gap-2">
                     <span class="small text-muted fw-bold">Template:</span>
-                    <field name="template_id" nolabel="1" class="oe_inline o_pdfgen_toolbar_field"/>
+                    <field name="is_library_template" invisible="1"/>
+                    <field name="template_id" nolabel="1" widget="pdfgen_template_selection" class="oe_inline o_pdfgen_toolbar_field"/>
                     <field name="new_template_name"
                            nolabel="1"
                            placeholder="New template name"
                            class="oe_inline o_pdfgen_toolbar_field"
                            invisible="template_id != '__new__'"/>
+                    <!-- Library templates are read-only upstream: Open first
+                         copies the design into the user's account, so each
+                         click on a Default Template mints a fresh copy. -->
+                    <span class="small text-info"
+                          invisible="not is_library_template">
+                        <i class="fa fa-info-circle me-1"/>Opening a default template creates an editable copy under My Templates.
+                    </span>
 
                     <span class="small text-muted fw-bold ps-3 border-start">Dataset:</span>
                     <field name="dataset_id" nolabel="1" class="oe_inline o_pdfgen_toolbar_field"/>

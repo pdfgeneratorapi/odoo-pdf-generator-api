@@ -37,7 +37,9 @@ from .pdfgen_document_mixin import build_pdfgen_client
 
 _logger = logging.getLogger(__name__)
 
-_TEMPLATE_RE = re.compile(r"^pdfgen:template:(?P<tid>[^:\s]+)")
+# `\S+` (not `[^:\s]+`): library template ids are stored as `lib:<publicId>`,
+# so the id itself contains a colon.
+_TEMPLATE_RE = re.compile(r"^pdfgen:template:(?P<tid>\S+)")
 
 
 class PdfgenSendMixin(models.AbstractModel):

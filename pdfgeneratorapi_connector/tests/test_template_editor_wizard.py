@@ -209,6 +209,103 @@ class TestTemplateEditorWizard(TransactionCase):
             sel = self.env["pdfgen.template.editor.wizard"]._selection_template_id()
         self.assertEqual(sel, [])
 
+    def test_selection_includes_library_section_between_create_and_own(self):
+        """Library ("Default") templates slot between the magic create entry
+        and the account's own templates, with `lib:`-prefixed values the
+        grouped dropdown widget keys off."""
+        client = MagicMock()
+        client.list_templates.return_value = {"response": [{"id": 1, "name": "Mine"}]}
+        client.list_library_templates.return_value = {
+            "response": [
+                {"id": "pub-a", "name": "Library invoice"},
+                {"id": "pub-b", "name": "Library quote"},
+            ],
+        }
+        with self._patch_client(client):
+            sel = self.env["pdfgen.template.editor.wizard"]._selection_template_id()
+        self.assertEqual(sel[0][0], "__new__")
+        self.assertEqual(
+            sel[1:],
+            [
+                ("lib:pub-a", "Library invoice"),
+                ("lib:pub-b", "Library quote"),
+                ("1", "Mine"),
+            ],
+        )
+
+    def test_selection_library_failure_keeps_own_templates(self):
+        """The library section is additive — a dead library endpoint must
+        not take down the rest of the dropdown."""
+        client = MagicMock()
+        client.list_templates.return_value = {"response": [{"id": 1, "name": "Mine"}]}
+        client.list_library_templates.side_effect = Exception("library down")
+        with self._patch_client(client):
+            sel = self.env["pdfgen.template.editor.wizard"]._selection_template_id()
+        self.assertEqual(sel[1:], [("1", "Mine")])
+
+    def test_open_editor_copies_library_template_then_opens(self):
+        """Opening a Default Template copies its definition into the account
+        (library templates are read-only upstream) and opens the editor on
+        the fresh copy."""
+        definition = {
+            "id": "pub-a",
+            "name": "Library invoice",
+            "layout": {"format": "A4"},
+            "pages": [],
+        }
+        client = MagicMock()
+        client.get_library_template.return_value = {"response": definition}
+        client.create_template.return_value = {"response": {"id": 55, "name": "Library invoice"}}
+        client.open_editor.return_value = "https://us1.pdfgeneratorapi.com/editor/55?token=cp"
+        wizard = self._new_wizard(template_id="lib:pub-a")
+        with self._patch_client(client):
+            wizard.action_open_editor()
+        client.get_library_template.assert_called_once_with("pub-a")
+        client.create_template.assert_called_once_with(definition=definition)
+        client.open_editor.assert_called_once_with("55", data=None)
+        self.assertEqual(wizard.template_id, "55")
+        self.assertEqual(wizard.editor_url, "https://us1.pdfgeneratorapi.com/editor/55?token=cp")
+
+    def test_copy_library_template_fetch_error_wrapped(self):
+        from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (
+            PdfGenApiError,
+        )
+
+        client = MagicMock()
+        client.get_library_template.side_effect = PdfGenApiError(404, "gone")
+        wizard = self._new_wizard(template_id="lib:pub-a")
+        with self._patch_client(client), self.assertRaises(UserError) as ctx:
+            wizard.action_open_editor()
+        self.assertIn("404", str(ctx.exception))
+
+    def test_copy_library_template_create_error_wrapped(self):
+        from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (
+            PdfGenApiError,
+        )
+
+        client = MagicMock()
+        client.get_library_template.return_value = {"response": {"name": "X"}}
+        client.create_template.side_effect = PdfGenApiError(422, "invalid definition")
+        wizard = self._new_wizard(template_id="lib:pub-a")
+        with self._patch_client(client), self.assertRaises(UserError) as ctx:
+            wizard.action_open_editor()
+        self.assertIn("422", str(ctx.exception))
+
+    def test_copy_library_template_missing_id_raises(self):
+        client = MagicMock()
+        client.get_library_template.return_value = {"response": {"name": "X"}}
+        client.create_template.return_value = {"response": {"name": "no id"}}
+        wizard = self._new_wizard(template_id="lib:pub-a")
+        with self._patch_client(client), self.assertRaises(UserError) as ctx:
+            wizard.action_open_editor()
+        self.assertIn("no id", str(ctx.exception).lower())
+
+    def test_is_library_template_computed(self):
+        wizard = self._new_wizard(template_id="lib:pub-a")
+        self.assertTrue(wizard.is_library_template)
+        wizard = self._new_wizard(template_id="42")
+        self.assertFalse(wizard.is_library_template)
+
     def _new_partner_dataset(self):
         partner_model = self.env.ref("base.model_res_partner")
         dataset = self.env["pdfgen.model.dataset"].create(
