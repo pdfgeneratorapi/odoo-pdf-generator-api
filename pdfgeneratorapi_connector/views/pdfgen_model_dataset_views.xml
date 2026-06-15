@@ -47,7 +47,7 @@
                         <group>
                             <field name="model_id"
                                    options="{'no_create': True, 'no_open': True}"/>
-                            <field name="default_template_id"/>
+                            <field name="default_template_id" widget="pdfgen_template_selection"/>
                             <field name="model" invisible="1"/>
                             <field name="active" invisible="1"/>
                         </group>

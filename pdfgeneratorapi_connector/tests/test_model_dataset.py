@@ -124,6 +124,19 @@ class TestModelDataset(TransactionCase):
             sel = self.env["pdfgen.model.dataset"]._selection_default_template_id()
         self.assertEqual(sel, [])
 
+    def test_selection_default_template_includes_library_entries(self):
+        client = MagicMock()
+        client.list_templates.return_value = {"response": [{"id": 1, "name": "Mine"}]}
+        client.list_library_templates.return_value = {
+            "response": [{"id": "pub-a", "name": "Library invoice"}],
+        }
+        with patch(
+            "odoo.addons.pdfgeneratorapi_connector.models.pdfgen_model_dataset.build_pdfgen_client",
+            return_value=client,
+        ):
+            sel = self.env["pdfgen.model.dataset"]._selection_default_template_id()
+        self.assertEqual(sel, [("lib:pub-a", "Library invoice"), ("1", "Mine")])
+
     def test_selection_default_template_skips_entries_without_id(self):
         client = MagicMock()
         client.list_templates.return_value = {

@@ -16,7 +16,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.pdfgen_api_client import PdfGenApiError
+from ..models.pdfgen_api_client import LIBRARY_TEMPLATE_PREFIX, PdfGenApiError
 
 _logger = logging.getLogger(__name__)
 
@@ -59,6 +59,15 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
             "Not cached between actions — each Open editor click mints a fresh one."
         ),
     )
+    is_library_template = fields.Boolean(
+        compute="_compute_is_library_template",
+        help=(
+            "True when the picked template comes from the public Template "
+            "Library. Drives the 'a copy will be created' hint — library "
+            "templates are read-only, so Open copies them into the account "
+            "first."
+        ),
+    )
 
     # Magic selection value meaning "I want to create a new template instead
     # of editing an existing one." Picked up by `action_open_editor` and
@@ -76,6 +85,13 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
             self.sample_record_id = False
             return
         self.sample_record_id = self.dataset_id._first_sample_record_id() or False
+
+    @api.depends("template_id")
+    def _compute_is_library_template(self):
+        for rec in self:
+            rec.is_library_template = bool(
+                rec.template_id and rec.template_id.startswith(LIBRARY_TEMPLATE_PREFIX)
+            )
 
     @api.onchange("template_id")
     def _onchange_template_id(self):
@@ -105,32 +121,17 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
 
     @api.model
     def _selection_template_id(self):
-        # When the API is unreachable / unconfigured we return an empty list:
-        # the user has no way to create a template without working creds, so
-        # showing the "+ Create new template" affordance would just bait
-        # them into a 401. Once the list call succeeds — even if it returns
-        # zero templates — we prepend the magic entry so a fresh workspace
-        # can mint its first template directly from the dropdown.
-        try:
-            client = self._build_client()
-        except UserError:
-            return []
-        try:
-            response = client.list_templates(per_page=100)
-        except PdfGenApiError as e:
-            _logger.warning("list_templates failed: %s / %s", e.status, e.body)
-            return []
-        templates = response.get("response", response) if isinstance(response, dict) else response
-        if not isinstance(templates, list):
-            return []
-        result = [(self.NEW_TEMPLATE_VALUE, "+ Create new template…")]
-        for t in templates:
-            tid = t.get("id")
-            name = t.get("name") or f"Template {tid}"
-            if tid is None:
-                continue
-            result.append((str(tid), name))
-        return result
+        # When the API is unreachable / unconfigured the shared builder
+        # returns an empty list: the user has no way to create a template
+        # without working creds, so showing the "+ Create new template"
+        # affordance would just bait them into a 401. Once the list call
+        # succeeds — even if it returns zero templates — the magic entry is
+        # prepended so a fresh workspace can mint its first template
+        # directly from the dropdown. Library ("Default") templates follow,
+        # then the account's own templates.
+        from ..models.pdfgen_document_mixin import pdfgen_template_selection
+
+        return pdfgen_template_selection(self.env, self._build_client, include_create=True)
 
     def _resolve_sample_data(self):
         """Build the openEditor `data` payload from the picked dataset+record.
@@ -168,6 +169,10 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
             if not (self.new_template_name or "").strip():
                 raise UserError(_("Type a name for the new template."))
             return self.action_create_template()
+        if self.template_id.startswith(LIBRARY_TEMPLATE_PREFIX):
+            # Library templates are read-only — copy the definition into the
+            # account first, then reopen on the editable copy.
+            return self.action_copy_library_template()
         client = self._build_client()
         try:
             url = client.open_editor(self.template_id, data=self._resolve_sample_data())
@@ -224,5 +229,50 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
             raise UserError(_("Template was created but the response had no id. Got: %s", template))
         # Re-open the editor on the freshly minted template so the user can
         # start designing immediately.
+        self.template_id = str(new_id)
+        return self.action_open_editor()
+
+    def action_copy_library_template(self):
+        """Copy a public Template Library template into the account and open it.
+
+        Library templates can't be edited in place — there's no editor
+        endpoint for them. So: fetch the full definition, POST it to
+        `/templates` (which accepts a TemplateDefinitionNew body), swap the
+        dropdown to the new account template and recurse into
+        `action_open_editor` — the same pattern `action_create_template`
+        uses for blank templates.
+        """
+        self.ensure_one()
+        public_id = self.template_id[len(LIBRARY_TEMPLATE_PREFIX) :]
+        client = self._build_client()
+        try:
+            response = client.get_library_template(public_id)
+        except PdfGenApiError as e:
+            raise UserError(
+                _(
+                    "Could not load the default template (HTTP %(status)s): %(body)s",
+                    status=e.status or "—",
+                    body=(e.body or "no body")[:500],
+                )
+            ) from e
+        definition = response.get("response", response) if isinstance(response, dict) else response
+        if not isinstance(definition, dict):
+            raise UserError(
+                _("Unexpected template definition response. Got: %s", type(definition).__name__)
+            )
+        try:
+            created = client.create_template(definition=definition)
+        except PdfGenApiError as e:
+            raise UserError(
+                _(
+                    "Could not copy the template to your account (HTTP %(status)s): %(body)s",
+                    status=e.status or "—",
+                    body=(e.body or "no body")[:500],
+                )
+            ) from e
+        template = created.get("response", created) if isinstance(created, dict) else created
+        new_id = template.get("id") if isinstance(template, dict) else None
+        if new_id is None:
+            raise UserError(_("Template was copied but the response had no id. Got: %s", template))
         self.template_id = str(new_id)
         return self.action_open_editor()

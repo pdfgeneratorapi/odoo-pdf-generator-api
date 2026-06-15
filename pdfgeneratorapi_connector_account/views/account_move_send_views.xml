@@ -15,6 +15,7 @@
                     <field name="pdfgen_configured" invisible="1"/>
                     <field name="pdfgen_use_custom" widget="boolean_toggle"/>
                     <field name="pdfgen_template_id"
+                           widget="pdfgen_template_selection"
                            invisible="not pdfgen_use_custom"
                            required="pdfgen_use_custom"/>
                     <field name="pdfgen_error"

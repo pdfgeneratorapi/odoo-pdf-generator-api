@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator API Connector",
-    "version": "19.0.6.0.0",
+    "version": "19.0.7.0.0",
     "category": "Productivity/Documents",
     "summary": "Framework: generate custom PDFs of any record via pdfgeneratorapi.com",
     "author": "PDF Generator API",
@@ -27,6 +27,8 @@
             "pdfgeneratorapi_connector/static/src/mapping_editor/mapping_editor.scss",
             "pdfgeneratorapi_connector/static/src/template_editor/editor_iframe_field.js",
             "pdfgeneratorapi_connector/static/src/template_editor/editor_iframe_field.xml",
+            "pdfgeneratorapi_connector/static/src/template_editor/template_selection_field.js",
+            "pdfgeneratorapi_connector/static/src/template_editor/template_selection_field.xml",
             "pdfgeneratorapi_connector/static/src/template_editor/template_editor.scss",
             "pdfgeneratorapi_connector/static/src/settings/settings.scss",
         ],
