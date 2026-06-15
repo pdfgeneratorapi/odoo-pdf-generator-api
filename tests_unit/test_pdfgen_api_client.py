@@ -10,17 +10,33 @@ import importlib.util
 import json
 import sys
 import time
+import types
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-CLIENT_PATH = (
-    Path(__file__).parent.parent / "pdfgeneratorapi_connector" / "models" / "pdfgen_api_client.py"
+_ADDON = Path(__file__).parent.parent / "pdfgeneratorapi_connector"
+
+
+def _load(qualname, relpath):
+    spec = importlib.util.spec_from_file_location(qualname, _ADDON / relpath)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[qualname] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+# pdfgen_api_client does `from ..enums import Format, Output`. Load it under its
+# real package name — with the enums module + stub parent packages in sys.modules —
+# so that relative import resolves WITHOUT running the addon __init__ (it imports Odoo).
+for _pkg in ("pdfgeneratorapi_connector", "pdfgeneratorapi_connector.models"):
+    sys.modules.setdefault(_pkg, types.ModuleType(_pkg))
+_load("pdfgeneratorapi_connector.enums", "enums.py")
+
+_client_module = _load(
+    "pdfgeneratorapi_connector.models.pdfgen_api_client", "models/pdfgen_api_client.py"
 )
-spec = importlib.util.spec_from_file_location("pdfgen_api_client", CLIENT_PATH)
-_client_module = importlib.util.module_from_spec(spec)
-sys.modules["pdfgen_api_client"] = _client_module
-spec.loader.exec_module(_client_module)
+sys.modules["pdfgen_api_client"] = _client_module  # legacy alias for any string-based patch
 
 PdfGenApiClient = _client_module.PdfGenApiClient
 PdfGenApiError = _client_module.PdfGenApiError

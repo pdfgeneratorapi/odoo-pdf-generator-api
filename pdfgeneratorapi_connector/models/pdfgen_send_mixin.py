@@ -14,7 +14,7 @@ with a pdfgen-generated one.
 - `_pdfgen_should_default_on(record)` — True when latest-wins logic or a
   configured default template means the toggle should start ON.
 - `_pdfgen_render_preview_html(template_id, record)` — calls
-  `client.generate(..., fmt="html")`, returns sanitised HTML.
+  `client.generate(..., format=Format.HTML)`, returns sanitised HTML.
 - `_pdfgen_generate_attachment(template_id, record)` — synchronous
   PDF generation. Creates the `ir.attachment` (with the `pdfgen:` marker
   the existing flows use) and returns it. Raises `UserError` on
@@ -32,7 +32,8 @@ import re
 from odoo import _, models
 from odoo.exceptions import UserError
 
-from .pdfgen_api_client import PdfGenApiError
+from ..enums import Format, Output
+from .pdfgen_api_client import ApiResponse, PdfGenApiError
 from .pdfgen_document_mixin import build_pdfgen_client
 
 _logger = logging.getLogger(__name__)
@@ -48,7 +49,7 @@ class PdfgenSendMixin(models.AbstractModel):
 
     # ---------------------------------------------------------------- look-up
 
-    def _pdfgen_dataset(self, record):
+    def _pdfgen_dataset(self, record: models.Model) -> models.Model:
         if not record:
             return self.env["pdfgen.model.dataset"]
         return self.env["pdfgen.model.dataset"].search(
@@ -56,7 +57,7 @@ class PdfgenSendMixin(models.AbstractModel):
             limit=1,
         )
 
-    def _pdfgen_latest_pdfgen_attachment(self, record):
+    def _pdfgen_latest_pdfgen_attachment(self, record: models.Model) -> models.Model:
         if not record:
             return self.env["ir.attachment"]
         # The trailing res_field clause matches everything but suppresses
@@ -77,7 +78,7 @@ class PdfgenSendMixin(models.AbstractModel):
             limit=1,
         )
 
-    def _pdfgen_latest_standard_attachment(self, record):
+    def _pdfgen_latest_standard_attachment(self, record: models.Model) -> models.Model:
         if not record:
             return self.env["ir.attachment"]
         return self.env["ir.attachment"].search(
@@ -96,7 +97,7 @@ class PdfgenSendMixin(models.AbstractModel):
             limit=1,
         )
 
-    def _pdfgen_pick_template_id(self, record):
+    def _pdfgen_pick_template_id(self, record: models.Model) -> str | bool:
         """Resolution: template parsed from the latest pdfgen attachment >
         dataset.default_template_id > False.
         """
@@ -108,7 +109,7 @@ class PdfgenSendMixin(models.AbstractModel):
         dataset = self._pdfgen_dataset(record)
         return dataset.default_template_id or False
 
-    def _pdfgen_should_default_on(self, record):
+    def _pdfgen_should_default_on(self, record: models.Model) -> bool:
         """True iff the toggle should start ON for this record.
 
         - pdfgen attachment exists AND is newer than the standard report.
@@ -126,7 +127,7 @@ class PdfgenSendMixin(models.AbstractModel):
 
     # -------------------------------------------------------- preview / render
 
-    def _pdfgen_render_preview_html(self, template_id, record):
+    def _pdfgen_render_preview_html(self, template_id: str, record: models.Model) -> str:
         """Build the modal preview body.
 
         Strategy: if a pdfgen attachment for this template already exists on
@@ -148,7 +149,7 @@ class PdfgenSendMixin(models.AbstractModel):
             )
         return self._pdfgen_render_preview_html_via_api(template_id, record)
 
-    def _pdfgen_render_preview_html_via_api(self, template_id, record):
+    def _pdfgen_render_preview_html_via_api(self, template_id: str, record: models.Model) -> str:
         """API-rendered HTML fallback for the preview modal — used when no
         live pdfgen attachment matches the chosen template. Empty string
         on any failure.
@@ -163,8 +164,8 @@ class PdfgenSendMixin(models.AbstractModel):
                 template_id=template_id,
                 data=data,
                 name=f"preview-{record._name}-{record.id}.html",
-                output="base64",
-                fmt="html",
+                output=Output.BASE64,
+                format=Format.HTML,
             )
         except (PdfGenApiError, UserError) as e:
             _logger.warning("pdfgen preview failed for %s(%s): %s", record._name, record.id, e)
@@ -177,7 +178,7 @@ class PdfgenSendMixin(models.AbstractModel):
         except (ValueError, TypeError):
             return ""
 
-    def _pdfgen_generate_attachment(self, template_id, record):
+    def _pdfgen_generate_attachment(self, template_id: str, record: models.Model) -> models.Model:
         """Synchronous PDF generation. Creates an `ir.attachment` on the
         record and returns it. Raises `UserError` on failure.
         """
@@ -201,8 +202,8 @@ class PdfgenSendMixin(models.AbstractModel):
                 template_id=template_id,
                 data=data,
                 name=filename,
-                output="base64",
-                fmt="pdf",
+                output=Output.BASE64,
+                format=Format.PDF,
             )
         except PdfGenApiError as e:
             raise UserError(
@@ -250,7 +251,7 @@ class PdfgenSendMixin(models.AbstractModel):
             }
         )
 
-    def _pdfgen_promote_attachment(self, record, attachment):
+    def _pdfgen_promote_attachment(self, record: models.Model, attachment: models.Model) -> None:
         """Make `attachment` the record's canonical PDF attachment.
 
         Odoo binds the form-view "Document Preview" pane and the Send
@@ -288,7 +289,7 @@ class PdfgenSendMixin(models.AbstractModel):
         record.invalidate_recordset()
 
     @staticmethod
-    def _pdfgen_canonical_binary_field(record):
+    def _pdfgen_canonical_binary_field(record: models.Model) -> str | None:
         """Name of the Binary field whose attachment becomes the model's
         canonical PDF (drives Odoo's preview pane + extras collection).
 
@@ -299,7 +300,7 @@ class PdfgenSendMixin(models.AbstractModel):
         return None
 
     @staticmethod
-    def _pdfgen_extract_payload(response):
+    def _pdfgen_extract_payload(response: ApiResponse) -> str | None:
         """Pull the base64 payload out of pdfgen's response envelope —
         same shape-tolerant matcher the generate wizard uses.
         """

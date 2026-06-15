@@ -13,7 +13,8 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.pdfgen_api_client import PdfGenApiError
+from ..enums import Format, Output
+from ..models.pdfgen_api_client import ApiResponse, PdfGenApiClient, PdfGenApiError
 
 _logger = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ class GeneratePdfWizard(models.TransientModel):
     )
 
     @api.model
-    def _default_template_id(self):
+    def _default_template_id(self) -> str | bool:
         """Pre-fill from the dataset's default_template_id when the wizard
         opens — saves the user a click when they already configured a
         per-model default.
@@ -68,7 +69,7 @@ class GeneratePdfWizard(models.TransientModel):
         return dataset.default_template_id or False
 
     @api.depends("res_model", "res_id")
-    def _compute_res_display_name(self):
+    def _compute_res_display_name(self) -> None:
         for rec in self:
             if rec.res_model and rec.res_id and rec.res_model in self.env:
                 target = self.env[rec.res_model].browse(rec.res_id)
@@ -77,7 +78,7 @@ class GeneratePdfWizard(models.TransientModel):
                 rec.res_display_name = ""
 
     @api.model
-    def _build_client(self):
+    def _build_client(self) -> PdfGenApiClient:
         # Delegates to the shared helper on pdfgen.document.mixin so
         # every wizard + model reads credentials identically (per-company
         # override first, global ICP fallback).
@@ -86,18 +87,18 @@ class GeneratePdfWizard(models.TransientModel):
         return build_pdfgen_client(self.env)
 
     @api.model
-    def _selection_template_id(self):
+    def _selection_template_id(self) -> list[tuple[str, str]]:
         from ..models.pdfgen_document_mixin import pdfgen_template_selection
 
         return pdfgen_template_selection(self.env, self._build_client)
 
-    def _target_record(self):
+    def _target_record(self) -> models.Model:
         self.ensure_one()
         if not self.res_model or self.res_model not in self.env:
             raise UserError(_("Unknown source model: %s", self.res_model))
         return self.env[self.res_model].browse(self.res_id).exists()
 
-    def action_generate(self):
+    def action_generate(self) -> dict:
         self.ensure_one()
         record = self._target_record()
         if not record:
@@ -123,8 +124,8 @@ class GeneratePdfWizard(models.TransientModel):
                 template_id=self.template_id,
                 data=data,
                 name=filename,
-                output="base64",
-                fmt="pdf",
+                output=Output.BASE64,
+                format=Format.PDF,
             )
         except PdfGenApiError as e:
             raise UserError(
@@ -207,7 +208,7 @@ class GeneratePdfWizard(models.TransientModel):
         return {"type": "ir.actions.client", "tag": "soft_reload"}
 
     @staticmethod
-    def _extract_pdf_payload(response):
+    def _extract_pdf_payload(response: ApiResponse) -> str | None:
         """Find the base64 payload in the API response regardless of envelope shape."""
         if isinstance(response, str):
             return response

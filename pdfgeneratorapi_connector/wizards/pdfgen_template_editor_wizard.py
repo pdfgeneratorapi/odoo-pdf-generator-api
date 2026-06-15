@@ -16,7 +16,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.pdfgen_api_client import LIBRARY_TEMPLATE_PREFIX, PdfGenApiError
+from ..models.pdfgen_api_client import LIBRARY_TEMPLATE_PREFIX, PdfGenApiClient, PdfGenApiError
 
 _logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
     NEW_TEMPLATE_VALUE = "__new__"
 
     @api.onchange("dataset_id")
-    def _onchange_dataset_id(self):
+    def _onchange_dataset_id(self) -> None:
         # Auto-pick the first record of the dataset's model so the editor
         # renders against real data without the user having to dig out a
         # specific record. Falls back cleanly when the dataset's model has
@@ -87,21 +87,21 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
         self.sample_record_id = self.dataset_id._first_sample_record_id() or False
 
     @api.depends("template_id")
-    def _compute_is_library_template(self):
+    def _compute_is_library_template(self) -> None:
         for rec in self:
             rec.is_library_template = bool(
                 rec.template_id and rec.template_id.startswith(LIBRARY_TEMPLATE_PREFIX)
             )
 
     @api.onchange("template_id")
-    def _onchange_template_id(self):
+    def _onchange_template_id(self) -> None:
         # Keep `new_template_name` reset until the user actually picks the
         # magic "+ Create new template" entry — that way switching between
         # existing templates doesn't strand a half-typed name in the form.
         if self.template_id != self.NEW_TEMPLATE_VALUE:
             self.new_template_name = False
 
-    def _compute_display_name(self):
+    def _compute_display_name(self) -> None:
         """Force a friendly breadcrumb label.
 
         TransientModels with no `name` field fall back to
@@ -114,13 +114,13 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
             rec.display_name = "Template Editor"
 
     @api.model
-    def _build_client(self):
+    def _build_client(self) -> PdfGenApiClient:
         from ..models.pdfgen_document_mixin import build_pdfgen_client
 
         return build_pdfgen_client(self.env)
 
     @api.model
-    def _selection_template_id(self):
+    def _selection_template_id(self) -> list[tuple[str, str]]:
         # When the API is unreachable / unconfigured the shared builder
         # returns an empty list: the user has no way to create a template
         # without working creds, so showing the "+ Create new template"
@@ -133,7 +133,7 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
 
         return pdfgen_template_selection(self.env, self._build_client, include_create=True)
 
-    def _resolve_sample_data(self):
+    def _resolve_sample_data(self) -> dict | None:
         """Build the openEditor `data` payload from the picked dataset+record.
 
         Returns None when either is missing or the record can't be resolved —
@@ -158,7 +158,7 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
             )
             return None
 
-    def action_open_editor(self):
+    def action_open_editor(self) -> bool:
         self.ensure_one()
         if not self.template_id:
             raise UserError(_("Pick a template first."))
@@ -192,7 +192,7 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
         # URL and swaps the <iframe src>. Keeps the user on the same page.
         return False
 
-    def action_open_sample_record(self):
+    def action_open_sample_record(self) -> dict:
         """Open the picked sample record in a side dialog so the user can sanity-check
         which record's data is feeding the editor preview.
         """
@@ -209,7 +209,7 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
             "target": "new",
         }
 
-    def action_create_template(self):
+    def action_create_template(self) -> bool:
         self.ensure_one()
         name = (self.new_template_name or "").strip() or _("New template")
         client = self._build_client()
@@ -232,7 +232,7 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
         self.template_id = str(new_id)
         return self.action_open_editor()
 
-    def action_copy_library_template(self):
+    def action_copy_library_template(self) -> bool:
         """Copy a public Template Library template into the account and open it.
 
         Library templates can't be edited in place — there's no editor
