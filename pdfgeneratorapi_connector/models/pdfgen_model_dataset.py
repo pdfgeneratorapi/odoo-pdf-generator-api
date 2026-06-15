@@ -1,4 +1,5 @@
 import logging
+from typing import Self
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -43,7 +44,7 @@ class PdfGenModelDataset(models.Model):
     )
 
     @api.model
-    def _selection_default_template_id(self):
+    def _selection_default_template_id(self) -> list[tuple[str, str]]:
         # `build_pdfgen_client` is resolved through this module's namespace
         # at call time so tests can patch it here.
         return pdfgen_template_selection(self.env, lambda: build_pdfgen_client(self.env))
@@ -57,7 +58,7 @@ class PdfGenModelDataset(models.Model):
     ]
 
     @api.model_create_multi
-    def create(self, vals_list):
+    def create(self, vals_list: list[dict]) -> Self:
         for vals in vals_list:
             if not vals.get("name") and vals.get("model_id"):
                 model = self.env["ir.model"].browse(vals["model_id"])
@@ -68,7 +69,7 @@ class PdfGenModelDataset(models.Model):
     # Wizard launchers (header buttons on the dataset form)
     # ------------------------------------------------------------------
 
-    def _first_sample_record_id(self):
+    def _first_sample_record_id(self) -> int:
         """First record of the dataset's model, or 0 if none exist.
 
         Used as the auto-default for the template editor wizard's sample
@@ -82,7 +83,7 @@ class PdfGenModelDataset(models.Model):
         record = self.env[self.model].search([], limit=1)
         return record.id if record else 0
 
-    def action_open_in_editor(self):
+    def action_open_in_editor(self) -> dict:
         """Open the pdfgen.com template editor with this dataset prefilled.
 
         The template editor wizard pre-fills `dataset_id` (so the placeholder
@@ -107,7 +108,7 @@ class PdfGenModelDataset(models.Model):
             "context": ctx,
         }
 
-    def action_open_preview(self):
+    def action_open_preview(self) -> dict:
         """Open the coverage/preview wizard. Auto-renders if a default
         template is configured so the user lands on the rendered HTML
         instead of an empty preview pane.
@@ -132,7 +133,7 @@ class PdfGenModelDataset(models.Model):
         # user back on this wizard with `preview_html` populated.
         return wizard.action_preview()
 
-    def resolve_payload(self, record):
+    def resolve_payload(self, record: models.Model) -> dict:
         """Turn an Odoo record into the JSON payload every template receives."""
         self.ensure_one()
         if record._name != self.model:
@@ -206,7 +207,7 @@ class PdfGenModelDatasetLine(models.Model):
     )
 
     @api.depends("parent_id.odoo_field_path", "dataset_id.model")
-    def _compute_target_model(self):
+    def _compute_target_model(self) -> None:
         for rec in self:
             root = rec.dataset_id.model or ""
             if not rec.parent_id:
@@ -228,25 +229,25 @@ class _LineView:
 
     __slots__ = ("_line",)
 
-    def __init__(self, line):
+    def __init__(self, line: models.Model) -> None:
         self._line = line
 
     @property
-    def placeholder_path(self):
+    def placeholder_path(self) -> str:
         return self._line.placeholder_path
 
     @property
-    def odoo_field_path(self):
+    def odoo_field_path(self) -> str:
         return self._line.odoo_field_path or ""
 
     @property
-    def expression(self):
+    def expression(self) -> str:
         return self._line.expression or ""
 
     @property
-    def is_list(self):
+    def is_list(self) -> bool:
         return self._line.is_list
 
     @property
-    def child_lines(self):
+    def child_lines(self) -> list["_LineView"]:
         return [_LineView(c) for c in self._line.child_ids]

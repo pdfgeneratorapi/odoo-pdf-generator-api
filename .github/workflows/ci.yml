@@ -9,7 +9,7 @@ on:
 
 jobs:
   lint:
-    name: Lint (ruff + pylint-odoo)
+    name: Lint (ruff + pylint-odoo + mypy)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,6 +33,11 @@ jobs:
         # venv (runs in docker in local dev), but pyproject.toml disables
         # import-error / no-name-in-module so the plugin still works.
         run: make lint-pylint
+
+      - name: Mypy (Odoo-independent modules)
+        # Scoped via [tool.mypy] files=... to the pure stdlib+requests modules;
+        # the Odoo-dependent code needs odoo-stubs to type-check cleanly.
+        run: make lint-mypy
 
   unit-tests:
     name: Host unit tests + host coverage

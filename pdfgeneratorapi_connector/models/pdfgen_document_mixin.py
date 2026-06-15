@@ -8,6 +8,7 @@ per-company value if set, else global `ir.config_parameter` fallback.
 """
 
 import logging
+from collections.abc import Callable
 
 from odoo import _, api, fields, models, release
 from odoo.exceptions import UserError
@@ -22,7 +23,7 @@ from .pdfgen_api_client import (
 _logger = logging.getLogger(__name__)
 
 
-def pdfgen_config(env, key):
+def pdfgen_config(env: api.Environment, key: str) -> str | None:
     """Return the effective pdfgen config value for the current company.
 
     Resolution order:
@@ -39,7 +40,7 @@ def pdfgen_config(env, key):
     return env["ir.config_parameter"].sudo().get_param(f"pdfgen.{key}") or None
 
 
-def build_pdfgen_client(env):
+def build_pdfgen_client(env: api.Environment) -> PdfGenApiClient:
     """Shared client factory used by every wizard — reads pdfgen_config
     for creds and raises a translatable UserError if anything's missing."""
     key = pdfgen_config(env, "api_key")
@@ -59,7 +60,12 @@ def build_pdfgen_client(env):
     )
 
 
-def pdfgen_template_selection(env, build_client, include_create=False, include_library=True):
+def pdfgen_template_selection(
+    env: api.Environment,
+    build_client: Callable[[], PdfGenApiClient],
+    include_create: bool = False,
+    include_library: bool = True,
+) -> list[tuple[str, str]]:
     """Build the Selection entries shared by every template dropdown.
 
     `build_client` is a zero-arg callable returning a PdfGenApiClient —
@@ -130,7 +136,7 @@ class PdfgenDocumentMixin(models.AbstractModel):
     )
 
     @api.depends_context("uid", "allowed_company_ids")
-    def _compute_pdfgen_configured(self):
+    def _compute_pdfgen_configured(self) -> None:
         ready = bool(
             pdfgen_config(self.env, "api_key")
             and pdfgen_config(self.env, "api_secret")
@@ -139,7 +145,7 @@ class PdfgenDocumentMixin(models.AbstractModel):
         for record in self:
             record.pdfgen_configured = ready
 
-    def action_open_pdfgen_wizard(self):
+    def action_open_pdfgen_wizard(self) -> dict:
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
@@ -153,7 +159,7 @@ class PdfgenDocumentMixin(models.AbstractModel):
             },
         }
 
-    def action_view_pdfgen_async_jobs_from_list(self):
+    def action_view_pdfgen_async_jobs_from_list(self) -> dict:
         """Open the Async Jobs list filtered to the selected records.
 
         When invoked from a list-view header button the recordset is the
@@ -173,7 +179,7 @@ class PdfgenDocumentMixin(models.AbstractModel):
             "target": "current",
         }
 
-    def action_open_pdfgen_wizard_from_list(self):
+    def action_open_pdfgen_wizard_from_list(self) -> dict:
         """Entry point for the list-view header button.
 
         Single record → opens the existing sync wizard.

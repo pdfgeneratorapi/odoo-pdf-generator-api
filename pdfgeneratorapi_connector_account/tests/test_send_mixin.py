@@ -188,7 +188,7 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
             html = wiz._pdfgen_render_preview_html("42", self.invoice)
         self.assertIn("Preview", html)
         client.generate.assert_called_once()
-        self.assertEqual(client.generate.call_args.kwargs["fmt"], "html")
+        self.assertEqual(client.generate.call_args.kwargs["format"], "html")
 
     def test_preview_returns_empty_on_api_error(self):
         from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (

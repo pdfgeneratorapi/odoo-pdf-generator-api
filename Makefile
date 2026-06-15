@@ -30,7 +30,7 @@ REPO_ROOT := $(CURDIR)
 # Odoo container's coverage run but their code is covered via --source.
 ODOO_COVERAGE_FILE_HOST := $(REPO_ROOT)/$(MODULE)/.coverage.odoo
 
-.PHONY: help setup lint lint-ruff lint-pylint format test test-unit test-odoo \
+.PHONY: help setup lint lint-ruff lint-pylint lint-mypy format test test-unit test-odoo \
         coverage coverage-unit coverage-odoo coverage-clean \
         hooks upgrade demo-seed i18n-export i18n-translate i18n-check
 
@@ -40,7 +40,8 @@ COUNT ?= 1
 help:
 	@echo "setup            - install dev tooling via uv"
 	@echo "hooks            - install the git pre-commit hook"
-	@echo "lint             - run ruff + pylint-odoo"
+	@echo "lint             - run ruff + pylint-odoo + mypy"
+	@echo "lint-mypy        - mypy type-check (Odoo-independent modules only)"
 	@echo "format           - apply ruff formatting + import sorting"
 	@echo "test             - run unit tests (host) + Odoo integration tests (container)"
 	@echo "demo-seed        - ensure >= COUNT records of every supported doc type (default COUNT=1; idempotent)"
@@ -56,13 +57,16 @@ setup:
 hooks:
 	uv run pre-commit install
 
-lint: lint-ruff lint-pylint
+lint: lint-ruff lint-pylint lint-mypy
 
 lint-ruff:
 	uv run ruff check .
 
 lint-pylint:
 	uv run pylint --rcfile=pyproject.toml -- $(shell find $(MODULE) $(BRIDGES) -type f -name "*.py" -not -path "*/__pycache__/*")
+
+lint-mypy:
+	uv run mypy
 
 format:
 	uv run ruff format .
@@ -150,5 +154,6 @@ i18n-translate:
 
 i18n-check:
 	@err=0; for f in $(MODULE)/i18n/*.po $(foreach b,$(BRIDGES),$(b)/i18n/*.po) ; do \
+		[ -e "$$f" ] || continue ; \
 		if ! msgfmt -cv "$$f" -o /dev/null ; then err=1 ; fi ; \
 	done ; exit $$err
