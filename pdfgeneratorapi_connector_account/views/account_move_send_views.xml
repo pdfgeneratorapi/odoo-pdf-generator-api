@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="account_move_send_wizard_form_pdfgen" model="ir.ui.view">
-        <field name="name">account.move.send.wizard.form.pdfgen</field>
-        <field name="model">account.move.send.wizard</field>
-        <field name="inherit_id" ref="account.account_move_send_wizard_form"/>
+    <record id="account_move_send_form_pdfgen" model="ir.ui.view">
+        <field name="name">account.move.send.form.pdfgen</field>
+        <field name="model">account.move.send</field>
+        <field name="inherit_id" ref="account.account_move_send_form"/>
         <field name="arch" type="xml">
             <!-- Append a pdfgen panel inside the wizard form (the parent has
                  no <sheet>; it's a flat <form>). Visible only when the

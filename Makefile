@@ -10,6 +10,8 @@ else
     DEFAULT_ODOO_SERVICE := odoo
 endif
 ODOO_SERVICE ?= $(DEFAULT_ODOO_SERVICE)
+# Odoo 17's bundled pip predates PEP 668 and rejects --break-system-packages.
+PIP_BREAK_SYSTEM := $(if $(filter odoo17,$(ODOO_SERVICE)),,--break-system-packages)
 ODOO_DB ?= odoo
 MODULE := pdfgeneratorapi_connector
 BRIDGES := pdfgeneratorapi_connector_account pdfgeneratorapi_connector_sale pdfgeneratorapi_connector_purchase pdfgeneratorapi_connector_stock pdfgeneratorapi_connector_mrp
@@ -97,7 +99,7 @@ coverage-unit: coverage-clean
 
 coverage-odoo:
 	cd $(COMPOSE_DIR) && docker compose exec -T $(ODOO_SERVICE) bash -c \
-		"pip install --quiet --user --break-system-packages 'coverage[toml]>=7' >/dev/null && \
+		"pip install --quiet --user $(PIP_BREAK_SYSTEM) 'coverage[toml]>=7' >/dev/null && \
 		 cd /mnt/extra-addons/$(MODULE) && \
 		 /var/lib/odoo/.local/bin/coverage run \
 		   --data-file=.coverage.odoo \

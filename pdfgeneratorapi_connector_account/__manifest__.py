@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator API Connector — Invoicing bridge",
-    "version": "18.0.1.1.0",
+    "version": "17.0.1.1.0",
     "category": "Accounting",
     "summary": "Generate pdfgeneratorapi.com PDFs from customer invoices and credit notes",
     "author": "PDF Generator API",

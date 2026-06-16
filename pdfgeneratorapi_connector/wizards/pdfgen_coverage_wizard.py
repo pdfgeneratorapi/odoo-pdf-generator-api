@@ -19,6 +19,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 from ..enums import Format, Output
+from ..fields import TolerantSelection
 from ..models.pdfgen_api_client import ApiResponse, PdfGenApiClient, PdfGenApiError
 from ..models.pdfgen_resolver import flatten_placeholders
 
@@ -34,7 +35,7 @@ class PdfgenCoverageWizard(models.TransientModel):
         required=True,
         ondelete="cascade",
     )
-    template_id = fields.Selection(
+    template_id = TolerantSelection(
         selection="_selection_template_id",
         required=True,
     )

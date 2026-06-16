@@ -4,7 +4,7 @@
         <field name="name">pdfgen.async.job.list</field>
         <field name="model">pdfgen.async.job</field>
         <field name="arch" type="xml">
-            <list string="Async PDF Jobs" default_order="create_date desc">
+            <tree string="Async PDF Jobs" default_order="create_date desc">
                 <field name="create_date" string="Created"/>
                 <field name="name"/>
                 <field name="template_name"/>
@@ -17,7 +17,7 @@
                 <field name="dispatched_at" optional="hide"/>
                 <field name="completed_at" optional="show"/>
                 <field name="company_id" groups="base.group_multi_company" optional="hide"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -95,7 +95,7 @@
     <record id="action_pdfgen_async_job" model="ir.actions.act_window">
         <field name="name">Async Jobs</field>
         <field name="res_model">pdfgen.async.job</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_pdfgen_async_job_search"/>
         <field name="context">{"search_default_filter_dispatched": 1}</field>
     </record>

@@ -17,7 +17,7 @@ class TestMrpProductionPdfgen(TransactionCase):
         icp.set_param("pdfgen.api_secret", "test-secret")
         icp.set_param("pdfgen.workspace_identifier", "me@example.com")
         cls.product = cls.env["product.product"].create(
-            {"name": "Finished Gadget", "is_storable": True}
+            {"name": "Finished Gadget", "type": "product"}
         )
         cls.mo = cls.env["mrp.production"].create(
             {

@@ -4,11 +4,11 @@
         <field name="name">pdfgen.model.dataset.tree</field>
         <field name="model">pdfgen.model.dataset</field>
         <field name="arch" type="xml">
-            <list string="Field Datasets">
+            <tree string="Field Datasets">
                 <field name="name"/>
                 <field name="model_id"/>
                 <field name="active" widget="boolean_toggle"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -57,7 +57,7 @@
                             <div class="row g-3">
                                 <div class="col-12 col-lg-8">
                                     <field name="line_ids">
-                                        <list string="Mappings" editable="bottom">
+                                        <tree string="Mappings" editable="bottom">
                                             <field name="sequence" widget="handle"/>
                                             <field name="placeholder_path"/>
                                             <field name="is_list" widget="boolean_toggle"/>
@@ -68,7 +68,7 @@
                                                    widget="pdfgen_droppable_field_selector"
                                                    options="{'model': 'target_model', 'follow_relations': true}"/>
                                             <field name="parent_id" column_invisible="1"/>
-                                        </list>
+                                        </tree>
                                         <form string="Mapping">
                                             <sheet>
                                                 <group>
@@ -85,7 +85,7 @@
                                                 <notebook invisible="not is_list">
                                                     <page string="List Item Fields">
                                                         <field name="child_ids">
-                                                            <list editable="bottom">
+                                                            <tree editable="bottom">
                                                                 <field name="sequence" widget="handle"/>
                                                                 <field name="placeholder_path"/>
                                                                 <field name="target_model" column_invisible="1"/>
@@ -94,7 +94,7 @@
                                                                 <field name="odoo_field_path"
                                                                        widget="pdfgen_droppable_field_selector"
                                                                        options="{'model': 'target_model', 'follow_relations': true}"/>
-                                                            </list>
+                                                            </tree>
                                                         </field>
                                                     </page>
                                                 </notebook>
@@ -116,6 +116,6 @@
     <record id="action_pdfgen_model_dataset" model="ir.actions.act_window">
         <field name="name">Field Datasets</field>
         <field name="res_model">pdfgen.model.dataset</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
     </record>
 </odoo>

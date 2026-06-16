@@ -16,6 +16,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from ..fields import TolerantSelection
 from ..models.pdfgen_api_client import LIBRARY_TEMPLATE_PREFIX, PdfGenApiClient, PdfGenApiError
 
 _logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ class PdfgenTemplateEditorWizard(models.TransientModel):
     _name = "pdfgen.template.editor.wizard"
     _description = "Embed the pdfgeneratorapi.com template editor"
 
-    template_id = fields.Selection(
+    template_id = TolerantSelection(
         selection="_selection_template_id",
     )
     new_template_name = fields.Char(
