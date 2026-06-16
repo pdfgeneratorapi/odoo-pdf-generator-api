@@ -1,31 +1,29 @@
 /** @odoo-module **/
 
-import { Component, useEffect, useRef } from "@odoo/owl";
+import { useEffect, useRef } from "@odoo/owl";
 import { registry } from "@web/core/registry";
-import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import {
-    FieldSelectorField,
-    fieldSelectorField,
-} from "@web/views/fields/field_selector/field_selector_field";
+    DynamicModelFieldSelectorChar,
+    dynamicModelFieldSelectorChar,
+} from "@web/views/fields/dynamic_widget/dynamic_model_field_selector_char";
 
 /**
- * Thin wrapper around the stock field_selector that also accepts drops from
- * the pdfgen field palette. Standard keyboard / click-picker flow is
- * delegated to FieldSelectorField untouched; we only add the drag-to-bind
+ * Thin wrapper around the stock dynamic field selector that also accepts drops
+ * from the pdfgen field palette. The standard keyboard / click-picker flow is
+ * inherited from DynamicModelFieldSelectorChar untouched (getSelectorProps,
+ * getResModel, filter, _onRecordUpdate); we only add the drag-to-bind
  * affordance on the wrapper element.
+ *
+ * Odoo 18: the field-selector field widget is DynamicModelFieldSelectorChar
+ * (a CharField subclass rendering DynamicModelFieldSelector). Odoo 19
+ * renamed/moved it to @web/views/fields/field_selector/field_selector_field
+ * (FieldSelectorField); this module targets the 18 API.
  */
-export class PdfgenDroppableFieldSelector extends Component {
+export class PdfgenDroppableFieldSelector extends DynamicModelFieldSelectorChar {
     static template = "pdfgeneratorapi_connector.DroppableFieldSelector";
-    static components = { FieldSelectorField };
-    static props = {
-        ...standardFieldProps,
-        resModel: { type: String, optional: true },
-        onlySearchable: { type: Boolean, optional: true },
-        allowProperties: { type: Boolean, optional: true },
-        followRelations: { type: Boolean, optional: true },
-    };
 
     setup() {
+        super.setup();
         this.rootRef = useRef("root");
         // The palette fires a custom `pdfgen-field-drop` event on us when the
         // user drops a field onto our wrapper. The palette handles the HTML5
@@ -54,30 +52,10 @@ export class PdfgenDroppableFieldSelector extends Component {
         }
         await this.props.record.update({ [this.props.name]: path });
     }
-
-    get innerProps() {
-        // Forward every standard prop + our picker-specific props; the inner
-        // FieldSelectorField takes over from there.
-        const {
-            resModel,
-            onlySearchable,
-            allowProperties,
-            followRelations,
-            ...rest
-        } = this.props;
-        return {
-            ...rest,
-            resModel,
-            onlySearchable,
-            allowProperties,
-            followRelations,
-        };
-    }
-
 }
 
 export const pdfgenDroppableFieldSelector = {
-    ...fieldSelectorField,
+    ...dynamicModelFieldSelectorChar,
     component: PdfgenDroppableFieldSelector,
 };
 
