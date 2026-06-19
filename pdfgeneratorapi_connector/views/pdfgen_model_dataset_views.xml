@@ -18,12 +18,25 @@
         <field name="arch" type="xml">
             <form string="Field Dataset">
                 <header>
+                    <button name="action_open_in_editor"
+                            type="object"
+                            string="Open in Editor"
+                            class="btn-primary"
+                            invisible="not id"
+                            help="Launch the pdfgeneratorapi.com template editor with this dataset's resolved JSON as the sample data, so placeholder paths line up while you design the template."/>
+                    <button name="action_open_preview"
+                            type="object"
+                            string="Preview"
+                            class="btn-secondary"
+                            invisible="not id"
+                            help="Render the dataset against a real record (or the template's own sample data if no record exists) so you can see how the PDF looks before generating it for real."/>
                     <button name="%(action_pdfgen_coverage_wizard)d"
                             type="action"
-                            string="Check template coverage"
+                            string="Check coverage"
                             context="{'default_dataset_id': id}"
                             class="btn-secondary"
-                            invisible="not id"/>
+                            invisible="not id"
+                            help="Compare this dataset's placeholders against a template's expected fields. Highlights placeholders missing from the dataset and unused fields the template doesn't render."/>
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
@@ -34,7 +47,7 @@
                         <group>
                             <field name="model_id"
                                    options="{'no_create': True, 'no_open': True}"/>
-                            <field name="default_template_id"/>
+                            <field name="default_template_id" widget="pdfgen_template_selection"/>
                             <field name="model" invisible="1"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -53,7 +66,7 @@
                                                    placeholder="{street}, {city} {zip}"/>
                                             <field name="odoo_field_path"
                                                    widget="pdfgen_droppable_field_selector"
-                                                   options="{'model': 'target_model', 'followRelations': true}"/>
+                                                   options="{'model': 'target_model', 'follow_relations': true}"/>
                                             <field name="parent_id" column_invisible="1"/>
                                         </list>
                                         <form string="Mapping">
@@ -64,7 +77,7 @@
                                                     <field name="target_model" invisible="1"/>
                                                     <field name="odoo_field_path"
                                                            widget="pdfgen_droppable_field_selector"
-                                                           options="{'model': 'target_model', 'followRelations': true}"/>
+                                                           options="{'model': 'target_model', 'follow_relations': true}"/>
                                                     <field name="expression"
                                                            placeholder="{street}, {city} {zip}"/>
                                                     <field name="parent_id"/>
@@ -80,7 +93,7 @@
                                                                        placeholder="{name} ({qty})"/>
                                                                 <field name="odoo_field_path"
                                                                        widget="pdfgen_droppable_field_selector"
-                                                                       options="{'model': 'target_model', 'followRelations': true}"/>
+                                                                       options="{'model': 'target_model', 'follow_relations': true}"/>
                                                             </list>
                                                         </field>
                                                     </page>

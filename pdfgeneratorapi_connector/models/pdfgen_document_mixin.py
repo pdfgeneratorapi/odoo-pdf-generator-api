@@ -7,13 +7,23 @@ Also hosts the shared pdfgen config-read helper used by every wizard —
 per-company value if set, else global `ir.config_parameter` fallback.
 """
 
+import logging
+from collections.abc import Callable
+
 from odoo import _, api, fields, models, release
 from odoo.exceptions import UserError
 
-from .pdfgen_api_client import DEFAULT_BASE_URL, PdfGenApiClient
+from .pdfgen_api_client import (
+    DEFAULT_BASE_URL,
+    LIBRARY_TEMPLATE_PREFIX,
+    PdfGenApiClient,
+    PdfGenApiError,
+)
+
+_logger = logging.getLogger(__name__)
 
 
-def pdfgen_config(env, key):
+def pdfgen_config(env: api.Environment, key: str) -> str | None:
     """Return the effective pdfgen config value for the current company.
 
     Resolution order:
@@ -30,7 +40,7 @@ def pdfgen_config(env, key):
     return env["ir.config_parameter"].sudo().get_param(f"pdfgen.{key}") or None
 
 
-def build_pdfgen_client(env):
+def build_pdfgen_client(env: api.Environment) -> PdfGenApiClient:
     """Shared client factory used by every wizard — reads pdfgen_config
     for creds and raises a translatable UserError if anything's missing."""
     key = pdfgen_config(env, "api_key")
@@ -50,6 +60,72 @@ def build_pdfgen_client(env):
     )
 
 
+def pdfgen_template_selection(
+    env: api.Environment,
+    build_client: Callable[[], PdfGenApiClient],
+    include_create: bool = False,
+    include_library: bool = True,
+) -> list[tuple[str, str]]:
+    """Build the Selection entries shared by every template dropdown.
+
+    `build_client` is a zero-arg callable returning a PdfGenApiClient —
+    passed in (rather than calling `build_pdfgen_client` here) so each
+    caller keeps its own mockable factory hook (`self._build_client` on the
+    wizards, the module-level `build_pdfgen_client` on the dataset).
+
+    Order: optional "+ Create new template…" magic entry, then the public
+    Template Library ("Default Templates", values `lib:<publicId>`), then
+    the account's own templates ("My Templates", values `str(id)`). The
+    `pdfgen_template_selection` JS widget groups the dropdown by these
+    value shapes.
+
+    Gating mirrors the historical behaviour: no working client or a failed
+    own-templates fetch → empty list (a user who can't list their templates
+    can't act on any of them). The library section is purely additive — any
+    failure there just drops the section.
+    """
+    try:
+        client = build_client()
+    except UserError:
+        return []
+    try:
+        response = client.list_templates(per_page=100)
+    except PdfGenApiError as e:
+        _logger.warning("list_templates failed: %s / %s", e.status, e.body)
+        return []
+    templates = response.get("response", response) if isinstance(response, dict) else response
+    if not isinstance(templates, list):
+        return []
+    result = []
+    if include_create:
+        result.append(("__new__", env._("+ Create new template…")))
+    if include_library:
+        try:
+            lib_response = client.list_library_templates()
+        except Exception as e:
+            _logger.warning("list_library_templates failed: %s", e)
+            lib_response = None
+        lib_templates = (
+            lib_response.get("response") if isinstance(lib_response, dict) else lib_response
+        )
+        if isinstance(lib_templates, list):
+            for t in lib_templates:
+                if not isinstance(t, dict):
+                    continue
+                tid = t.get("id")
+                if not tid:
+                    continue
+                name = t.get("name") or f"Template {tid}"
+                result.append((f"{LIBRARY_TEMPLATE_PREFIX}{tid}", name))
+    for t in templates:
+        tid = t.get("id")
+        if tid is None:
+            continue
+        name = t.get("name") or f"Template {tid}"
+        result.append((str(tid), name))
+    return result
+
+
 class PdfgenDocumentMixin(models.AbstractModel):
     _name = "pdfgen.document.mixin"
     _description = "Expose the PDF Generator wizard on a document model"
@@ -60,7 +136,7 @@ class PdfgenDocumentMixin(models.AbstractModel):
     )
 
     @api.depends_context("uid", "allowed_company_ids")
-    def _compute_pdfgen_configured(self):
+    def _compute_pdfgen_configured(self) -> None:
         ready = bool(
             pdfgen_config(self.env, "api_key")
             and pdfgen_config(self.env, "api_secret")
@@ -69,7 +145,7 @@ class PdfgenDocumentMixin(models.AbstractModel):
         for record in self:
             record.pdfgen_configured = ready
 
-    def action_open_pdfgen_wizard(self):
+    def action_open_pdfgen_wizard(self) -> dict:
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
@@ -83,7 +159,7 @@ class PdfgenDocumentMixin(models.AbstractModel):
             },
         }
 
-    def action_view_pdfgen_async_jobs_from_list(self):
+    def action_view_pdfgen_async_jobs_from_list(self) -> dict:
         """Open the Async Jobs list filtered to the selected records.
 
         When invoked from a list-view header button the recordset is the
@@ -103,7 +179,7 @@ class PdfgenDocumentMixin(models.AbstractModel):
             "target": "current",
         }
 
-    def action_open_pdfgen_wizard_from_list(self):
+    def action_open_pdfgen_wizard_from_list(self) -> dict:
         """Entry point for the list-view header button.
 
         Single record → opens the existing sync wizard.

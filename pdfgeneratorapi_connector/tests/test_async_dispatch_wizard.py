@@ -68,6 +68,29 @@ class TestPdfgenAsyncDispatchWizard(TransactionCase):
             self.assertTrue(job.pdfgen_job_id)
             self.assertTrue(job.dispatched_at)
 
+    def test_dispatch_with_library_template_passes_value_through(self):
+        """`lib:` selection values reach `generate_async` intact — the client
+        strips the prefix into a public id when building the request body."""
+        self._new_dataset()
+        partner = self.env["res.partner"].create({"name": "L"})
+        client = MagicMock()
+        client.generate_async.return_value = "job-lib"
+        wiz = self.env["pdfgen.async.dispatch.wizard"].create(
+            {
+                "res_model": "res.partner",
+                "res_ids": str(partner.id),
+                "template_id": "lib:pub-a",
+            }
+        )
+        with self._patch_client(client):
+            wiz.action_dispatch()
+        self.assertEqual(client.generate_async.call_args.kwargs["template_id"], "lib:pub-a")
+        job = self.env["pdfgen.async.job"].search(
+            [("res_model", "=", "res.partner"), ("res_id", "=", partner.id)], limit=1
+        )
+        self.assertEqual(job.state, "dispatched")
+        self.assertEqual(job.template_id, "lib:pub-a")
+
     def test_dispatch_marks_failed_when_api_raises(self):
         from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (
             PdfGenApiError,

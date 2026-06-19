@@ -11,12 +11,14 @@ the April 2026 strategy doc; checked items are landed on `main`.
 - [x] `res.config.settings` page with credentials + Show/Hide secret toggle
 - [x] Hand-rolled `PdfGenApiClient` (stdlib + `requests`, zero pip deps)
 - [x] JWT HS256 minting (fresh token per request)
-- [x] `Test Connection` button hitting `GET /workspaces/{id}`
+- [x] `Test Connection` button hitting `GET /templates?per_page=1` (works for regular workspace users; `/workspaces/{id}` is master-only and rejected non-master accounts with a 403)
 - [x] `Generate custom PDF` button on `account.move`
 - [x] Wizard with live `GET /templates` (first 100)
 - [x] `POST /documents/generate` → `ir.attachment` on the invoice, posted to the chatter
 - [x] Docker compose: v19 + v18 services, shared network with pdfgeneratorapi backend
 - [x] Dev tooling: `uv`, `ruff`, `pylint-odoo`, `pre-commit` hook with 95% coverage gate
+- [x] Opt-in bridge selection: **Settings → PDF Generator API → Document types** exposes `module_pdfgeneratorapi_connector_{account,sale,purchase,stock,mrp,rental}` toggles. Each tick installs the bridge + seeds its default dataset; untick uninstalls cleanly. Bridges are not `auto_install` so users (e.g. rental-only shops) only get what they pick.
+- [x] Invoicing extracted into its own bridge (`pdfgeneratorapi_connector_account`). Base addon depends only on `base` + `mail` — pure framework (API client, mixins, dataset model, wizards, async jobs). A `pre_init_hook` re-homes the existing `ir.model.data` rows on upgrade so the invoice dataset survives without duplicating.
 
 ### Open Phase 1 follow-ups
 
@@ -219,7 +221,7 @@ webhook receiver, with idempotent retry handling.
 
 ## Phase 7 — Distribution & App Store
 
-- [ ] `static/description/index.html` — App Store listing page (features, screenshots).
+- [x] `static/description/index.html` — App Store listing page (features, screenshots).
 - [x] Proper icon (currently placeholder).
 - [ ] Screenshots: settings page, wizard, generated PDF attached to invoice.
 - [ ] Privacy policy section for App Store review (what data leaves Odoo, over TLS, to which region).

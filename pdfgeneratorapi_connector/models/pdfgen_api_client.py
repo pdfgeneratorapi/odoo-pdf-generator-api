@@ -16,11 +16,42 @@ import time
 
 import requests
 
+from ..enums import Format, Output
+
 _logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "https://us1.pdfgeneratorapi.com/api/v4"
 DEFAULT_TIMEOUT = 60
 JWT_TTL_SECONDS = 30
+
+# Parsed return of `_request`: a decoded JSON body (usually a dict envelope,
+# sometimes a list or a bare string for scalar endpoints), the raw bytes when
+# the response isn't JSON, or None for an empty 2xx body.
+ApiResponse = dict | list | str | bytes | None
+
+# Selection-value prefix marking a Template Library ("default") template.
+# Library templates are identified by an opaque public id string, while
+# account templates use numeric ids — the prefix keeps the two namespaces
+# unambiguous in Selection fields, attachment descriptions and job rows.
+LIBRARY_TEMPLATE_PREFIX = "lib:"
+
+
+def normalize_template_id(value: str | int) -> int | str:
+    """Turn a selection/storage value into what the API expects.
+
+    `lib:`-prefixed values resolve to the bare public id *string* (the
+    generation endpoints accept either a numeric id or a public id).
+    Numeric values stay ints so request bodies are unchanged for account
+    templates. Anything else passes through as a string.
+    """
+    text = str(value)
+    if text.startswith(LIBRARY_TEMPLATE_PREFIX):
+        return text[len(LIBRARY_TEMPLATE_PREFIX) :]
+    try:
+        return int(text)
+    except (TypeError, ValueError):
+        return text
+
 
 # Retry policy for _request. 429 and the three "gateway-ish" 5xx codes are
 # retried with exponential backoff. Everything else either succeeds on first
@@ -43,7 +74,7 @@ _REDACT_RE = re.compile(
 )
 
 
-def _redact(text):
+def _redact(text: str) -> str:
     """Mask values after secret-sounding keys in free-form text.
 
     Used before logging API response bodies so a stray token in an error
@@ -55,7 +86,7 @@ def _redact(text):
     return _REDACT_RE.sub(r"\1<redacted>", text)
 
 
-def _parse_retry_after(header_value):
+def _parse_retry_after(header_value: str) -> float | None:
     """Parse a `Retry-After` header. Returns float seconds or None on junk.
 
     RFC 7231 allows either a non-negative integer (seconds) or an HTTP-date.
@@ -83,7 +114,7 @@ def _parse_retry_after(header_value):
 class PdfGenApiError(Exception):
     """Raised when the API returns a non-2xx response."""
 
-    def __init__(self, status, body, message=None):
+    def __init__(self, status: int | None, body: str | None, message: str | None = None) -> None:
         self.status = status
         self.body = body
         super().__init__(message or f"PDF Generator API error {status}: {body}")
@@ -94,14 +125,14 @@ class PdfGenApiClient:
 
     def __init__(
         self,
-        base_url,
-        api_key,
-        api_secret,
-        workspace_identifier,
-        timeout=DEFAULT_TIMEOUT,
-        editor_web_url=None,
-        partner_id=None,
-    ):
+        base_url: str | None,
+        api_key: str,
+        api_secret: str,
+        workspace_identifier: str,
+        timeout: int = DEFAULT_TIMEOUT,
+        editor_web_url: str | None = None,
+        partner_id: str | None = None,
+    ) -> None:
         self.base_url = (base_url or DEFAULT_BASE_URL).rstrip("/")
         self.api_key = api_key
         self.api_secret = api_secret
@@ -116,10 +147,10 @@ class PdfGenApiClient:
         self.editor_web_url = editor_web_url.rstrip("/") if editor_web_url else None
 
     @staticmethod
-    def _b64url(payload):
+    def _b64url(payload: bytes) -> bytes:
         return base64.urlsafe_b64encode(payload).rstrip(b"=")
 
-    def _jwt(self, ttl=JWT_TTL_SECONDS):
+    def _jwt(self, ttl: int = JWT_TTL_SECONDS) -> str:
         header = self._b64url(
             json.dumps({"alg": "HS256", "typ": "JWT"}, separators=(",", ":")).encode()
         )
@@ -137,8 +168,20 @@ class PdfGenApiClient:
         )
         return (signing_input + b"." + signature).decode()
 
-    def _request(self, method, path, params=None, json_body=None, retries=DEFAULT_RETRIES):
+    def _request(
+        self,
+        method: str,
+        path: str,
+        params: dict | None = None,
+        json_body: dict | None = None,
+        retries: int = DEFAULT_RETRIES,
+        base_url: str | None = None,
+    ) -> ApiResponse:
         """HTTP call with retry + backoff on transient failures.
+
+        `base_url` overrides the configured workspace base URL for the one
+        call — used by the Template Library endpoints, which always live on
+        the public production API.
 
         Retries on connection errors, timeouts, and responses with status in
         RETRYABLE_STATUSES (429 / 502 / 503 / 504). Honors `Retry-After` when
@@ -147,7 +190,6 @@ class PdfGenApiClient:
         MAX_TOTAL_WAIT_SECONDS overall. Non-retryable 4xx and 5xx still fail
         on first response.
         """
-        url = f"{self.base_url}{path}"
         elapsed_wait = 0.0
         last_error = None
         last_response = None
@@ -160,7 +202,7 @@ class PdfGenApiClient:
             try:
                 response = requests.request(
                     method,
-                    url,
+                    f"{base_url or self.base_url}{path}",
                     params=params,
                     json=json_body,
                     timeout=self.timeout,
@@ -221,10 +263,13 @@ class PdfGenApiClient:
                 _redact(last_response.text)[:500],
             )
             raise PdfGenApiError(last_response.status_code, last_response.text)
-        raise last_error
+        # last_response is None only on the exception paths, which always set
+        # last_error — the `or` fallback is just to satisfy the type checker
+        # (and avoid ever raising None) for the theoretically-unreachable case.
+        raise last_error or PdfGenApiError(0, "", "Request failed")
 
     @staticmethod
-    def _retry_delay(attempt, response):
+    def _retry_delay(attempt: int, response: requests.Response | None) -> float:
         """Compute how long to wait before the next retry.
 
         Prefers `Retry-After` from the response (integer seconds or HTTP-date).
@@ -244,12 +289,27 @@ class PdfGenApiClient:
         jitter = base * 0.2 * (random.random() * 2 - 1)
         return max(0, min(base + jitter, MAX_SINGLE_WAIT_SECONDS))
 
-    def ping(self):
-        """Validate both auth and workspace existence."""
-        return self._request("GET", f"/workspaces/{self.workspace}")
+    def ping(self) -> ApiResponse:
+        """Validate auth + workspace by listing one template.
 
-    def list_templates(self, per_page=100, page=1, name=None, tags=None, access=None):
-        params = {"per_page": per_page, "page": page}
+        `/workspaces/{id}` is restricted to master-user credentials, so it
+        rejects regular workspace users with a 403 even when the JWT and
+        workspace identifier are correct. `/templates` is reachable by any
+        authenticated workspace (master or sub), so it makes a better health
+        check — a 200 proves the API key/secret and `sub` claim resolve to a
+        real workspace, without requiring elevated permissions.
+        """
+        return self._request("GET", "/templates", params={"per_page": 1, "page": 1})
+
+    def list_templates(
+        self,
+        per_page: int = 100,
+        page: int = 1,
+        name: str | None = None,
+        tags: str | None = None,
+        access: str | None = None,
+    ) -> ApiResponse:
+        params: dict[str, int | str] = {"per_page": per_page, "page": page}
         if name:
             params["name"] = name
         if tags:
@@ -258,7 +318,38 @@ class PdfGenApiClient:
             params["access"] = access
         return self._request("GET", "/templates", params=params)
 
-    def get_template_data(self, template_id):
+    # The Template Library is public, global content served by the production
+    # API — it requires no auth and is identical for every workspace. Library
+    # calls therefore always target DEFAULT_BASE_URL (per the official docs at
+    # https://docs.pdfgeneratorapi.com/v4) instead of the configured regional /
+    # on-prem base URL, whose library may be empty.
+    LIBRARY_BASE_URL = DEFAULT_BASE_URL
+
+    def list_library_templates(self, tags: str | None = None) -> ApiResponse:
+        """List the public Template Library (`GET /templates/library`).
+
+        The endpoint requires no auth and has no pagination — the only
+        filter is `tags`. Each entry carries a string `id` (public id),
+        `name`, `tags`, `preview_image` and `sample_data` URLs.
+        """
+        params = {}
+        if tags:
+            params["tags"] = tags
+        return self._request(
+            "GET", "/templates/library", params=params or None, base_url=self.LIBRARY_BASE_URL
+        )
+
+    def get_library_template(self, public_id: str) -> ApiResponse:
+        """Fetch a library template's full definition
+        (`GET /templates/library/{publicId}`). The `response` envelope holds a
+        TemplateDefinition (name, layout, pages, dataSettings, editor) that can
+        be POSTed to `/templates` to copy the template into the account.
+        """
+        return self._request(
+            "GET", f"/templates/library/{public_id}", base_url=self.LIBRARY_BASE_URL
+        )
+
+    def get_template_data(self, template_id: int | str) -> ApiResponse:
         """Return the sample data dict the template expects.
 
         The response envelope is `{"response": <dict>, "meta": {}}`. The dict shape
@@ -267,18 +358,32 @@ class PdfGenApiClient:
         """
         return self._request("GET", f"/templates/{int(template_id)}/data")
 
-    def generate(self, template_id, data, name=None, output="base64", fmt="pdf"):
+    def generate(
+        self,
+        template_id: int | str,
+        data: dict,
+        name: str | None = None,
+        output: Output = Output.BASE64,
+        format: Format = Format.PDF,
+    ) -> ApiResponse:
+        normalized = normalize_template_id(template_id)
         body = {
-            "template": {"id": int(template_id), "data": data},
-            "format": fmt,
+            "template": {"id": normalized, "data": data},
+            "format": format,
             "output": output,
-            "name": name or f"template-{template_id}",
+            "name": name or f"template-{normalized}",
         }
         return self._request("POST", "/documents/generate", json_body=body)
 
     def generate_async(
-        self, template_id, data, callback_url, name=None, output="base64", fmt="pdf"
-    ):
+        self,
+        template_id: int | str,
+        data: dict,
+        callback_url: str,
+        name: str | None = None,
+        output: Output = Output.BASE64,
+        format: Format = Format.PDF,
+    ) -> str | None:
         """Dispatch an async generation job and return pdfgen's job id.
 
         Body shape mirrors `/documents/generate` plus a `callback.url` field
@@ -286,18 +391,19 @@ class PdfGenApiClient:
         the only piece tied to pdfgen's docs — the rest of the body / the
         envelope extractor are unchanging.
         """
+        normalized = normalize_template_id(template_id)
         body = {
-            "template": {"id": int(template_id), "data": data},
-            "format": fmt,
+            "template": {"id": normalized, "data": data},
+            "format": format,
             "output": output,
-            "name": name or f"template-{template_id}",
+            "name": name or f"template-{normalized}",
             "callback": {"url": callback_url},
         }
         response = self._request("POST", "/documents/generate/async", json_body=body)
         return self._extract_async_job_id(response)
 
     @staticmethod
-    def _extract_async_job_id(response):
+    def _extract_async_job_id(response: ApiResponse) -> str | None:
         """Pull the async-job id out of pdfgen's response envelope.
 
         Tolerant of both `{"response": "<id>"}` and the more typical
@@ -315,7 +421,9 @@ class PdfGenApiClient:
                         return str(value[key])
         return None
 
-    def open_editor(self, template_id, data=None, language=None):
+    def open_editor(
+        self, template_id: int | str, data: dict | None = None, language: str | None = None
+    ) -> str | None:
         """Call `POST /templates/{id}/editor` (openEditor) and return the signed
         URL pointing at the embedded template editor.
 
@@ -330,7 +438,15 @@ class PdfGenApiClient:
         match, preserving the path and (crucially) the signed token in the
         query string.
         """
-        body = {}
+        if str(template_id).startswith(LIBRARY_TEMPLATE_PREFIX):
+            # Library templates have no editor endpoint — callers must copy
+            # them into the account first (see the template editor wizard).
+            raise PdfGenApiError(
+                None,
+                None,
+                message=f"Library template {template_id} cannot be opened in the editor directly",
+            )
+        body: dict[str, object] = {}
         if data is not None:
             body["data"] = data
         if language:
@@ -342,7 +458,7 @@ class PdfGenApiClient:
         return url
 
     @staticmethod
-    def _extract_editor_url(response):
+    def _extract_editor_url(response: ApiResponse) -> str | None:
         """Pull the signed URL string out of an openEditor response."""
         if isinstance(response, str):
             return response
@@ -357,7 +473,7 @@ class PdfGenApiClient:
         return None
 
     @staticmethod
-    def _rewrite_url_host(url, new_host_base):
+    def _rewrite_url_host(url: str, new_host_base: str) -> str:
         """Replace the scheme+host of `url` with `new_host_base`. Keeps path,
         query and fragment verbatim so the signed session identifier (typically
         embedded in the path as a UUID) survives intact.
@@ -382,11 +498,44 @@ class PdfGenApiClient:
             )
         )
 
-    def create_template(self, name, description=None):
-        """Create a new blank template. Returns the template's metadata, including
+    # Keys POST /templates accepts (the spec's TemplateDefinitionNew schema).
+    # Whitelisted (rather than just dropping `id`) so read-only metadata the
+    # library may grow later never leaks into the body.
+    TEMPLATE_DEFINITION_KEYS = (
+        "name",
+        "tags",
+        "isDraft",
+        "layout",
+        "pages",
+        "dataSettings",
+        "editor",
+        "fontSubsetting",
+        "barcodeAsImage",
+    )
+
+    def create_template(
+        self,
+        name: str | None = None,
+        description: str | None = None,
+        definition: dict | None = None,
+    ) -> ApiResponse:
+        """Create a new template. Returns the template's metadata, including
         `id`, which the caller typically pairs with `get_editor_url` to immediately
-        open the editor on the fresh template."""
-        body = {"name": name}
+        open the editor on the fresh template.
+
+        With only `name`/`description` a blank template is minted. When
+        `definition` is given (a TemplateDefinition dict, e.g. from
+        `get_library_template`) its design is copied — `name` still wins if
+        passed explicitly.
+        """
+        if definition is not None:
+            body = {k: definition[k] for k in self.TEMPLATE_DEFINITION_KEYS if k in definition}
+            if name:
+                body["name"] = name
+        else:
+            body = {"name": name}
+        if not body.get("name"):
+            body["name"] = "New template"
         if description:
             body["description"] = description
         return self._request("POST", "/templates", json_body=body)

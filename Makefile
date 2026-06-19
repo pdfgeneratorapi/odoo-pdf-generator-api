@@ -1,26 +1,18 @@
-# Route the Odoo container *and* its database by the current git branch so
-# the pre-commit hook tests against the matching major version. A schema
-# created by v19 is not loadable by v18, so each major needs its own DB.
-# Override with `ODOO_SERVICE=...` / `ODOO_DB=...` on the command line.
+# Route the Odoo container by the branch we're on so the pre-commit hook
+# tests against the matching major version. Override with `ODOO_SERVICE=...`
+# on the command line to force a specific service.
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null)
 ifeq ($(GIT_BRANCH),18.0)
     DEFAULT_ODOO_SERVICE := odoo18
-    DEFAULT_ODOO_DB := odoo18
 else ifeq ($(GIT_BRANCH),17.0)
     DEFAULT_ODOO_SERVICE := odoo17
-    DEFAULT_ODOO_DB := odoo17
 else
     DEFAULT_ODOO_SERVICE := odoo
-    DEFAULT_ODOO_DB := odoo
 endif
 ODOO_SERVICE ?= $(DEFAULT_ODOO_SERVICE)
-ODOO_DB ?= $(DEFAULT_ODOO_DB)
-# Docker Desktop ships compose as the v2 plugin (`docker compose`), but on
-# some setups the plugin isn't loaded — fall back to the standalone v1
-# `docker-compose` binary when the subcommand isn't recognized.
-DOCKER_COMPOSE ?= $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
+ODOO_DB ?= odoo
 MODULE := pdfgeneratorapi_connector
-BRIDGES := pdfgeneratorapi_connector_sale pdfgeneratorapi_connector_purchase pdfgeneratorapi_connector_stock pdfgeneratorapi_connector_mrp
+BRIDGES := pdfgeneratorapi_connector_account pdfgeneratorapi_connector_sale pdfgeneratorapi_connector_purchase pdfgeneratorapi_connector_stock pdfgeneratorapi_connector_mrp
 comma := ,
 empty :=
 space := $(empty) $(empty)
@@ -38,16 +30,21 @@ REPO_ROOT := $(CURDIR)
 # Odoo container's coverage run but their code is covered via --source.
 ODOO_COVERAGE_FILE_HOST := $(REPO_ROOT)/$(MODULE)/.coverage.odoo
 
-.PHONY: help setup lint lint-ruff lint-pylint format test test-unit test-odoo \
+.PHONY: help setup lint lint-ruff lint-pylint lint-mypy format test test-unit test-odoo \
         coverage coverage-unit coverage-odoo coverage-clean \
-        hooks upgrade i18n-export i18n-translate i18n-check
+        hooks upgrade demo-seed i18n-export i18n-translate i18n-check
+
+# Default record count for `make demo-seed`. Override with `make demo-seed COUNT=10`.
+COUNT ?= 1
 
 help:
 	@echo "setup            - install dev tooling via uv"
 	@echo "hooks            - install the git pre-commit hook"
-	@echo "lint             - run ruff + pylint-odoo"
+	@echo "lint             - run ruff + pylint-odoo + mypy"
+	@echo "lint-mypy        - mypy type-check (Odoo-independent modules only)"
 	@echo "format           - apply ruff formatting + import sorting"
 	@echo "test             - run unit tests (host) + Odoo integration tests (container)"
+	@echo "demo-seed        - ensure >= COUNT records of every supported doc type (default COUNT=1; idempotent)"
 	@echo "coverage         - combined coverage (unit + Odoo), fail under threshold in pyproject"
 	@echo "upgrade          - upgrade all addons (main + bridges) in the running Odoo container"
 	@echo "i18n-export      - regenerate each addon's .pot from current source strings"
@@ -60,13 +57,16 @@ setup:
 hooks:
 	uv run pre-commit install
 
-lint: lint-ruff lint-pylint
+lint: lint-ruff lint-pylint lint-mypy
 
 lint-ruff:
 	uv run ruff check .
 
 lint-pylint:
 	uv run pylint --rcfile=pyproject.toml -- $(shell find $(MODULE) $(BRIDGES) -type f -name "*.py" -not -path "*/__pycache__/*")
+
+lint-mypy:
+	uv run mypy
 
 format:
 	uv run ruff format .
@@ -78,7 +78,7 @@ test-unit:
 	uv run pytest tests_unit -v
 
 test-odoo:
-	cd $(COMPOSE_DIR) && $(DOCKER_COMPOSE) exec -T $(ODOO_SERVICE) odoo \
+	cd $(COMPOSE_DIR) && docker compose exec -T $(ODOO_SERVICE) odoo \
 		-d $(ODOO_DB) \
 		-u $(MODULES) \
 		--test-enable \
@@ -96,7 +96,7 @@ coverage-unit: coverage-clean
 	uv run coverage run --data-file=.coverage.unit -m pytest tests_unit -q
 
 coverage-odoo:
-	cd $(COMPOSE_DIR) && $(DOCKER_COMPOSE) exec -T $(ODOO_SERVICE) bash -c \
+	cd $(COMPOSE_DIR) && docker compose exec -T $(ODOO_SERVICE) bash -c \
 		"pip install --quiet --user --break-system-packages 'coverage[toml]>=7' >/dev/null && \
 		 cd /mnt/extra-addons/$(MODULE) && \
 		 /var/lib/odoo/.local/bin/coverage run \
@@ -119,12 +119,26 @@ coverage: coverage-unit coverage-odoo
 	uv run coverage report
 
 upgrade:
-	cd $(COMPOSE_DIR) && $(DOCKER_COMPOSE) exec -T $(ODOO_SERVICE) odoo \
+	cd $(COMPOSE_DIR) && docker compose exec -T $(ODOO_SERVICE) odoo \
 		-d $(ODOO_DB) \
 		-u $(MODULES) \
 		--stop-after-init \
 		--no-http
-	cd $(COMPOSE_DIR) && $(DOCKER_COMPOSE) restart $(ODOO_SERVICE)
+	cd $(COMPOSE_DIR) && docker compose restart $(ODOO_SERVICE)
+
+# Local-dev seeder: ensure ≥ COUNT records of every pdfgen-supported
+# document type exist in the DB. Idempotent on COUNT — re-runs with the
+# same value are no-ops; bumping COUNT adds the difference.
+#
+# First-time path: the `-i pdfgen_demo_data` installs the demo addon (a
+# no-op once installed) and fires its post_init_hook which reads
+# PDFGEN_DEMO_COUNT from the env. The subsequent odoo-shell call invokes
+# `seed(env, count=$(COUNT))` directly so subsequent calls also honour
+# the requested count without needing to re-install.
+demo-seed:
+	cd $(COMPOSE_DIR) && docker compose exec -T -e PDFGEN_DEMO_COUNT=$(COUNT) $(ODOO_SERVICE) bash -lc \
+		"odoo -i pdfgen_demo_data -d $(ODOO_DB) --stop-after-init --no-http >/dev/null && \
+		 echo 'from odoo.addons.pdfgen_demo_data.hooks import seed; seed(env, count=$(COUNT)); env.cr.commit()' | odoo shell -d $(ODOO_DB) --no-http"
 
 # i18n — uses the running Odoo container to export .pot files (reads the
 # installed module schema), then rewrites .po files from the translation dicts
@@ -133,12 +147,13 @@ upgrade:
 # hand and the translator script is idempotent on it.
 i18n-export:
 	cd $(COMPOSE_DIR) && $(foreach m,$(MODULE) $(BRIDGES),\
-		$(DOCKER_COMPOSE) exec -T $(ODOO_SERVICE) odoo i18n export -d $(ODOO_DB) $(m) 2>&1 | tail -1 ; )
+		docker compose exec -T $(ODOO_SERVICE) odoo i18n export -d $(ODOO_DB) $(m) 2>&1 | tail -1 ; )
 
 i18n-translate:
 	uv run python scripts/i18n_translate.py
 
 i18n-check:
 	@err=0; for f in $(MODULE)/i18n/*.po $(foreach b,$(BRIDGES),$(b)/i18n/*.po) ; do \
+		[ -e "$$f" ] || continue ; \
 		if ! msgfmt -cv "$$f" -o /dev/null ; then err=1 ; fi ; \
 	done ; exit $$err

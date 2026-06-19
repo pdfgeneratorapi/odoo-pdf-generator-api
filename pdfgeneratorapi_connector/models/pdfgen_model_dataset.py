@@ -1,11 +1,11 @@
 import logging
+from typing import Self
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 from . import pdfgen_resolver
-from .pdfgen_api_client import PdfGenApiError
-from .pdfgen_document_mixin import build_pdfgen_client
+from .pdfgen_document_mixin import build_pdfgen_client, pdfgen_template_selection
 
 _logger = logging.getLogger(__name__)
 
@@ -44,27 +44,10 @@ class PdfGenModelDataset(models.Model):
     )
 
     @api.model
-    def _selection_default_template_id(self):
-        try:
-            client = build_pdfgen_client(self.env)
-        except UserError:
-            return []
-        try:
-            response = client.list_templates(per_page=100)
-        except PdfGenApiError as e:
-            _logger.warning("list_templates failed: %s / %s", e.status, e.body)
-            return []
-        templates = response.get("response", response) if isinstance(response, dict) else response
-        if not isinstance(templates, list):
-            return []
-        result = []
-        for t in templates:
-            tid = t.get("id")
-            name = t.get("name") or f"Template {tid}"
-            if tid is None:
-                continue
-            result.append((str(tid), name))
-        return result
+    def _selection_default_template_id(self) -> list[tuple[str, str]]:
+        # `build_pdfgen_client` is resolved through this module's namespace
+        # at call time so tests can patch it here.
+        return pdfgen_template_selection(self.env, lambda: build_pdfgen_client(self.env))
 
     _sql_constraints = [
         (
@@ -75,14 +58,82 @@ class PdfGenModelDataset(models.Model):
     ]
 
     @api.model_create_multi
-    def create(self, vals_list):
+    def create(self, vals_list: list[dict]) -> Self:
         for vals in vals_list:
             if not vals.get("name") and vals.get("model_id"):
                 model = self.env["ir.model"].browse(vals["model_id"])
                 vals["name"] = model.name or model.model
         return super().create(vals_list)
 
-    def resolve_payload(self, record):
+    # ------------------------------------------------------------------
+    # Wizard launchers (header buttons on the dataset form)
+    # ------------------------------------------------------------------
+
+    def _first_sample_record_id(self) -> int:
+        """First record of the dataset's model, or 0 if none exist.
+
+        Used as the auto-default for the template editor wizard's sample
+        record picker. We don't filter for `posted` / `done` / similar
+        state — the dataset only needs *some* record so the editor can
+        render real data.
+        """
+        self.ensure_one()
+        if not self.model or self.model not in self.env:
+            return 0
+        record = self.env[self.model].search([], limit=1)
+        return record.id if record else 0
+
+    def action_open_in_editor(self) -> dict:
+        """Open the pdfgen.com template editor with this dataset prefilled.
+
+        The template editor wizard pre-fills `dataset_id` (so the placeholder
+        palette knows what model to walk) and `sample_record_id` (so the
+        editor renders against real data). If the dataset has a
+        `default_template_id`, that template is selected too — user just
+        clicks `Open` to launch the editor iframe.
+        """
+        self.ensure_one()
+        ctx = {"default_dataset_id": self.id}
+        sample = self._first_sample_record_id()
+        if sample:
+            ctx["default_sample_record_id"] = sample
+        if self.default_template_id:
+            ctx["default_template_id"] = self.default_template_id
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Template Editor"),
+            "res_model": "pdfgen.template.editor.wizard",
+            "view_mode": "form",
+            "target": "current",
+            "context": ctx,
+        }
+
+    def action_open_preview(self) -> dict:
+        """Open the coverage/preview wizard. Auto-renders if a default
+        template is configured so the user lands on the rendered HTML
+        instead of an empty preview pane.
+
+        Falls back to opening the wizard for manual template selection
+        when `default_template_id` is empty.
+        """
+        self.ensure_one()
+        if not self.default_template_id:
+            return {
+                "type": "ir.actions.act_window",
+                "name": _("Preview"),
+                "res_model": "pdfgen.coverage.wizard",
+                "view_mode": "form",
+                "target": "new",
+                "context": {"default_dataset_id": self.id},
+            }
+        wizard = self.env["pdfgen.coverage.wizard"].create(
+            {"dataset_id": self.id, "template_id": self.default_template_id}
+        )
+        # action_preview() returns a `_reopen()` action dict that lands the
+        # user back on this wizard with `preview_html` populated.
+        return wizard.action_preview()
+
+    def resolve_payload(self, record: models.Model) -> dict:
         """Turn an Odoo record into the JSON payload every template receives."""
         self.ensure_one()
         if record._name != self.model:
@@ -156,7 +207,7 @@ class PdfGenModelDatasetLine(models.Model):
     )
 
     @api.depends("parent_id.odoo_field_path", "dataset_id.model")
-    def _compute_target_model(self):
+    def _compute_target_model(self) -> None:
         for rec in self:
             root = rec.dataset_id.model or ""
             if not rec.parent_id:
@@ -178,25 +229,25 @@ class _LineView:
 
     __slots__ = ("_line",)
 
-    def __init__(self, line):
+    def __init__(self, line: models.Model) -> None:
         self._line = line
 
     @property
-    def placeholder_path(self):
+    def placeholder_path(self) -> str:
         return self._line.placeholder_path
 
     @property
-    def odoo_field_path(self):
+    def odoo_field_path(self) -> str:
         return self._line.odoo_field_path or ""
 
     @property
-    def expression(self):
+    def expression(self) -> str:
         return self._line.expression or ""
 
     @property
-    def is_list(self):
+    def is_list(self) -> bool:
         return self._line.is_list
 
     @property
-    def child_lines(self):
+    def child_lines(self) -> list["_LineView"]:
         return [_LineView(c) for c in self._line.child_ids]

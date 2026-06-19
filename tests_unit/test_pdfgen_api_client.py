@@ -10,17 +10,33 @@ import importlib.util
 import json
 import sys
 import time
+import types
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-CLIENT_PATH = (
-    Path(__file__).parent.parent / "pdfgeneratorapi_connector" / "models" / "pdfgen_api_client.py"
+_ADDON = Path(__file__).parent.parent / "pdfgeneratorapi_connector"
+
+
+def _load(qualname, relpath):
+    spec = importlib.util.spec_from_file_location(qualname, _ADDON / relpath)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[qualname] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+# pdfgen_api_client does `from ..enums import Format, Output`. Load it under its
+# real package name — with the enums module + stub parent packages in sys.modules —
+# so that relative import resolves WITHOUT running the addon __init__ (it imports Odoo).
+for _pkg in ("pdfgeneratorapi_connector", "pdfgeneratorapi_connector.models"):
+    sys.modules.setdefault(_pkg, types.ModuleType(_pkg))
+_load("pdfgeneratorapi_connector.enums", "enums.py")
+
+_client_module = _load(
+    "pdfgeneratorapi_connector.models.pdfgen_api_client", "models/pdfgen_api_client.py"
 )
-spec = importlib.util.spec_from_file_location("pdfgen_api_client", CLIENT_PATH)
-_client_module = importlib.util.module_from_spec(spec)
-sys.modules["pdfgen_api_client"] = _client_module
-spec.loader.exec_module(_client_module)
+sys.modules["pdfgen_api_client"] = _client_module  # legacy alias for any string-based patch
 
 PdfGenApiClient = _client_module.PdfGenApiClient
 PdfGenApiError = _client_module.PdfGenApiError
@@ -121,13 +137,16 @@ class RequestTests(unittest.TestCase):
         resp.json.return_value = json_body
         return resp
 
-    def test_ping_calls_workspaces_endpoint(self):
+    def test_ping_calls_templates_endpoint(self):
+        # `/workspaces/{id}` is master-user-only; ping uses `/templates` with a
+        # minimal page so regular workspace users can validate their config too.
         with patch.object(_client_module.requests, "request") as mock_req:
-            mock_req.return_value = self._mock_response(json_body={"response": {"id": 1}})
+            mock_req.return_value = self._mock_response(json_body={"response": []})
             self.client.ping()
         args, kwargs = mock_req.call_args
         self.assertEqual(args[0], "GET")
-        self.assertEqual(args[1], "https://example.test/api/v4/workspaces/w")
+        self.assertEqual(args[1], "https://example.test/api/v4/templates")
+        self.assertEqual(kwargs["params"], {"per_page": 1, "page": 1})
         self.assertIn("Authorization", kwargs["headers"])
         self.assertTrue(kwargs["headers"]["Authorization"].startswith("Bearer "))
 
@@ -346,6 +365,128 @@ class RequestTests(unittest.TestCase):
             workspace_identifier="w",
         )
         self.assertEqual(c.base_url, _client_module.DEFAULT_BASE_URL.rstrip("/"))
+
+
+class LibraryTemplateTests(unittest.TestCase):
+    """Template Library endpoints + `lib:` id normalization."""
+
+    def setUp(self):
+        self.client = PdfGenApiClient(
+            base_url="https://example.test/api/v4",
+            api_key="k",
+            api_secret="s",
+            workspace_identifier="w",
+        )
+
+    def _mock_response(self, *, json_body=None):
+        resp = MagicMock()
+        resp.ok = True
+        resp.status_code = 200
+        resp.text = json.dumps(json_body) if json_body is not None else ""
+        resp.content = resp.text.encode()
+        resp.json.return_value = json_body
+        return resp
+
+    def test_normalize_template_id(self):
+        normalize = _client_module.normalize_template_id
+        self.assertEqual(normalize(42), 42)
+        self.assertEqual(normalize("42"), 42)
+        self.assertEqual(normalize("lib:abc123"), "abc123")
+        # A numeric public id must stay a string — it lives in the public-id
+        # namespace, not the account-template one.
+        self.assertEqual(normalize("lib:42"), "42")
+        self.assertEqual(normalize("weird"), "weird")
+
+    def test_list_library_templates_hits_production_library_endpoint(self):
+        # The library is public, global content — calls bypass the configured
+        # (regional / on-prem) base URL and always target the production API.
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(json_body={"response": []})
+            self.client.list_library_templates()
+        args, kwargs = mock_req.call_args
+        self.assertEqual(args[0], "GET")
+        self.assertEqual(args[1], "https://us1.pdfgeneratorapi.com/api/v4/templates/library")
+        self.assertIsNone(kwargs["params"])
+
+    def test_list_library_templates_forwards_tags(self):
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(json_body={"response": []})
+            self.client.list_library_templates(tags="invoice")
+        _, kwargs = mock_req.call_args
+        self.assertEqual(kwargs["params"], {"tags": "invoice"})
+
+    def test_get_library_template_hits_public_id_path(self):
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(json_body={"response": {"name": "Tpl"}})
+            self.client.get_library_template("abc123")
+        args, _ = mock_req.call_args
+        self.assertEqual(args[0], "GET")
+        self.assertEqual(args[1], "https://us1.pdfgeneratorapi.com/api/v4/templates/library/abc123")
+
+    def test_generate_with_library_value_sends_public_id_string(self):
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(json_body={"response": "b64"})
+            self.client.generate(template_id="lib:abc123", data={"x": 1}, name="demo.pdf")
+        _, kwargs = mock_req.call_args
+        self.assertEqual(kwargs["json"]["template"], {"id": "abc123", "data": {"x": 1}})
+
+    def test_generate_default_name_strips_library_prefix(self):
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(json_body={"response": "b64"})
+            self.client.generate(template_id="lib:abc123", data={})
+        _, kwargs = mock_req.call_args
+        self.assertEqual(kwargs["json"]["name"], "template-abc123")
+
+    def test_generate_async_with_library_value_sends_public_id_string(self):
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(json_body={"response": {"id": "j1"}})
+            self.client.generate_async(
+                template_id="lib:abc123",
+                data={},
+                callback_url="https://odoo.example.com/cb",
+            )
+        _, kwargs = mock_req.call_args
+        self.assertEqual(kwargs["json"]["template"]["id"], "abc123")
+
+    def test_open_editor_rejects_library_values(self):
+        with self.assertRaises(PdfGenApiError):
+            self.client.open_editor("lib:abc123")
+
+    def test_create_template_from_definition_whitelists_keys(self):
+        definition = {
+            "id": "abc123",
+            "name": "Invoice template",
+            "tags": ["invoice"],
+            "isDraft": False,
+            "layout": {"format": "A4"},
+            "pages": [{"components": []}],
+            "dataSettings": {"sortBy": ""},
+            "editor": {"heightMultiplier": 1},
+            "some_future_readonly_key": "x",
+        }
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(json_body={"response": {"id": 7}})
+            self.client.create_template(definition=definition)
+        _, kwargs = mock_req.call_args
+        self.assertEqual(
+            kwargs["json"],
+            {
+                "name": "Invoice template",
+                "tags": ["invoice"],
+                "isDraft": False,
+                "layout": {"format": "A4"},
+                "pages": [{"components": []}],
+                "dataSettings": {"sortBy": ""},
+                "editor": {"heightMultiplier": 1},
+            },
+        )
+
+    def test_create_template_definition_name_override(self):
+        with patch.object(_client_module.requests, "request") as mock_req:
+            mock_req.return_value = self._mock_response(json_body={"response": {"id": 7}})
+            self.client.create_template(name="My copy", definition={"name": "Original"})
+        _, kwargs = mock_req.call_args
+        self.assertEqual(kwargs["json"], {"name": "My copy"})
 
 
 class RetryTests(unittest.TestCase):

@@ -8,13 +8,20 @@ Generate custom-designed PDFs from Odoo records using `pdfgeneratorapi.com
 What it does
 ============
 
-- Adds a **Generate custom PDF** button on customer invoices.
-- Pulls the list of templates from your PDF Generator API workspace and lets
-  you pick one.
-- Serializes the invoice (header, lines, partner, totals, currency) and sends
-  it to pdfgeneratorapi.com for rendering.
-- Attaches the returned PDF to the invoice as an ``ir.attachment`` and
-  downloads it in the browser.
+This base addon is the **framework**: API client, JWT minting, dataset
+model, send/document mixins, async-job machinery, and the per-record
+generator and template-editor wizards. By itself it does not add any
+*Generate custom PDF* button to a specific record type — pick the
+document types you want from **Settings → PDF Generator API → Document
+types** and Odoo will install the matching bridge addon (Invoicing,
+Sales, Purchase, Stock, Manufacturing, Rental).
+
+Each bridge:
+
+- adds a **Generate custom PDF** button on its records,
+- seeds a starter placeholder dataset you can edit, and
+- (for the Invoicing bridge) wires a *Use pdfgen PDF* toggle into the
+  invoice Send wizard so the rendered PDF can replace the standard report.
 
 Hosting compatibility
 =====================
@@ -37,6 +44,12 @@ Configuration
    and workspace identifier (usually your account email).
 2. In Odoo: **Settings > PDF Generator API**.
 3. Paste the key, secret, and workspace identifier. Click **Test Connection**.
+4. Under **Document types**, tick every record type you want a Generate
+   custom PDF button on (invoices, quotations, purchase orders, deliveries,
+   manufacturing orders, rentals). Saving installs the corresponding
+   bridge addons and seeds their default placeholder datasets. You can
+   change the selection any time; unticking a toggle removes that bridge
+   cleanly.
 
 Privacy
 =======

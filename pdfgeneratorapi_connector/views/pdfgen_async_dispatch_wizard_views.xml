@@ -15,7 +15,7 @@
                         <field name="res_model" readonly="1"/>
                         <field name="res_ids" invisible="1"/>
                         <field name="dataset_id" readonly="1"/>
-                        <field name="template_id"/>
+                        <field name="template_id" widget="pdfgen_template_selection"/>
                     </group>
                 </sheet>
                 <footer>

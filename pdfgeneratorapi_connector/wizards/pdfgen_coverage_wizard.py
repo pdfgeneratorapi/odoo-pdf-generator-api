@@ -18,7 +18,8 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.pdfgen_api_client import PdfGenApiError
+from ..enums import Format, Output
+from ..models.pdfgen_api_client import ApiResponse, PdfGenApiClient, PdfGenApiError
 from ..models.pdfgen_resolver import flatten_placeholders
 
 _logger = logging.getLogger(__name__)
@@ -69,35 +70,21 @@ class PdfgenCoverageWizard(models.TransientModel):
     )
 
     @api.model
-    def _build_client(self):
+    def _build_client(self) -> PdfGenApiClient:
         from ..models.pdfgen_document_mixin import build_pdfgen_client
 
         return build_pdfgen_client(self.env)
 
     @api.model
-    def _selection_template_id(self):
-        try:
-            client = self._build_client()
-        except UserError:
-            return []
-        try:
-            response = client.list_templates(per_page=100)
-        except PdfGenApiError as e:
-            _logger.warning("list_templates failed: %s / %s", e.status, e.body)
-            return []
-        templates = response.get("response", response) if isinstance(response, dict) else response
-        if not isinstance(templates, list):
-            return []
-        result = []
-        for t in templates:
-            tid = t.get("id")
-            name = t.get("name") or f"Template {tid}"
-            if tid is None:
-                continue
-            result.append((str(tid), name))
-        return result
+    def _selection_template_id(self) -> list[tuple[str, str]]:
+        # include_library=False: the coverage check reads the template's
+        # sample data via `GET /templates/{id}/data`, which only exists for
+        # account templates — library templates can't be analysed here.
+        from ..models.pdfgen_document_mixin import pdfgen_template_selection
 
-    def _template_placeholder_paths(self, data):
+        return pdfgen_template_selection(self.env, self._build_client, include_library=False)
+
+    def _template_placeholder_paths(self, data: dict) -> set[str]:
         """Flatten the template-data response into a set of canonical paths.
 
         Scalars → their dotted path. List rows → `<path>[].<child>` for each
@@ -117,7 +104,7 @@ class PdfgenCoverageWizard(models.TransientModel):
                 paths.add(path)
         return paths
 
-    def _dataset_placeholder_paths(self):
+    def _dataset_placeholder_paths(self) -> set[str]:
         """Same shape as _template_placeholder_paths, built from this dataset's lines."""
         paths = set()
         for line in self.dataset_id.line_ids:
@@ -134,7 +121,7 @@ class PdfgenCoverageWizard(models.TransientModel):
                 paths.add(line.placeholder_path)
         return paths
 
-    def action_check(self):
+    def action_check(self) -> dict:
         self.ensure_one()
         client = self._build_client()
         try:
@@ -184,7 +171,7 @@ class PdfgenCoverageWizard(models.TransientModel):
         )
         return self._reopen()
 
-    def action_preview(self):
+    def action_preview(self) -> dict:
         """Call /documents/generate with format=html and stash the result in the wizard.
 
         Prefers a real record of the dataset's model (so the user sees *their* data
@@ -199,8 +186,8 @@ class PdfgenCoverageWizard(models.TransientModel):
                 template_id=self.template_id,
                 data=data,
                 name="coverage-preview",
-                output="base64",
-                fmt="html",
+                output=Output.BASE64,
+                format=Format.HTML,
             )
         except PdfGenApiError as e:
             raise UserError(
@@ -227,7 +214,7 @@ class PdfgenCoverageWizard(models.TransientModel):
         self.write({"preview_html": html, "preview_source": source})
         return self._reopen()
 
-    def _preview_payload(self, client):
+    def _preview_payload(self, client: PdfGenApiClient) -> tuple[dict, str]:
         """Resolve the payload for the preview call.
 
         Returns a `(data, source_label)` tuple. Tries a real record first, falls
@@ -261,7 +248,7 @@ class PdfgenCoverageWizard(models.TransientModel):
             data = {}
         return data, _("API sample data")
 
-    def _reopen(self):
+    def _reopen(self) -> dict:
         return {
             "type": "ir.actions.act_window",
             "res_model": self._name,
@@ -271,7 +258,7 @@ class PdfgenCoverageWizard(models.TransientModel):
         }
 
     @staticmethod
-    def _extract_payload(response):
+    def _extract_payload(response: ApiResponse) -> str | None:
         """Pull the base64 string out of a pdfgen /generate response."""
         if isinstance(response, str):
             return response

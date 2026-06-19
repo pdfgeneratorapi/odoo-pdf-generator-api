@@ -28,6 +28,8 @@ class TestPurchaseOrderPdfgen(AccountTestInvoicingCommon):
                             "product_id": cls.product_a.id,
                             "name": cls.product_a.name,
                             "product_qty": 3.0,
+                            # Odoo 18: the UoM field on purchase.order.line is
+                            # `product_uom` (renamed to `product_uom_id` in 19).
                             "product_uom": cls.product_a.uom_id.id,
                             "price_unit": 75.0,
                         },

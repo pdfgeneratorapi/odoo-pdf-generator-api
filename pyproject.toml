@@ -13,6 +13,8 @@ dev = [
     "coverage[toml]>=7",
     "pre-commit>=4",
     "requests>=2",
+    "mypy>=1.13",
+    "types-requests>=2",
 ]
 
 [tool.ruff]
@@ -30,18 +32,49 @@ select = [
     "UP",
     "SIM",
     "RUF",
+    "ANN",
 ]
 ignore = [
     "E501",
     "B008",
     "RUF012",
+    # Allow `typing.Any` where a value is genuinely dynamic (JSON payloads,
+    # arbitrary Odoo field values). ANN401 would forbid it outright.
+    "ANN401",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "__manifest__.py" = ["B018"]
-"__init__.py" = ["F401"]
-"tests/*" = ["S101"]
-"tests_unit/*" = ["S101"]
+"__init__.py" = ["F401", "ANN"]
+# Tests, the i18n dev helper and one-off upgrade scripts aren't shipped addon
+# code — don't force type annotations there.
+"**/tests/**" = ["S101", "ANN"]
+"tests_unit/*" = ["S101", "ANN"]
+"scripts/*" = ["ANN"]
+"**/migrations/**" = ["ANN"]
+# Grandfathered: pre-existing files not yet annotated. ANN is enforced
+# everywhere else (new files + any file you touch). Drop each entry when the
+# file is next edited and its functions get type hints.
+"pdfgeneratorapi_connector/controllers/webhook.py" = ["ANN"]
+"pdfgeneratorapi_connector/models/pdfgen_async_job.py" = ["ANN"]
+"pdfgeneratorapi_connector/models/pdfgen_resolver.py" = ["ANN"]
+"pdfgeneratorapi_connector/models/res_config_settings.py" = ["ANN"]
+"pdfgeneratorapi_connector_account/wizards/account_move_send.py" = ["ANN"]
+
+[tool.mypy]
+python_version = "3.11"
+# Scoped to the Odoo-independent modules (pure stdlib + requests). The model
+# and wizard files import `odoo`, which ships no type stubs here, so they'd
+# need community odoo-stubs to check without noise — deferred. follow_imports
+# + ignore_missing_imports keep the `odoo` imports pulled in via the package
+# __init__ from failing the run.
+files = [
+    "pdfgeneratorapi_connector/enums.py",
+    "pdfgeneratorapi_connector/models/pdfgen_api_client.py",
+    "pdfgeneratorapi_connector/models/pdfgen_resolver.py",
+]
+follow_imports = "silent"
+ignore_missing_imports = true
 
 [tool.pylint.master]
 load-plugins = "pylint_odoo"
@@ -57,6 +90,10 @@ disable = [
     "broad-exception-caught",
     "broad-exception-raised",
     "unused-argument",
+    # `format` is the natural name for the document-format argument on the
+    # API client (it maps to the request body's `format` key); the StrEnum
+    # typing keeps it safe, so allow shadowing the `format` builtin.
+    "redefined-builtin",
     # `_` / `odoo` imports aren't resolvable in the host lint env — Odoo
     # lives inside the docker image, not in the uv venv.
     "import-error",
@@ -130,6 +167,10 @@ omit = [
 source = [
     "pdfgeneratorapi_connector",
     "/mnt/extra-addons/pdfgeneratorapi_connector",
+]
+account_bridge = [
+    "pdfgeneratorapi_connector_account",
+    "/mnt/extra-addons/pdfgeneratorapi_connector_account",
 ]
 sale_bridge = [
     "pdfgeneratorapi_connector_sale",

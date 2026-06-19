@@ -67,10 +67,17 @@
         </div>
     </t>
 
-    <t t-name="pdfgeneratorapi_connector.DroppableFieldSelector">
-        <div class="o_pdfgen_droppable" t-ref="root">
-            <FieldSelectorField t-props="innerProps"/>
-        </div>
+    <t t-name="pdfgeneratorapi_connector.DroppableFieldSelector"
+       t-inherit="web.DynamicModelFieldSelectorChar" t-inherit-mode="primary">
+        <!-- Wrap the stock dynamic field selector in a drop target. Inheriting
+             the stock template (rather than re-implementing it) keeps the
+             hidden CharField input that DynamicModelFieldSelectorChar's setup
+             relies on. -->
+        <xpath expr="//DynamicModelFieldSelector" position="replace">
+            <div class="o_pdfgen_droppable" t-ref="root">
+                <DynamicModelFieldSelector t-props="getSelectorProps"/>
+            </div>
+        </xpath>
     </t>
 
 </templates>

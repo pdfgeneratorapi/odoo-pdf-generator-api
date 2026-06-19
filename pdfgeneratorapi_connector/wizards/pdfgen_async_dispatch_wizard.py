@@ -19,7 +19,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.pdfgen_api_client import PdfGenApiError
+from ..models.pdfgen_api_client import PdfGenApiClient, PdfGenApiError
 
 _logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
     )
 
     @api.model
-    def default_get(self, fields_list):
+    def default_get(self, fields_list: list[str]) -> dict:
         defaults = super().default_get(fields_list)
         active_model = self.env.context.get("active_model")
         active_ids = self.env.context.get("active_ids") or []
@@ -61,7 +61,7 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
         return defaults
 
     @api.model
-    def _default_template_id(self):
+    def _default_template_id(self) -> str | bool:
         # Pre-fill template_id from the dataset's default_template_id when
         # the wizard opens — list-view dispatch sets active_model in context.
         active_model = self.env.context.get("active_model")
@@ -73,12 +73,12 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
         return dataset.default_template_id or False
 
     @api.depends("res_ids")
-    def _compute_record_count(self):
+    def _compute_record_count(self) -> None:
         for wiz in self:
             wiz.record_count = len(wiz._record_ids())
 
     @api.depends("res_model")
-    def _compute_dataset_id(self):
+    def _compute_dataset_id(self) -> None:
         for wiz in self:
             if wiz.res_model:
                 wiz.dataset_id = self.env["pdfgen.model.dataset"].search(
@@ -88,41 +88,24 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
             else:
                 wiz.dataset_id = False
 
-    def _record_ids(self):
+    def _record_ids(self) -> list[int]:
         if not self.res_ids:
             return []
         return [int(i) for i in self.res_ids.split(",") if i.strip().isdigit()]
 
     @api.model
-    def _build_client(self):
+    def _build_client(self) -> PdfGenApiClient:
         from ..models.pdfgen_document_mixin import build_pdfgen_client
 
         return build_pdfgen_client(self.env)
 
     @api.model
-    def _selection_template_id(self):
-        try:
-            client = self._build_client()
-        except UserError:
-            return []
-        try:
-            response = client.list_templates(per_page=100)
-        except PdfGenApiError as e:
-            _logger.warning("list_templates failed: %s / %s", e.status, e.body)
-            return []
-        templates = response.get("response", response) if isinstance(response, dict) else response
-        if not isinstance(templates, list):
-            return []
-        result = []
-        for t in templates:
-            tid = t.get("id")
-            name = t.get("name") or f"Template {tid}"
-            if tid is None:
-                continue
-            result.append((str(tid), name))
-        return result
+    def _selection_template_id(self) -> list[tuple[str, str]]:
+        from ..models.pdfgen_document_mixin import pdfgen_template_selection
 
-    def action_dispatch(self):
+        return pdfgen_template_selection(self.env, self._build_client)
+
+    def action_dispatch(self) -> dict:
         self.ensure_one()
         if not self.res_model or self.res_model not in self.env:
             raise UserError(_("Unknown source model: %s", self.res_model))

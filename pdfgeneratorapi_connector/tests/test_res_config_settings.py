@@ -56,12 +56,12 @@ class TestResConfigSettings(TransactionCase):
     def test_test_connection_success_returns_notification(self):
         config = self._make_config()
         fake_client = MagicMock()
-        fake_client.ping.return_value = {"response": {"name": "My Workspace"}}
+        fake_client.ping.return_value = {"response": [], "meta": {"total": 0}}
         with patch.object(type(config), "_get_pdfgen_client", return_value=fake_client):
             result = config.action_pdfgen_test_connection()
         self.assertEqual(result["tag"], "display_notification")
         self.assertEqual(result["params"]["type"], "success")
-        self.assertIn("My Workspace", result["params"]["message"])
+        self.assertIn("me@example.com", result["params"]["message"])
 
     def test_test_connection_failure_raises_user_error(self):
         from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (
@@ -77,3 +77,27 @@ class TestResConfigSettings(TransactionCase):
         ):
             config.action_pdfgen_test_connection()
         self.assertIn("401", str(ctx.exception))
+
+    def test_bridge_module_toggle_marks_module_for_install(self):
+        """`module_<name>` toggle wires through to Odoo's install machinery.
+
+        Asserting one bridge is enough — `res.config.settings.execute()` uses
+        the same prefix scan for every `module_*` field, so proving the
+        plumbing works for one toggle proves it for all five.
+        """
+        modules = self.env["ir.module.module"].search(
+            [("name", "=", "pdfgeneratorapi_connector_sale")]
+        )
+        # Start from a known state: if a previous test left the bridge marked
+        # for install, the test-run DB still reports a non-uninstalled state;
+        # short-circuit so the assertion stays meaningful.
+        if modules and modules.state not in ("uninstalled", "uninstallable"):
+            self.skipTest("Sales bridge already installed in this test DB")
+        config = self._make_config()
+        config.module_pdfgeneratorapi_connector_sale = True
+        config.execute()
+        module = self.env["ir.module.module"].search(
+            [("name", "=", "pdfgeneratorapi_connector_sale")]
+        )
+        self.assertTrue(module, "Sales bridge module record not found")
+        self.assertIn(module.state, ("installed", "to install"))

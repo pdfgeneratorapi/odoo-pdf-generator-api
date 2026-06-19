@@ -89,10 +89,13 @@ class AccountMoveSendWizard(models.TransientModel):
         return self.env["pdfgen.model.dataset"]._selection_default_template_id()
 
     @api.depends(
+        # Odoo 18's send wizard names the mail-template field `mail_template_id`
+        # (renamed to `template_id` in 19) and its base compute also keys off
+        # `sending_methods`; there is no `pdf_report_id` field on the 18 wizard.
         "mail_template_id",
+        "sending_methods",
         "invoice_edi_format",
         "extra_edis",
-        "pdf_report_id",
         "pdfgen_use_custom",
         "pdfgen_template_id",
     )

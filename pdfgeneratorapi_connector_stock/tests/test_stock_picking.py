@@ -30,6 +30,8 @@ class TestStockPickingPdfgen(TransactionCase):
                         0,
                         0,
                         {
+                            # Odoo 18 requires stock.move.name (Description);
+                            # 19 defaults it, so the move can omit it there.
                             "name": cls.product.name,
                             "product_id": cls.product.id,
                             "product_uom_qty": 4.0,

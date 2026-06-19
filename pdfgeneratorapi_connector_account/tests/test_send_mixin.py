@@ -31,7 +31,7 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
         icp.set_param("pdfgen.api_secret", "s")
         icp.set_param("pdfgen.workspace_identifier", "w")
         cls.invoice = cls.init_invoice("out_invoice", products=cls.product_a, post=True)
-        cls.dataset = cls.env.ref("pdfgeneratorapi_connector.dataset_account_move")
+        cls.dataset = cls.env.ref("pdfgeneratorapi_connector_account.dataset_account_move")
 
     def setUp(self):
         super().setUp()
@@ -112,6 +112,14 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
         self._attach(description="pdfgen:template:42")
         self.assertEqual(wiz._pdfgen_pick_template_id(self.invoice), "42")
 
+    def test_pick_template_id_parses_library_marker(self):
+        # Library template ids are stored as `lib:<publicId>` — the marker
+        # regex must capture past the second colon (regression: `[^:\s]+`
+        # used to truncate this to "lib").
+        wiz = self._wizard()
+        self._attach(description="pdfgen:template:lib:abc123")
+        self.assertEqual(wiz._pdfgen_pick_template_id(self.invoice), "lib:abc123")
+
     def test_pick_template_id_falls_back_to_dataset_default(self):
         wiz = self._wizard()
         self._set_dataset_default_template("99")
@@ -180,7 +188,7 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
             html = wiz._pdfgen_render_preview_html("42", self.invoice)
         self.assertIn("Preview", html)
         client.generate.assert_called_once()
-        self.assertEqual(client.generate.call_args.kwargs["fmt"], "html")
+        self.assertEqual(client.generate.call_args.kwargs["format"], "html")
 
     def test_preview_returns_empty_on_api_error(self):
         from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (

@@ -1,12 +1,12 @@
 {
     "name": "PDF Generator API Connector",
-    "version": "18.0.4.0.0",
-    "category": "Accounting",
-    "summary": "Generate invoices, quotes and other documents via pdfgeneratorapi.com",
+    "version": "18.0.7.0.0",
+    "category": "Productivity/Documents",
+    "summary": "Framework: generate custom PDFs of any record via pdfgeneratorapi.com",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
     "license": "LGPL-3",
-    "depends": ["base", "mail", "account"],
+    "depends": ["base", "mail"],
     "data": [
         "security/ir.model.access.csv",
         "data/ir_config_parameter.xml",
@@ -17,10 +17,7 @@
         "views/generate_pdf_wizard_views.xml",
         "views/pdfgen_async_dispatch_wizard_views.xml",
         "views/pdfgen_async_job_views.xml",
-        "views/account_move_views.xml",
-        "views/account_move_send_views.xml",
         "views/menu.xml",
-        "data/pdfgen_model_dataset_account_move.xml",
     ],
     "assets": {
         "web.assets_backend": [
@@ -30,6 +27,8 @@
             "pdfgeneratorapi_connector/static/src/mapping_editor/mapping_editor.scss",
             "pdfgeneratorapi_connector/static/src/template_editor/editor_iframe_field.js",
             "pdfgeneratorapi_connector/static/src/template_editor/editor_iframe_field.xml",
+            "pdfgeneratorapi_connector/static/src/template_editor/template_selection_field.js",
+            "pdfgeneratorapi_connector/static/src/template_editor/template_selection_field.xml",
             "pdfgeneratorapi_connector/static/src/template_editor/template_editor.scss",
             "pdfgeneratorapi_connector/static/src/settings/settings.scss",
         ],

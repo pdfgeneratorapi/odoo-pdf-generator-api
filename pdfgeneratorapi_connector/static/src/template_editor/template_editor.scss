@@ -16,17 +16,62 @@
         display: none !important;
     }
 
+    // Odoo's outer .o_content (between the control panel and the form
+    // body) ships with its own top padding for breathing room. We hide
+    // the control panel and want the editor header flush against the
+    // app navbar — zero it out.
+    & > .o_content,
+    .o_content {
+        padding-top: 0;
+    }
+
+    // Same story for the form-view's inner div (.o_form_renderer /
+    // .o_form_view_container etc.) — strip top margin so the custom
+    // header is the first visible row.
+    .o_form_renderer,
+    .o_form_view {
+        padding-top: 0;
+        margin-top: 0;
+    }
+
     .o_pdfgen_template_editor_toolbar {
         background: var(--bs-body-bg, white);
 
-        // Force every input/value cell in the toolbar grid to the same width
-        // so Selection (`<select>`) and Many2one (`<input>`) widgets, which
-        // have different native paddings, line up vertically across rows.
+        // Force every input/value cell in the toolbar to the same width so
+        // Selection (`<select>`) and Many2one (`<input>`) widgets, which
+        // have different native paddings, line up.
         .o_pdfgen_toolbar_field,
         .o_pdfgen_toolbar_field .o_input,
         .o_pdfgen_toolbar_field .o_field_widget {
             width: 220px;
             min-width: 220px;
+        }
+
+        // Visible affordance: by default Odoo strips borders from inline
+        // form fields outside a sheet, so the dropdowns rendered as bare
+        // underlines and looked empty. Give them a Bootstrap-style input
+        // box (border + background + padding) so users see something to
+        // click on.
+        .o_pdfgen_toolbar_field {
+            input.o_input,
+            select.o_input,
+            .o_input {
+                border: 1px solid var(--bs-border-color, #dee2e6);
+                border-radius: var(--bs-border-radius-sm, 0.25rem);
+                background: var(--bs-body-bg, white);
+                padding: 0.25rem 0.5rem;
+                line-height: 1.4;
+            }
+
+            // Many2one wrapper has the input nested one level down — same
+            // treatment to keep visual parity with the Selection field.
+            .o_field_many2one_selection .o_input {
+                border: 1px solid var(--bs-border-color, #dee2e6);
+                border-radius: var(--bs-border-radius-sm, 0.25rem);
+                background: var(--bs-body-bg, white);
+                padding: 0.25rem 0.5rem;
+                line-height: 1.4;
+            }
         }
     }
 

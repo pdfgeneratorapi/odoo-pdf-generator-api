@@ -39,6 +39,25 @@ export class PdfgenEditorIframeField extends Component {
                     return;
                 }
                 this.iframeRef.el.src = url || "about:blank";
+                if (!url) {
+                    return;
+                }
+                // Hand focus to the iframe once it finishes loading so
+                // arrow keys / Delete / typing reach the editor without
+                // the user having to click into it first. Without this
+                // the parent (Odoo) keeps focus and keyboard events are
+                // silently swallowed until the user clicks an editor
+                // input — the exact symptom users reported.
+                const onLoad = () => {
+                    try {
+                        this.iframeRef.el.contentWindow?.focus();
+                    } catch {
+                        // Cross-origin contentWindow.focus() is generally
+                        // allowed but defensively swallow any browser-
+                        // specific quirks so this never breaks Open.
+                    }
+                };
+                this.iframeRef.el.addEventListener("load", onLoad, { once: true });
             },
             () => [this.props.record.data[this.props.name]]
         );
@@ -85,13 +104,23 @@ export class PdfgenEditorIframeField extends Component {
         // in production if it changes or surfaces new events.
         console.debug("[pdfgen-editor] message:", type, data);
 
-        const normalized = String(type).toLowerCase();
-        if (normalized.includes("save")) {
+        // Match a strict whitelist. The previous `.includes("save"/"close")`
+        // matched event names like `closePanel`, `componentClosed`, etc.,
+        // which the editor emits on internal UI interactions (tab switches,
+        // panel toggles). False-positive matches cleared `editor_url` and
+        // unloaded the iframe — triggering the editor's own beforeunload
+        // ("Leave site? Changes you made may not be saved.") on every
+        // panel click. Whitelist exact tokens only; everything else is
+        // logged for discovery and ignored.
+        const normalized = String(type).toLowerCase().trim();
+        const SAVE_EVENTS = new Set(["save", "saved", "template.save", "template:save"]);
+        const CLOSE_EVENTS = new Set(["close", "closed", "editor.close", "editor:close"]);
+        if (SAVE_EVENTS.has(normalized)) {
             this.notificationService.add(_t("Template saved."), {
                 type: "success",
                 sticky: false,
             });
-        } else if (normalized.includes("close")) {
+        } else if (CLOSE_EVENTS.has(normalized)) {
             this.notificationService.add(_t("Editor closed."), {
                 type: "info",
                 sticky: false,

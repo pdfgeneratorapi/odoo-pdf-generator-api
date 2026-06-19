@@ -248,7 +248,7 @@ class TestCoverageWizard(TransactionCase):
         ):
             wizard.action_preview()
         call = client.generate.call_args
-        self.assertEqual(call.kwargs["fmt"], "html")
+        self.assertEqual(call.kwargs["format"], "html")
         self.assertEqual(call.kwargs["output"], "base64")
         self.assertEqual(call.kwargs["data"]["name"], "Preview Target")
         client.get_template_data.assert_not_called()
