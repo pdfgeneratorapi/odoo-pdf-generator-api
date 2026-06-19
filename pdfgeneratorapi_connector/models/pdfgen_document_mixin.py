@@ -48,7 +48,7 @@ def build_pdfgen_client(env: api.Environment) -> PdfGenApiClient:
     workspace = pdfgen_config(env, "workspace_identifier")
     if not (key and secret and workspace):
         raise UserError(
-            env._("PDF Generator API is not configured. Go to Settings > PDF Generator API.")
+            _("PDF Generator API is not configured. Go to Settings > PDF Generator API.")
         )
     return PdfGenApiClient(
         base_url=pdfgen_config(env, "api_base_url") or DEFAULT_BASE_URL,
@@ -98,7 +98,7 @@ def pdfgen_template_selection(
         return []
     result = []
     if include_create:
-        result.append(("__new__", env._("+ Create new template…")))
+        result.append(("__new__", _("+ Create new template…")))
     if include_library:
         try:
             lib_response = client.list_library_templates()
@@ -172,7 +172,7 @@ class PdfgenDocumentMixin(models.AbstractModel):
             domain.append(("res_id", "in", self.ids))
         return {
             "type": "ir.actions.act_window",
-            "name": self.env._("Async PDF Jobs"),
+            "name": _("Async PDF Jobs"),
             "res_model": "pdfgen.async.job",
             "view_mode": "list,form",
             "domain": domain,
@@ -188,12 +188,12 @@ class PdfgenDocumentMixin(models.AbstractModel):
         `pdfgen.async.job`.
         """
         if not self:
-            raise UserError(self.env._("Select at least one record."))
+            raise UserError(_("Select at least one record."))
         if len(self) == 1:
             return self.action_open_pdfgen_wizard()
         return {
             "type": "ir.actions.act_window",
-            "name": self.env._("Generate custom PDFs"),
+            "name": _("Generate custom PDFs"),
             "res_model": "pdfgen.async.dispatch.wizard",
             "view_mode": "form",
             "target": "new",

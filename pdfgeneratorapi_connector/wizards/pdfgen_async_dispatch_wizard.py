@@ -19,6 +19,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from ..fields import TolerantSelection
 from ..models.pdfgen_api_client import PdfGenApiClient, PdfGenApiError
 
 _logger = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
         compute="_compute_record_count",
         readonly=True,
     )
-    template_id = fields.Selection(
+    template_id = TolerantSelection(
         selection="_selection_template_id",
         default=lambda self: self._default_template_id(),
         required=True,

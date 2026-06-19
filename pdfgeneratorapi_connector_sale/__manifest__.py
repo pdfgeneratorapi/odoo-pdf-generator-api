@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator API Connector — Sales bridge",
-    "version": "19.0.1.0.0",
+    "version": "17.0.1.0.0",
     "category": "Sales",
     "summary": "Generate pdfgeneratorapi.com PDFs from quotations and sale orders",
     "author": "PDF Generator API",

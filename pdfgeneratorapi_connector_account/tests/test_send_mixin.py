@@ -53,7 +53,11 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
         self.dataset.invalidate_recordset()
 
     def _wizard(self):
-        return self.env["account.move.send.wizard"].new({"move_id": self.invoice.id})
+        return (
+            self.env["account.move.send"]
+            .with_context(active_ids=[self.invoice.id])
+            .create({"move_ids": [(6, 0, [self.invoice.id])]})
+        )
 
     def _set_dataset_default_template(self, tid):
         # Selection has a dynamic getter; bypass validation by writing via SQL
@@ -455,9 +459,9 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
     def test_compute_widget_swaps_in_pdfgen_when_toggled_on(self):
         # Create a real (saved) wizard so the compute fires and writes back.
         wiz = (
-            self.env["account.move.send.wizard"]
-            .with_context(active_ids=[self.invoice.id], default_move_id=self.invoice.id)
-            .create({"move_id": self.invoice.id})
+            self.env["account.move.send"]
+            .with_context(active_ids=[self.invoice.id])
+            .create({"move_ids": [(6, 0, [self.invoice.id])]})
         )
         att = self._attach(description="pdfgen:template:42")
         wiz.pdfgen_use_custom = True
@@ -469,9 +473,9 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
 
     def test_compute_widget_records_user_error_and_disables_toggle(self):
         wiz = (
-            self.env["account.move.send.wizard"]
-            .with_context(active_ids=[self.invoice.id], default_move_id=self.invoice.id)
-            .create({"move_id": self.invoice.id})
+            self.env["account.move.send"]
+            .with_context(active_ids=[self.invoice.id])
+            .create({"move_ids": [(6, 0, [self.invoice.id])]})
         )
         # No pdfgen attachment, no template → _pdfgen_apply_substitution
         # raises UserError (no template picked); the compute should swallow

@@ -23,18 +23,21 @@ class TestStockPickingPdfgen(TransactionCase):
             {
                 "partner_id": cls.partner.id,
                 "picking_type_id": cls.picking_type.id,
-                "location_id": cls.picking_type.default_location_src_id.id,
-                "location_dest_id": cls.picking_type.default_location_dest_id.id,
+                "location_id": cls.env.ref("stock.stock_location_stock").id,
+                "location_dest_id": cls.env.ref("stock.stock_location_customers").id,
                 "move_ids": [
                     (
                         0,
                         0,
                         {
+                            # Odoo 18 requires stock.move.name (Description);
+                            # 19 defaults it, so the move can omit it there.
+                            "name": cls.product.name,
                             "product_id": cls.product.id,
                             "product_uom_qty": 4.0,
                             "product_uom": cls.product.uom_id.id,
-                            "location_id": cls.picking_type.default_location_src_id.id,
-                            "location_dest_id": cls.picking_type.default_location_dest_id.id,
+                            "location_id": cls.env.ref("stock.stock_location_stock").id,
+                            "location_dest_id": cls.env.ref("stock.stock_location_customers").id,
                         },
                     ),
                 ],

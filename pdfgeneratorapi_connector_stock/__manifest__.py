@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator API Connector — Stock bridge",
-    "version": "19.0.1.0.0",
+    "version": "17.0.1.0.0",
     "category": "Inventory",
     "summary": "Generate pdfgeneratorapi.com PDFs from stock transfers (delivery slips, receipts)",
     "author": "PDF Generator API",

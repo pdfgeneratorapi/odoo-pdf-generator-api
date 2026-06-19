@@ -1,3 +1,7 @@
+/** @odoo-module **/
+// Odoo 17 doesn't auto-detect ES modules from `import`/`export` (18+ does),
+// so the explicit module header is required here.
+
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { selectionField, SelectionField } from "@web/views/fields/selection/selection_field";

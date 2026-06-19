@@ -1,11 +1,17 @@
+from __future__ import annotations
+
 import logging
-from typing import Self
+from typing import TYPE_CHECKING
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from ..fields import TolerantSelection
 from . import pdfgen_resolver
 from .pdfgen_document_mixin import build_pdfgen_client, pdfgen_template_selection
+
+if TYPE_CHECKING:  # `Self` (PEP 673) is stdlib only on Python 3.11+; Odoo 17 is 3.10.
+    from typing import Self
 
 _logger = logging.getLogger(__name__)
 
@@ -27,7 +33,7 @@ class PdfGenModelDataset(models.Model):
     )
     model = fields.Char(related="model_id.model", store=True, readonly=True)
     active = fields.Boolean(default=True)
-    default_template_id = fields.Selection(
+    default_template_id = TolerantSelection(
         selection="_selection_default_template_id",
         string="Default template",
         help=(
@@ -249,5 +255,5 @@ class _LineView:
         return self._line.is_list
 
     @property
-    def child_lines(self) -> list["_LineView"]:
+    def child_lines(self) -> list[_LineView]:
         return [_LineView(c) for c in self._line.child_ids]

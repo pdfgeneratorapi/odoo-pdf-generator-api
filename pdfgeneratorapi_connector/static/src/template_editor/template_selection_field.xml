@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
+    <!--
+        Odoo 18's SelectionField renders a native <select>/<option> list; the
+        rich <SelectMenu> component (with group support) only exists in 19. To
+        keep the "Default Templates" / "My Templates" sections we render native
+        <optgroup>s from the `groups` getter, replacing the flat option loop.
+    -->
     <t t-name="pdfgeneratorapi_connector.PdfgenTemplateSelectionField"
        t-inherit="web.SelectionField"
        t-inherit-mode="primary">
-        <xpath expr="//SelectMenu" position="attributes">
-            <attribute name="choices"></attribute>
-            <attribute name="groups">groups</attribute>
+        <xpath expr="//t[@t-foreach='options']" position="replace">
+            <t t-foreach="groups" t-as="group" t-key="group_index">
+                <optgroup t-if="group.label" t-att-label="group.label">
+                    <t t-foreach="group.choices" t-as="choice" t-key="choice.value">
+                        <option t-att-selected="choice.value === value"
+                                t-att-value="stringify(choice.value)"
+                                t-esc="choice.label"/>
+                    </t>
+                </optgroup>
+                <t t-else="">
+                    <t t-foreach="group.choices" t-as="choice" t-key="choice.value">
+                        <option t-att-selected="choice.value === value"
+                                t-att-value="stringify(choice.value)"
+                                t-esc="choice.label"/>
+                    </t>
+                </t>
+            </t>
         </xpath>
     </t>
 </templates>

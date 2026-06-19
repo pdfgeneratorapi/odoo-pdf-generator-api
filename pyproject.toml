@@ -18,7 +18,7 @@ dev = [
 ]
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py310"
 line-length = 100
 extend-exclude = ["__pycache__", "static/lib", ".venv"]
 
@@ -139,7 +139,7 @@ disable = [
 manifest-required-authors = "PDF Generator API"
 manifest-required-keys = ["license"]
 manifest-deprecated-keys = ["description"]
-valid-odoo-versions = ["18.0", "19.0"]
+valid-odoo-versions = ["17.0", "18.0", "19.0"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests_unit"]

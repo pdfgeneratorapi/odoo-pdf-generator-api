@@ -1,9 +1,15 @@
-"""Inherits `account.move.send.wizard` to substitute the standard PDF report
-with the latest pdfgen-generated PDF (or a freshly-generated one).
+"""Inherits Odoo 17's `account.move.send` wizard to substitute the standard PDF
+report with the latest pdfgen-generated PDF (or a freshly-generated one).
 
-The wizard's stock view shows a `mail_attachments_widget` JSON list. The
-"placeholder" entry — the standard report that pdfgen Odoo will render at
-send time — is what we substitute. When `pdfgen_use_custom` is on:
+Odoo 17's Send & Print is a single multi-move wizard (`account.move.send`,
+with `move_ids` + a `mode`); Odoo 18 split it into a per-move
+`account.move.send.wizard` (`move_id`). pdfgen substitution is inherently
+per-document, so we only act in `invoice_single` mode — `_pdfgen_move()`
+returns the lone move and an empty recordset otherwise.
+
+The wizard's view shows a `mail_attachments_widget` JSON list. The
+"placeholder" entry — the standard report that Odoo renders at send time — is
+what we substitute. When `pdfgen_use_custom` is on:
 
   - if a recent pdfgen attachment already exists on the move, we drop the
     placeholder and add the existing attachment as a regular entry;
@@ -18,14 +24,15 @@ standard report.
 import logging
 
 from odoo import _, api, fields, models
+from odoo.addons.pdfgeneratorapi_connector.fields import TolerantSelection
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
 
-class AccountMoveSendWizard(models.TransientModel):
-    _name = "account.move.send.wizard"
-    _inherit = ["account.move.send.wizard", "pdfgen.send.mixin"]
+class AccountMoveSend(models.TransientModel):
+    _name = "account.move.send"
+    _inherit = ["account.move.send", "pdfgen.send.mixin"]
 
     pdfgen_configured = fields.Boolean(compute="_compute_pdfgen_configured")
     pdfgen_use_custom = fields.Boolean(
@@ -39,7 +46,7 @@ class AccountMoveSendWizard(models.TransientModel):
             "default template)."
         ),
     )
-    pdfgen_template_id = fields.Selection(
+    pdfgen_template_id = TolerantSelection(
         selection="_selection_pdfgen_template_id",
         string="pdfgen Template",
         compute="_compute_pdfgen_template_id",
@@ -54,30 +61,47 @@ class AccountMoveSendWizard(models.TransientModel):
     )
     pdfgen_error = fields.Char(readonly=True)
 
-    @api.depends("move_id")
+    def _pdfgen_move(self):
+        """The single move our per-document substitution targets.
+
+        Odoo 17's wizard can batch several invoices (`move_ids` + `mode`);
+        pdfgen substitution only makes sense for one invoice, so return the
+        lone move in `invoice_single` mode and an empty recordset otherwise.
+        """
+        self.ensure_one()
+        # Use len(move_ids)==1 rather than mode=='invoice_single': they're
+        # equivalent (mode is computed from move_ids) but `mode` may be unset
+        # on a `.new()` wizard built directly in a test.
+        return self.move_ids if len(self.move_ids) == 1 else self.env["account.move"]
+
+    @api.depends("move_ids", "mode")
     def _compute_pdfgen_configured(self):
         for wiz in self:
-            wiz.pdfgen_configured = bool(wiz.move_id) and bool(wiz._pdfgen_dataset(wiz.move_id))
+            move = wiz._pdfgen_move()
+            wiz.pdfgen_configured = bool(move) and bool(wiz._pdfgen_dataset(move))
 
-    @api.depends("move_id")
+    @api.depends("move_ids", "mode")
     def _compute_pdfgen_use_custom(self):
         for wiz in self:
-            wiz.pdfgen_use_custom = wiz._pdfgen_should_default_on(wiz.move_id)
+            move = wiz._pdfgen_move()
+            wiz.pdfgen_use_custom = bool(move) and wiz._pdfgen_should_default_on(move)
 
-    @api.depends("move_id", "pdfgen_use_custom")
+    @api.depends("move_ids", "mode", "pdfgen_use_custom")
     def _compute_pdfgen_template_id(self):
         for wiz in self:
-            if wiz.pdfgen_use_custom:
-                wiz.pdfgen_template_id = wiz._pdfgen_pick_template_id(wiz.move_id)
+            move = wiz._pdfgen_move()
+            if wiz.pdfgen_use_custom and move:
+                wiz.pdfgen_template_id = wiz._pdfgen_pick_template_id(move)
             else:
                 wiz.pdfgen_template_id = False
 
     @api.depends("pdfgen_template_id", "pdfgen_use_custom")
     def _compute_pdfgen_preview_html(self):
         for wiz in self:
-            if wiz.pdfgen_use_custom and wiz.pdfgen_template_id:
+            move = wiz._pdfgen_move()
+            if wiz.pdfgen_use_custom and wiz.pdfgen_template_id and move:
                 wiz.pdfgen_preview_html = wiz._pdfgen_render_preview_html(
-                    wiz.pdfgen_template_id, wiz.move_id
+                    wiz.pdfgen_template_id, move
                 )
             else:
                 wiz.pdfgen_preview_html = False
@@ -88,23 +112,20 @@ class AccountMoveSendWizard(models.TransientModel):
         # dataset selection helper so we hit the API at most once per request.
         return self.env["pdfgen.model.dataset"]._selection_default_template_id()
 
-    @api.depends(
-        "template_id",
-        "invoice_edi_format",
-        "extra_edis",
-        "pdf_report_id",
-        "pdfgen_use_custom",
-        "pdfgen_template_id",
-    )
+    @api.depends("mail_template_id", "pdfgen_use_custom", "pdfgen_template_id")
     # pylint-odoo's missing-return rule fires because we use super(); for
     # compute methods Odoo expects no return value, so suppress.
     # pylint: disable=missing-return
     def _compute_mail_attachments_widget(self):
-        # Defer to the upstream compute first so manual / dynamic / extra
-        # entries are present, then post-process to swap the placeholder.
+        # Odoo 17's base compute (re)builds the widget in invoice_single mode
+        # off `mail_template_id`; defer to it first so manual / dynamic entries
+        # are present, then post-process to swap the placeholder.
         super()._compute_mail_attachments_widget()
         for wiz in self:
             if not wiz.pdfgen_use_custom:
+                continue
+            move = wiz._pdfgen_move()
+            if not move:
                 continue
             try:
                 widget = wiz._pdfgen_apply_substitution(wiz.mail_attachments_widget or [])
@@ -135,10 +156,10 @@ class AccountMoveSendWizard(models.TransientModel):
         if not self.pdfgen_template_id:
             raise UserError(_("Pick a template to use the pdfgen PDF."))
         # Pin the move recordset locally — `ir.attachment.create` below
-        # invalidates wizard caches, and re-reading `self.move_id` on a
-        # NewId wizard would re-trigger default_get (and crash without
-        # active_ids in context).
-        move = self.move_id
+        # invalidates wizard caches, and re-reading the wizard on a NewId
+        # record would re-trigger default_get (and crash without active_ids
+        # in context).
+        move = self._pdfgen_move()
         latest = self._pdfgen_latest_pdfgen_attachment(move)
         if not latest or (
             self.pdfgen_template_id

@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator API Connector — Purchase bridge",
-    "version": "19.0.1.0.0",
+    "version": "17.0.1.0.0",
     "category": "Purchases",
     "summary": "Generate pdfgeneratorapi.com PDFs from purchase orders",
     "author": "PDF Generator API",
