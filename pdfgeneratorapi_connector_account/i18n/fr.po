@@ -18,6 +18,9 @@ msgstr ""
 msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
 msgstr "<span class=\"visually-hidden\">Basculer le menu déroulant</span>"
 
+msgid "Account Move Send Wizard"
+msgstr "Assistant d'envoi d'écritures comptables"
+
 msgid "Display Name"
 msgstr "Nom affiché"
 
@@ -30,15 +33,36 @@ msgstr "Générer un PDF personnalisé"
 msgid "ID"
 msgstr "ID"
 
-msgid "Manufacturing Order"
-msgstr "Ordre de fabrication"
+msgid "Journal Entry"
+msgstr "Écriture comptable"
+
+msgid "PDF Generator API"
+msgstr "PDF Generator API"
 
 msgid "Pdfgen Configured"
 msgstr "Pdfgen configuré"
 
+msgid "Pdfgen Error"
+msgstr "Erreur Pdfgen"
+
+msgid "Pick a template to use the pdfgen PDF."
+msgstr "Choisissez un modèle pour utiliser le PDF pdfgen."
+
+msgid "Preview"
+msgstr "Aperçu"
+
+msgid "Replace the standard invoice report with the latest pdfgen-generated PDF (or generate one synchronously from the dataset's default template)."
+msgstr "Remplace le rapport de facture standard par le dernier PDF généré par pdfgen (ou en génère un de manière synchrone à partir du modèle par défaut du jeu de données)."
+
 msgid "True when PDF Generator API credentials are present."
 msgstr "Vrai lorsque les identifiants PDF Generator API sont présents."
 
+msgid "Use pdfgen PDF"
+msgstr "Utiliser le PDF pdfgen"
+
 msgid "View Async Jobs"
 msgstr "Voir les tâches asynchrones"
+
+msgid "pdfgen Template"
+msgstr "Modèle pdfgen"
 

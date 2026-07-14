@@ -15,8 +15,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
+msgstr "<span class=\"visually-hidden\">Dropdown umschalten</span>"
+
 msgid "Display Name"
 msgstr "Anzeigename"
+
+msgid "Generate and Download"
+msgstr "Generieren und herunterladen"
 
 msgid "Generate custom PDF"
 msgstr "Eigenes PDF generieren"
@@ -32,4 +38,7 @@ msgstr "Lagerbewegung"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Wahr, wenn PDF-Generator-API-Zugangsdaten vorhanden sind."
+
+msgid "View Async Jobs"
+msgstr "Async-Aufträge anzeigen"
 

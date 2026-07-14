@@ -15,11 +15,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "<span class=\"small text-muted fw-bold\">Edit:</span>"
-msgstr "<span class=\"small text-muted fw-bold\">Muuda:</span>"
+msgid "+ Create new template…"
+msgstr "+ Loo uus mall…"
 
-msgid "<span class=\"small text-muted fw-bold\">New:</span>"
-msgstr "<span class=\"small text-muted fw-bold\">Uus:</span>"
+msgid ""
+"<span class=\"small text-info\" invisible=\"not is_library_template\">\n"
+"                        <i class=\"fa fa-info-circle me-1\"/>Opening a default template creates an editable copy under My Templates.\n"
+"                    </span>\n"
+"\n"
+"                    <span class=\"small text-muted fw-bold ps-3 border-start\">Dataset:</span>"
+msgstr ""
+"<span class=\"small text-info\" invisible=\"not is_library_template\">\n"
+"                        <i class=\"fa fa-info-circle me-1\"/>Vaikemalli avamine loob muudetava koopia jaotisesse Minu mallid.\n"
+"                    </span>\n"
+"\n"
+"                    <span class=\"small text-muted fw-bold ps-3 border-start\">Andmekogum:</span>"
+
+msgid "<span class=\"small text-muted fw-bold ps-3 border-start\" invisible=\"not dataset_id\">Record:</span>"
+msgstr "<span class=\"small text-muted fw-bold ps-3 border-start\" invisible=\"not dataset_id\">Kirje:</span>"
+
+msgid "<span class=\"small text-muted fw-bold\">Template:</span>"
+msgstr "<span class=\"small text-muted fw-bold\">Mall:</span>"
 
 msgid ""
 "<span class=\"text-muted small text-nowrap\">\n"
@@ -36,11 +52,98 @@ msgstr ""
 "                                                <span invisible=\"not pdfgen_show_secret\">Peida</span>\n"
 "                                            </span>"
 
+msgid ""
+"<span class=\"text-muted small text-nowrap\">\n"
+"                                                <i class=\"fa fa-eye me-1\" invisible=\"pdfgen_show_webhook_secret\"/>\n"
+"                                                <i class=\"fa fa-eye-slash me-1\" invisible=\"not pdfgen_show_webhook_secret\"/>\n"
+"                                                <span invisible=\"pdfgen_show_webhook_secret\">Show</span>\n"
+"                                                <span invisible=\"not pdfgen_show_webhook_secret\">Hide</span>\n"
+"                                            </span>"
+msgstr ""
+"<span class=\"text-muted small text-nowrap\">\n"
+"                                                <i class=\"fa fa-eye me-1\" invisible=\"pdfgen_show_webhook_secret\"/>\n"
+"                                                <i class=\"fa fa-eye-slash me-1\" invisible=\"not pdfgen_show_webhook_secret\"/>\n"
+"                                                <span invisible=\"pdfgen_show_webhook_secret\">Näita</span>\n"
+"                                                <span invisible=\"not pdfgen_show_webhook_secret\">Peida</span>\n"
+"                                            </span>"
+
 msgid "<span> / </span>"
 msgstr "<span> / </span>"
 
 msgid "<span> placeholders covered</span>"
 msgstr "<span> kohahoidjat kaetud</span>"
+
+msgid ""
+"<span> record(s) will be dispatched to pdfgeneratorapi.com.\n"
+"                              You'll be redirected to the Async Jobs list to follow progress.</span>"
+msgstr ""
+"<span> kirje(t) lähetatakse pdfgeneratorapi.com-i.\n"
+"                              Teid suunatakse asünkroonsete tööde loendisse, et edenemist jälgida.</span>"
+
+msgid ""
+"<span>Advanced Settings</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Show <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Hide <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+msgstr ""
+"<span>Täpsemad sätted</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Näita <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Peida <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+
+msgid ""
+"<span>Async webhook</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Show <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Hide <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+msgstr ""
+"<span>Asünkroonne webhook</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Näita <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Peida <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+
+msgid ""
+"<span>Attachments</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Show <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Hide <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+msgstr ""
+"<span>Manused</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Näita <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Peida <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+
+msgid ""
+"<span>Credentials</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Show <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Hide <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+msgstr ""
+"<span>Mandaadid</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Näita <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Peida <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+
+msgid ""
+"<span>Document types</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Show <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Hide <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+msgstr ""
+"<span>Dokumenditüübid</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Näita <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Peida <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
 
 msgid "<span>rendered from </span>"
 msgstr "<span>renderdatud allikast </span>"
@@ -69,14 +172,47 @@ msgstr "Kasutajakonto e-post tavaliste tööruumide jaoks või alamtööruumi id
 msgid "Active"
 msgstr "Aktiivne"
 
+msgid "Adds a Generate custom PDF button on account.move (customer invoices, vendor bills, credit notes) and a Use pdfgen PDF toggle on the invoice Send wizard. Installs the Accounting app if not already present. Seeds a default placeholder dataset."
+msgstr "Lisab nupu „Genereeri kohandatud PDF“ mudelile account.move (kliendiarved, ostuarved, kreeditarved) ja lüliti „Kasuta pdfgen-PDF-i“ arve saatmise viisardile. Paigaldab Raamatupidamise rakenduse, kui seda veel pole. Loob vaikimisi kohahoidjate andmekogumi."
+
+msgid "Adds a Generate custom PDF button on mrp.production and seeds a default placeholder dataset. Installs the Manufacturing app if not already present."
+msgstr "Lisab nupu „Genereeri kohandatud PDF“ mudelile mrp.production ja loob vaikimisi kohahoidjate andmekogumi. Paigaldab Tootmise rakenduse, kui seda veel pole."
+
+msgid "Adds a Generate custom PDF button on purchase.order and seeds a default placeholder dataset. Installs the Purchase app if not already present."
+msgstr "Lisab nupu „Genereeri kohandatud PDF“ mudelile purchase.order ja loob vaikimisi kohahoidjate andmekogumi. Paigaldab Ostu rakenduse, kui seda veel pole."
+
+msgid "Adds a Generate custom PDF button on sale.order and seeds a default placeholder dataset. Installs the Sales app if not already present. Unticking removes the bridge and its dataset; templates on pdfgeneratorapi.com are untouched."
+msgstr "Lisab nupu „Genereeri kohandatud PDF“ mudelile sale.order ja loob vaikimisi kohahoidjate andmekogumi. Paigaldab Müügi rakenduse, kui seda veel pole. Linnukese eemaldamine eemaldab silla ja selle andmekogumi; pdfgeneratorapi.com mallid jäävad puutumata."
+
+msgid "Adds a Generate custom PDF button on stock.picking and seeds a default placeholder dataset. Installs the Inventory app if not already present."
+msgstr "Lisab nupu „Genereeri kohandatud PDF“ mudelile stock.picking ja loob vaikimisi kohahoidjate andmekogumi. Paigaldab Lao rakenduse, kui seda veel pole."
+
+msgid "Adds a rental-specific dataset on top of the Sales bridge. Ticking this also enables the Sales bridge and installs the Rental app if not already present."
+msgstr "Lisab müügisilla peale rendispetsiifilise andmekogumi. Selle märkimine lubab ühtlasi müügisilla ja paigaldab Rendi rakenduse, kui seda veel pole."
+
 msgid "Archived"
 msgstr "Arhiveeritud"
+
+msgid "Async Jobs"
+msgstr "Asünkroonsed tööd"
+
+msgid "Async PDF Job"
+msgstr "Asünkroonne PDF-töö"
+
+msgid "Async PDF Jobs"
+msgstr "Asünkroonsed PDF-tööd"
+
+msgid "Attachment"
+msgstr "Manus"
 
 msgid "Attachment cleanup"
 msgstr "Manuste koristus"
 
-msgid "Attachments"
-msgstr "Manused"
+msgid "Attachment created when the webhook delivered the finished PDF."
+msgstr "Manus, mis loodi, kui webhook toimetas valmis PDF-i kohale."
+
+msgid "Auto Download"
+msgstr "Automaatne allalaadimine"
 
 msgid "Browse related fields"
 msgstr "Sirvi seotud välju"
@@ -89,6 +225,9 @@ msgstr "Tühista"
 
 msgid "Check"
 msgstr "Kontrolli"
+
+msgid "Check coverage"
+msgstr "Kontrolli katvust"
 
 msgid "Check pdfgen template coverage against a dataset"
 msgstr "Kontrolli pdfgen-malli katvust andmekogumi suhtes"
@@ -108,35 +247,56 @@ msgstr "Koristuspoliitika"
 msgid "Close"
 msgstr "Sulge"
 
+msgid "Companies"
+msgstr "Ettevõtted"
+
+msgid "Company"
+msgstr "Ettevõte"
+
+msgid "Compare this dataset's placeholders against a template's expected fields. Highlights placeholders missing from the dataset and unused fields the template doesn't render."
+msgstr "Võrdle selle andmekogumi kohahoidjaid malli eeldatavate väljadega. Tõstab esile kohahoidjad, mis andmekogumist puuduvad, ja kasutamata väljad, mida mall ei renderda."
+
+msgid "Completed"
+msgstr "Lõpetatud"
+
+msgid "Completed At"
+msgstr "Lõpetamise aeg"
+
 msgid "Config Settings"
 msgstr "Konfiguratsiooni sätted"
 
 msgid "Connected to workspace: %s"
 msgstr "Ühendatud tööruumiga: %s"
 
-msgid "Connection"
-msgstr "Ühendus"
+msgid "Connection failed (HTTP %(status)s): %(body)s"
+msgstr "Ühendus ebaõnnestus (HTTP %(status)s): %(body)s"
 
-msgid "Connection failed (HTTP %s): %s"
-msgstr "Ühendus ebaõnnestus (HTTP %s): %s"
+msgid "Connector version"
+msgstr "Konnektori versioon"
 
 msgid "Control what happens to previously-generated PDFs when a user clicks Generate again on the same record."
 msgstr "Juhib, mis juhtub varem genereeritud PDF-idega, kui kasutaja klõpsab samal kirjel uuesti „Genereeri“."
 
-msgid "Could not create template (HTTP %s): %s"
-msgstr "Malli ei saanud luua (HTTP %s): %s"
+msgid "Could not copy the template to your account (HTTP %(status)s): %(body)s"
+msgstr "Malli ei saanud teie kontole kopeerida (HTTP %(status)s): %(body)s"
 
-msgid "Could not load sample template data (HTTP %s): %s"
-msgstr "Malli näidisandmeid ei saanud laadida (HTTP %s): %s"
+msgid "Could not create template (HTTP %(status)s): %(body)s"
+msgstr "Malli ei saanud luua (HTTP %(status)s): %(body)s"
 
-msgid "Could not load template data (HTTP %s): %s"
-msgstr "Malli andmeid ei saanud laadida (HTTP %s): %s"
+msgid "Could not load sample template data (HTTP %(status)s): %(body)s"
+msgstr "Malli näidisandmeid ei saanud laadida (HTTP %(status)s): %(body)s"
 
-msgid "Could not load the editor (HTTP %s): %s"
-msgstr "Redaktorit ei saanud laadida (HTTP %s): %s"
+msgid "Could not load template data (HTTP %(status)s): %(body)s"
+msgstr "Malli andmeid ei saanud laadida (HTTP %(status)s): %(body)s"
 
-msgid "Create"
-msgstr "Loo"
+msgid "Could not load the default template (HTTP %(status)s): %(body)s"
+msgstr "Vaikemalli ei saanud laadida (HTTP %(status)s): %(body)s"
+
+msgid "Could not load the editor (HTTP %(status)s): %(body)s"
+msgstr "Redaktorit ei saanud laadida (HTTP %(status)s): %(body)s"
+
+msgid "Created"
+msgstr "Loodud"
 
 msgid "Created by"
 msgstr "Looja"
@@ -144,8 +304,8 @@ msgstr "Looja"
 msgid "Created on"
 msgstr "Loomise kuupäev"
 
-msgid "Credentials"
-msgstr "Mandaadid"
+msgid "Customer invoices, vendor bills, and credit notes. Also enables the Use pdfgen PDF toggle on the invoice Send wizard."
+msgstr "Kliendiarved, ostuarved ja kreeditarved. Lubab ühtlasi lüliti „Kasuta pdfgen-PDF-i“ arve saatmise viisardis."
 
 msgid "Dataset"
 msgstr "Andmekogum"
@@ -153,8 +313,44 @@ msgstr "Andmekogum"
 msgid "Dataset applies to every PDF generated from this model."
 msgstr "Andmekogum rakendub igale sellest mudelist genereeritud PDF-ile."
 
+msgid "Dataset whose resolved payload was sent to pdfgen at dispatch."
+msgstr "Andmekogum, mille lahendatud saadetis saadeti lähetamisel pdfgen-i."
+
+msgid "Default Templates"
+msgstr "Vaikemallid"
+
+msgid "Default template"
+msgstr "Vaikemall"
+
+msgid "Delivery Slips & Receipts"
+msgstr "Saatelehed ja vastuvõtud"
+
+msgid "Delivery slips and goods receipts."
+msgstr "Saatelehed ja kaupade vastuvõtud."
+
+msgid "Design pdfgeneratorapi.com templates against your Odoo data."
+msgstr "Kujunda pdfgeneratorapi.com malle oma Odoo andmete põhjal."
+
+msgid "Discard"
+msgstr "Loobu"
+
+msgid "Dispatch"
+msgstr "Läheta"
+
+msgid "Dispatch async PDF generation for selected records"
+msgstr "Läheta asünkroonne PDF-i genereerimine valitud kirjetele"
+
+msgid "Dispatched"
+msgstr "Lähetatud"
+
+msgid "Dispatched At"
+msgstr "Lähetamise aeg"
+
 msgid "Display Name"
 msgstr "Kuvatav nimi"
+
+msgid "Display name of the source record at read time."
+msgstr "Lähtekirje kuvatav nimi lugemise hetkel."
 
 msgid "Document"
 msgstr "Dokument"
@@ -180,6 +376,12 @@ msgstr "Redaktor suletud."
 msgid "Embed the pdfgeneratorapi.com template editor"
 msgstr "Manusta pdfgeneratorapi.com mallide redaktor"
 
+msgid "Enable the document types you want to generate PDFs for. Each one adds a Generate custom PDF button on its records and a starter placeholder dataset you can customise."
+msgstr "Luba dokumenditüübid, mille jaoks soovite PDF-e genereerida. Iga tüüp lisab oma kirjetele nupu „Genereeri kohandatud PDF“ ja algse kohahoidjate andmekogumi, mida saate kohandada."
+
+msgid "Error"
+msgstr "Viga"
+
 msgid "Every placeholder the template references is mapped by this dataset. Generation should work."
 msgstr "Iga kohahoidja, millele mall viitab, on selle andmekogumi poolt vastendatud. Genereerimine peaks töötama."
 
@@ -188,6 +390,9 @@ msgstr "Too PDF Generatori viisard esile dokumendimudelil"
 
 msgid "Expression"
 msgstr "Avaldis"
+
+msgid "Failed"
+msgstr "Ebaõnnestus"
 
 msgid "Field Dataset"
 msgstr "Väljade andmekogum"
@@ -216,20 +421,44 @@ msgstr "Genereeri PDF pdfgeneratorapi.com kaudu"
 msgid "Generate custom PDF"
 msgstr "Genereeri kohandatud PDF"
 
+msgid "Generate custom PDFs"
+msgstr "Genereeri kohandatud PDF-e"
+
+msgid "Generated custom PDF via pdfgeneratorapi.com (async)."
+msgstr "Kohandatud PDF genereeritud pdfgeneratorapi.com kaudu (asünkroonselt)."
+
 msgid "Generated custom PDF via pdfgeneratorapi.com."
 msgstr "Kohandatud PDF genereeritud pdfgeneratorapi.com kaudu."
 
 msgid "HTML render of the selected template with a sample record's data. Useful to sanity-check the template + dataset combination without generating a PDF."
 msgstr "Valitud malli HTML-vaade näidiskirje andmetega. Kasulik malli ja andmekogumi kombinatsiooni kontrollimiseks ilma PDF-i genereerimata."
 
+msgid "Helpers for Send wizards that substitute pdfgen PDFs"
+msgstr "Abivahendid saatmisviisarditele, mis asendavad pdfgen-PDF-e"
+
 msgid "ID"
 msgstr "ID"
+
+msgid "Identifier returned by pdfgeneratorapi.com's async endpoint."
+msgstr "Identifikaator, mille tagastas pdfgeneratorapi.com asünkroonne lõpp-punkt."
+
+msgid "Installed version of the PDF Generator API connector. Quote this when contacting support@pdfgeneratorapi.com so we know exactly which release you are running."
+msgstr "PDF Generator API konnektori paigaldatud versioon. Märkige see, kui pöördute aadressile support@pdfgeneratorapi.com, et teaksime täpselt, millist väljalaset kasutate."
+
+msgid "Invalid base64 from pdfgen: %s"
+msgstr "Vigane base64 pdfgen-ist: %s"
+
+msgid "Invoices & Credit Notes"
+msgstr "Arved ja kreeditarved"
+
+msgid "Is Library Template"
+msgstr "On teegimall"
 
 msgid "Is List"
 msgstr "On loend"
 
-msgid "Journal Entry"
-msgstr "Pearaamatukanne"
+msgid "JSON-ish list of selected record ids, comma-separated."
+msgstr "JSON-laadne loend valitud kirjete ID-dest, komadega eraldatud."
 
 msgid "Keep all versions"
 msgstr "Säilita kõik versioonid"
@@ -243,8 +472,20 @@ msgstr "Viimati uuendas"
 msgid "Last Updated on"
 msgstr "Viimati uuendatud"
 
+msgid "Launch the pdfgeneratorapi.com template editor with this dataset's resolved JSON as the sample data, so placeholder paths line up while you design the template."
+msgstr "Käivita pdfgeneratorapi.com mallide redaktor selle andmekogumi lahendatud JSON-iga näidisandmetena, et kohahoidjate teed klapiksid malli kujundamise ajal."
+
+msgid "Leave blank to inherit the global Settings value."
+msgstr "Jäta tühjaks, et pärida globaalne väärtus Sätetest."
+
 msgid "List Item Fields"
 msgstr "Loendiüksuse väljad"
+
+msgid "Manufacturing Orders"
+msgstr "Tootmistellimused"
+
+msgid "Manufacturing orders / work orders."
+msgstr "Tootmistellimused / töökäsud."
 
 msgid "Mapping"
 msgstr "Vastendus"
@@ -261,8 +502,14 @@ msgstr "Puudub andmekogumist"
 msgid "Model"
 msgstr "Mudel"
 
+msgid "Model %s is not available."
+msgstr "Mudel %s pole saadaval."
+
 msgid "Model the field picker should browse for this row. Matches the root model for top-level rows; for children of a list placeholder, walks the parent's path to the related model."
 msgstr "Mudel, mida väljavalija peaks selle rea jaoks sirvima. Ülemise taseme ridade puhul vastab juurmudelile; loendi-kohahoidja alluvate puhul järgib vanema teed seotud mudelini."
+
+msgid "My Templates"
+msgstr "Minu mallid"
 
 msgid "Name"
 msgstr "Nimi"
@@ -278,6 +525,9 @@ msgstr "Mudelile %s ei leitud aktiivset andmekogumit. Loo üks menüüst PDF Gen
 
 msgid "No fields match."
 msgstr "Ükski väli ei sobi."
+
+msgid "No records selected."
+msgstr "Ühtegi kirjet pole valitud."
 
 msgid "None — every dataset field is referenced by the template."
 msgstr "Ükski — mall viitab igale andmekogumi väljale."
@@ -297,6 +547,9 @@ msgstr "Odoo mudel, millest PDF genereeritakse (nt account.move)."
 msgid "Open"
 msgstr "Ava"
 
+msgid "Open in Editor"
+msgstr "Ava redaktoris"
+
 msgid "Origin of the sample payload: a real record's display name, or the API's dummy data."
 msgstr "Näidissaadetise päritolu: tegeliku kirje kuvatav nimi või API näivandmed."
 
@@ -311,14 +564,44 @@ msgstr ""
 "                                    (Docker teenuse nimi, privaatne VPC lõpp-punkt, …) või kui teie ettevõte käitab\n"
 "                                    PDF Generator API spetsiaalset paigaldust oma domeenil. Näide: <code>https://mydomain.com/editor</code>."
 
+msgid "Override the default API endpoint and the template editor's browser URL. Most users can leave these blank."
+msgstr "Kirjuta üle API vaikelõpp-punkt ja malliredaktori brauseri URL. Enamik kasutajaid võib need tühjaks jätta."
+
 msgid "PDF Generator API"
 msgstr "PDF Generator API"
+
+msgid "PDF Generator API Base URL"
+msgstr "PDF Generator API baas-URL"
+
+msgid "PDF Generator API Key"
+msgstr "PDF Generator API-võti"
+
+msgid "PDF Generator API Secret"
+msgstr "PDF Generator API salavõti"
 
 msgid "PDF Generator API is not configured. Go to Settings > PDF Generator API."
 msgstr "PDF Generator API pole seadistatud. Mine Sätted > PDF Generator API."
 
-msgid "PDF generation failed (HTTP %s): %s"
-msgstr "PDF-i genereerimine ebaõnnestus (HTTP %s): %s"
+msgid "PDF Generator Editor Web URL"
+msgstr "PDF Generatori redaktori veebi-URL"
+
+msgid "PDF Generator Webhook Base URL"
+msgstr "PDF Generatori webhooki baas-URL"
+
+msgid "PDF Generator Webhook Secret"
+msgstr "PDF Generatori webhooki salavõti"
+
+msgid "PDF Generator Workspace Identifier"
+msgstr "PDF Generatori tööruumi identifikaator"
+
+msgid "PDF Generator async generation job"
+msgstr "PDF Generatori asünkroonne genereerimistöö"
+
+msgid "PDF Generator webhook is not configured. Set the Webhook Base URL and Webhook Secret in Settings > PDF Generator API."
+msgstr "PDF Generatori webhook pole seadistatud. Määra webhooki baas-URL ja webhooki salavõti jaotises Sätted > PDF Generator API."
+
+msgid "PDF generation failed (HTTP %(status)s): %(body)s"
+msgstr "PDF-i genereerimine ebaõnnestus (HTTP %(status)s): %(body)s"
 
 msgid "Parent"
 msgstr "Ülem"
@@ -332,8 +615,20 @@ msgstr "Teed, millele mall viitab, kuid andmekogum neid ei vastenda."
 msgid "Pdfgen Configured"
 msgstr "Pdfgen seadistatud"
 
+msgid "Pending"
+msgstr "Ootel"
+
+msgid "Pick a record of the dataset's model. Its resolved payload is sent to the editor's preview pane so the template renders against real data."
+msgstr "Vali andmekogumi mudelist üks kirje. Selle lahendatud saadetis saadetakse redaktori eelvaatepaneelile, et mall renderduks päris andmetega."
+
+msgid "Pick a sample record first."
+msgstr "Vali esmalt näidiskirje."
+
 msgid "Pick a template above to open it in the editor, or create a new one."
 msgstr "Vali ülal mall, et avada see redaktoris, või loo uus."
+
+msgid "Pick a template before generating."
+msgstr "Vali enne genereerimist mall."
 
 msgid "Pick a template first."
 msgstr "Vali esmalt mall."
@@ -350,8 +645,8 @@ msgstr "Eelvaade"
 msgid "Preview Source"
 msgstr "Eelvaate allikas"
 
-msgid "Preview failed (HTTP %s): %s"
-msgstr "Eelvaade ebaõnnestus (HTTP %s): %s"
+msgid "Preview failed (HTTP %(status)s): %(body)s"
+msgstr "Eelvaade ebaõnnestus (HTTP %(status)s): %(body)s"
 
 msgid "Provided by pdfgeneratorapi.com. Admins only."
 msgstr "Pakub pdfgeneratorapi.com. Ainult administraatoritele."
@@ -359,11 +654,65 @@ msgstr "Pakub pdfgeneratorapi.com. Ainult administraatoritele."
 msgid "Public API key from your pdfgeneratorapi.com account."
 msgstr "Avalik API-võti teie pdfgeneratorapi.com kontolt."
 
+msgid "Public base URL of this Odoo (scheme + host) so pdfgeneratorapi.com can call back when an async job finishes — e.g. https://odoo.example.com or an ngrok tunnel for local dev. Leave blank to fall back to the System Parameter `web.base.url`."
+msgstr "Selle Odoo avalik baas-URL (skeem + host), et pdfgeneratorapi.com saaks asünkroonse töö lõppedes tagasikutse teha — nt https://odoo.example.com või ngrok-tunnel kohaliku arenduse jaoks. Jäta tühjaks, et kasutada varuvariandina süsteemiparameetrit `web.base.url`."
+
+msgid ""
+"Public origin (scheme + host) of this Odoo so pdfgeneratorapi.com can reach\n"
+"                                    <code>/pdfgen/webhook/deliver</code>. Leave blank to fall back to the system parameter\n"
+"                                    <code>web.base.url</code>. For local dev, point this at your ngrok tunnel."
+msgstr ""
+"Selle Odoo avalik lähtekoht (skeem + host), et pdfgeneratorapi.com pääseks ligi aadressile\n"
+"                                    <code>/pdfgen/webhook/deliver</code>. Jäta tühjaks, et kasutada süsteemiparameetrit\n"
+"                                    <code>web.base.url</code>. Kohalikuks arenduseks suuna see oma ngrok-tunnelile."
+
+msgid "Purchase Orders"
+msgstr "Ostutellimused"
+
+msgid "Purchase orders sent to vendors."
+msgstr "Tarnijatele saadetud ostutellimused."
+
+msgid "Quotations & Sale Orders"
+msgstr "Pakkumised ja müügitellimused"
+
+msgid "Quotations and sale orders."
+msgstr "Pakkumised ja müügitellimused."
+
+msgid "Record Count"
+msgstr "Kirjete arv"
+
 msgid "Regional endpoint. Default: us1.pdfgeneratorapi.com."
 msgstr "Piirkondlik lõpp-punkt. Vaikimisi: us1.pdfgeneratorapi.com."
 
+msgid "Render the dataset against a real record (or the template's own sample data if no record exists) so you can see how the PDF looks before generating it for real."
+msgstr "Renderda andmekogum päris kirje põhjal (või malli enda näidisandmetega, kui kirjet pole), et näha enne tegelikku genereerimist, kuidas PDF välja näeb."
+
+msgid "Rental Orders"
+msgstr "Renditellimused"
+
+msgid "Rental orders (contracts, pickup/return slips). Enables the Sales bridge automatically."
+msgstr "Renditellimused (lepingud, väljastus-/tagastuslehed). Lubab müügisilla automaatselt."
+
 msgid "Replace previous pdfgen PDFs on the record"
 msgstr "Asenda varasemad pdfgen-PDF-id kirjel"
+
+msgid "Res"
+msgstr "Kirje"
+
+msgid "Res Display"
+msgstr "Kirje kuvanimi"
+
+msgid "Res Model"
+msgstr "Kirje mudel"
+
+msgid "Sample record"
+msgstr "Näidiskirje"
+
+msgid "Save"
+msgstr "Salvesta"
+
+msgid "Select at least one record."
+msgstr "Vali vähemalt üks kirje."
 
 msgid "Sends an authenticated request to verify credentials and workspace identity."
 msgstr "Saadab autenditud päringu, et kontrollida mandaate ja tööruumi identiteeti."
@@ -374,14 +723,30 @@ msgstr "Järjekord"
 msgid "Settings"
 msgstr "Sätted"
 
+msgid "Shared secret used to sign each async job's callback URL. Auto-filled with a random value on first save if left blank — only rotate it if you suspect leakage. The same secret derives the per-job token the webhook receiver verifies before accepting a delivery."
+msgstr "Jagatud salavõti, millega allkirjastatakse iga asünkroonse töö tagasikutse-URL. Kui see tühjaks jätta, täidetakse esimesel salvestamisel automaatselt juhusliku väärtusega — vaheta seda ainult lekkekahtluse korral. Samast salavõtmest tuletatakse iga töö token, mida webhooki vastuvõtja enne kohaletoimetamise vastuvõtmist kontrollib."
+
 msgid "Short-lived signed URL rendered by the pdfgen_editor_iframe widget. Not cached between actions — each Open editor click mints a fresh one."
 msgstr "Lühiealine allkirjastatud URL, mida renderdab widget pdfgen_editor_iframe. Tegevuste vahel ei vahemälustata — iga klõps „Ava redaktor“ genereerib uue."
 
 msgid "Show secret"
 msgstr "Näita salavõtit"
 
+msgid "Show webhook secret"
+msgstr "Näita webhooki salavõtit"
+
 msgid "Signs JWT tokens. Keep this confidential."
 msgstr "Allkirjastab JWT-märgised. Hoia konfidentsiaalsena."
+
+msgid ""
+"Signs each callback URL with an HMAC-derived per-job token. Auto-filled with a 32-byte random\n"
+"                                    value on first save when blank — only rotate if you suspect leakage."
+msgstr ""
+"Allkirjastab iga tagasikutse-URL-i HMAC-ist tuletatud tööpõhise tokeniga. Kui tühi, täidetakse esimesel salvestamisel\n"
+"                                    automaatselt 32-baidise juhusliku väärtusega — vaheta ainult lekkekahtluse korral."
+
+msgid "Source"
+msgstr "Allikas"
 
 msgid "Source Model"
 msgstr "Lähtemudel"
@@ -389,8 +754,14 @@ msgstr "Lähtemudel"
 msgid "Source Record"
 msgstr "Lähtekirje"
 
+msgid "Source record no longer exists for job %s."
+msgstr "Töö %s lähtekirjet enam ei eksisteeri."
+
 msgid "Source record no longer exists."
 msgstr "Lähtekirjet enam ei eksisteeri."
+
+msgid "State"
+msgstr "Olek"
 
 msgid "Target Model"
 msgstr "Sihtmudel"
@@ -401,6 +772,9 @@ msgstr "Mall"
 msgid "Template Editor"
 msgstr "Mallide redaktor"
 
+msgid "Template ID"
+msgstr "Malli ID"
+
 msgid "Template Name"
 msgstr "Malli nimi"
 
@@ -410,6 +784,12 @@ msgstr "Mall salvestatud."
 msgid "Template string composing multiple fields. Use {dotted.path} tokens, e.g. '{street}, {city} {zip}'. When set, beats the Odoo Field column."
 msgstr "Malliväljend, mis koostab mitu välja. Kasuta tokeneid {punkti.ga.tee}, nt „{street}, {city} {zip}“. Kui määratud, on eelisõigus veeru „Odoo väli“ ees."
 
+msgid "Template the Send wizard auto-generates a pdfgen PDF with when a record has no pdfgen attachment yet. Pick from your live pdfgeneratorapi.com templates. Leave blank to disable auto-generation for this model."
+msgstr "Mall, millega saatmisviisard genereerib automaatselt pdfgen-PDF-i, kui kirjel pole veel pdfgen-manust. Vali oma pdfgeneratorapi.com aktiivsete mallide hulgast. Jäta tühjaks, et keelata selle mudeli automaatne genereerimine."
+
+msgid "Template was copied but the response had no id. Got: %s"
+msgstr "Mall kopeeriti, kuid vastuses polnud ID-d. Saadi: %s"
+
 msgid "Template was created but the response had no id. Got: %s"
 msgstr "Mall loodi, kuid vastuses polnud ID-d. Saadi: %s"
 
@@ -418,6 +798,9 @@ msgstr "Testi ühendust"
 
 msgid "Test the connection"
 msgstr "Testi ühendust"
+
+msgid "The pdfgeneratorapi.com template id this job renders."
+msgstr "pdfgeneratorapi.com malli ID, mida see töö renderdab."
 
 msgid "The root model of the dataset — same for every row."
 msgstr "Andmekogumi juurmudel — sama igal real."
@@ -435,20 +818,35 @@ msgstr "See andmekogum sihib %(expected)s, kuid kirje on %(got)s."
 msgid "Toggle to reveal the API secret in plaintext."
 msgstr "Lülita sisse, et näha API salavõtit tavatekstis."
 
+msgid "Toggle to reveal the webhook secret in plaintext."
+msgstr "Lülita sisse, et näha webhooki salavõtit tavatekstis."
+
 msgid "Total placeholders"
 msgstr "Kohahoidjaid kokku"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Tõene, kui PDF Generator API mandaadid on olemas."
 
+msgid "True when the picked template comes from the public Template Library. Drives the 'a copy will be created' hint — library templates are read-only, so Open copies them into the account first."
+msgstr "Tõene, kui valitud mall pärineb avalikust malliteegist. Juhib vihjet „luuakse koopia“ — teegimallid on kirjutuskaitstud, seega Ava kopeerib need esmalt kontole."
+
 msgid "True when the placeholder is an array of items (repeated section)."
 msgstr "Tõene, kui kohahoidja on elementide massiiv (korduv sektsioon)."
+
+msgid "Type a name for the new template."
+msgstr "Sisesta uue malli nimi."
 
 msgid "Unexpected API response for preview. Got: %s"
 msgstr "Ootamatu API vastus eelvaatele. Saadi: %s"
 
+msgid "Unexpected API response shape from pdfgeneratorapi.com."
+msgstr "Ootamatu API vastuse kuju pdfgeneratorapi.com-ilt."
+
 msgid "Unexpected API response shape. Got keys: %s"
 msgstr "Ootamatu API vastuse kuju. Saadud võtmed: %s"
+
+msgid "Unexpected template definition response. Got: %s"
+msgstr "Ootamatu malli definitsiooni vastus. Saadi: %s"
 
 msgid "Unknown source model: %s"
 msgstr "Tundmatu lähtemudel: %s"
@@ -462,8 +860,26 @@ msgstr "Kasutatakse JWT-märgiste allkirjastamiseks. Hoia konfidentsiaalsena."
 msgid "Used when clicking Create new template."
 msgstr "Kasutatakse, kui klõpsatakse „Loo uus mall“."
 
-msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Keep` leaves every version attached (default); `Replace` deletes pdfgen-generated PDFs on that record before attaching the new one. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
-msgstr "Mida teha samal kirjel olevate varem genereeritud PDF-idega, kui kasutaja klõpsab uuesti „Genereeri“. „Säilita“ jätab iga versiooni manustatuks (vaikimisi); „Asenda“ kustutab sellel kirjel pdfgen-i genereeritud PDF-id enne uue manustamist. Mõjutatud on ainult selle konnektori loodud manused — käsitsi üleslaaditud PDF-e ei puudutata kunagi."
+msgid "Webhook Base URL"
+msgstr "Webhooki baas-URL"
+
+msgid "Webhook Secret"
+msgstr "Webhooki salavõti"
+
+msgid "Webhook delivered no recognisable PDF payload. Got keys: %s"
+msgstr "Webhook ei toimetanud kohale äratuntavat PDF-saadetist. Saadud võtmed: %s"
+
+msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Replace` deletes pdfgen-generated PDFs on that record before attaching the new one (default); `Keep` leaves every version attached. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
+msgstr "Mida teha samal kirjel olevate varem genereeritud PDF-idega, kui kasutaja klõpsab uuesti „Genereeri“. „Asenda“ kustutab sellel kirjel pdfgen-i genereeritud PDF-id enne uue manustamist (vaikimisi); „Säilita“ jätab iga versiooni manustatuks. Mõjutatud on ainult selle konnektori loodud manused — käsitsi üleslaaditud PDF-e ei puudutata kunagi."
+
+msgid "When True, action_generate returns an ir.actions.act_url that downloads the just-created attachment in addition to attaching it to the source record. Set via context default from the split-button's `Generate and Download` dropdown item."
+msgstr "Kui tõene, tagastab action_generate ir.actions.act_url-i, mis laadib äsja loodud manuse alla lisaks selle manustamisele lähtekirjele. Määratakse konteksti vaikeväärtusega jagatud nupu rippmenüü valikust „Genereeri ja laadi alla“."
+
+msgid "When set together with a Sample record, the resolved Odoo data is sent to the editor as preview data so you can design against your real records."
+msgstr "Kui see on määratud koos näidiskirjega, saadetakse lahendatud Odoo andmed redaktorisse eelvaateandmetena, et saaksite kujundada oma päris kirjete põhjal."
+
+msgid "Where pdfgeneratorapi.com calls back when an async generation finishes. Required for the multi-record list-view dispatch flow."
+msgstr "Kuhu pdfgeneratorapi.com teeb tagasikutse, kui asünkroonne genereerimine lõpeb. Nõutav mitme kirje loendivaate lähetusvoo jaoks."
 
 msgid "Workspace Identifier"
 msgstr "Tööruumi identifikaator"
@@ -471,17 +887,29 @@ msgstr "Tööruumi identifikaator"
 msgid "Your account email for regular workspaces, or a sub-workspace identifier (format per the pdfgeneratorapi.com workspace settings page — typically `parent@domain.com:slug`) for sub-workspaces. The value is forwarded verbatim into the JWT `sub` claim so pdfgen routes requests to the right workspace."
 msgstr "Teie konto e-post tavaliste tööruumide jaoks või alamtööruumi identifikaator (vorming vastavalt pdfgeneratorapi.com tööruumi sätete lehele — tavaliselt „parent@domain.com:slug“) alamtööruumide jaoks. Väärtus edastatakse sõna-sõnalt JWT `sub` claimi, et pdfgen suunaks päringud õigesse tööruumi."
 
+msgid "auto-generated on save"
+msgstr "genereeritakse salvestamisel automaatselt"
+
 msgid "breadcrumb"
 msgstr "leivapuru"
 
 msgid "drag onto a row"
 msgstr "lohista reale"
 
+msgid "e.g. https://abcd-1234.ngrok-free.app"
+msgstr "nt https://abcd-1234.ngrok-free.app"
+
 msgid "e.g. https://mydomain.com/editor"
 msgstr "nt https://mydomain.com/editor"
 
+msgid "id"
+msgstr "id"
+
 msgid "openEditor returned no URL."
 msgstr "openEditor ei tagastanud URL-i."
+
+msgid "pdfgen Job ID"
+msgstr "pdfgen-i töö ID"
 
 msgid "pdfgeneratorapi.com dataset placeholder mapping"
 msgstr "pdfgeneratorapi.com andmekogumi kohahoidja vastendus"
@@ -489,11 +917,20 @@ msgstr "pdfgeneratorapi.com andmekogumi kohahoidja vastendus"
 msgid "pdfgeneratorapi.com payload dataset for an Odoo model"
 msgstr "pdfgeneratorapi.com saadetise andmekogum Odoo mudeli jaoks"
 
+msgid "support@pdfgeneratorapi.com"
+msgstr "support@pdfgeneratorapi.com"
+
+msgid "unknown"
+msgstr "teadmata"
+
 msgid "{name} ({qty})"
 msgstr "{name} ({qty})"
 
 msgid "{street}, {city} {zip}"
 msgstr "{street}, {city} {zip}"
+
+msgid "— please include it when writing to"
+msgstr "— palun lisage see, kui kirjutate aadressile"
 
 msgid "↑↓ navigate · Enter drills in · Esc back · / filter"
 msgstr "↑↓ liigu · Enter süvene · Esc tagasi · / filtreeri"
