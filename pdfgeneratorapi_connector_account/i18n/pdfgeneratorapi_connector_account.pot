@@ -1,0 +1,97 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pdfgeneratorapi_connector_account
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0-20260409\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-14 09:26+0000\n"
+"PO-Revision-Date: 2026-07-14 09:26+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pdfgeneratorapi_connector_account
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_account.view_move_form_pdfgen
+msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model:ir.model,name:pdfgeneratorapi_connector_account.model_account_move_send_wizard
+msgid "Account Move Send Wizard"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_account.view_move_form_pdfgen
+msgid "Generate and Download"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_account.view_move_form_pdfgen
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_account.view_out_invoice_list_pdfgen
+msgid "Generate custom PDF"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model:ir.model,name:pdfgeneratorapi_connector_account.model_account_move
+msgid "Journal Entry"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_account.account_move_send_wizard_form_pdfgen
+msgid "PDF Generator API"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model:ir.model.fields,field_description:pdfgeneratorapi_connector_account.field_account_move__pdfgen_configured
+#: model:ir.model.fields,field_description:pdfgeneratorapi_connector_account.field_account_move_send_wizard__pdfgen_configured
+msgid "Pdfgen Configured"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model:ir.model.fields,field_description:pdfgeneratorapi_connector_account.field_account_move_send_wizard__pdfgen_error
+msgid "Pdfgen Error"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#. odoo-python
+#: code:addons/pdfgeneratorapi_connector_account/wizards/account_move_send.py:0
+msgid "Pick a template to use the pdfgen PDF."
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model:ir.model.fields,field_description:pdfgeneratorapi_connector_account.field_account_move_send_wizard__pdfgen_preview_html
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_account.account_move_send_wizard_form_pdfgen
+msgid "Preview"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model:ir.model.fields,help:pdfgeneratorapi_connector_account.field_account_move_send_wizard__pdfgen_use_custom
+msgid ""
+"Replace the standard invoice report with the latest pdfgen-generated PDF (or"
+" generate one synchronously from the dataset's default template)."
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model:ir.model.fields,help:pdfgeneratorapi_connector_account.field_account_move__pdfgen_configured
+msgid "True when PDF Generator API credentials are present."
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model:ir.model.fields,field_description:pdfgeneratorapi_connector_account.field_account_move_send_wizard__pdfgen_use_custom
+msgid "Use pdfgen PDF"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_account.view_out_invoice_list_pdfgen
+msgid "View Async Jobs"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_account
+#: model:ir.model.fields,field_description:pdfgeneratorapi_connector_account.field_account_move_send_wizard__pdfgen_template_id
+msgid "pdfgen Template"
+msgstr ""

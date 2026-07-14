@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0-20260409\n"
+"Project-Id-Version: Odoo Server 18.0-20260409\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 17:09+0000\n"
-"PO-Revision-Date: 2026-04-24 17:09+0000\n"
+"POT-Creation-Date: 2026-07-14 09:27+0000\n"
+"PO-Revision-Date: 2026-07-14 09:27+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,18 +16,19 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: pdfgeneratorapi_connector_purchase
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector_purchase.field_purchase_order__display_name
-msgid "Display Name"
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_form_pdfgen
+msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector_purchase
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_form_pdfgen
-msgid "Generate custom PDF"
+msgid "Generate and Download"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector_purchase
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector_purchase.field_purchase_order__id
-msgid "ID"
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_form_pdfgen
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_list_pdfgen
+msgid "Generate custom PDF"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector_purchase
@@ -43,4 +44,9 @@ msgstr ""
 #. module: pdfgeneratorapi_connector_purchase
 #: model:ir.model.fields,help:pdfgeneratorapi_connector_purchase.field_purchase_order__pdfgen_configured
 msgid "True when PDF Generator API credentials are present."
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_purchase
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_list_pdfgen
+msgid "View Async Jobs"
 msgstr ""

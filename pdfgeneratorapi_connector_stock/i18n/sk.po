@@ -15,14 +15,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-msgid "Display Name"
-msgstr "Zobrazovaný názov"
+msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
+msgstr "<span class=\"visually-hidden\">Prepnúť rozbaľovaciu ponuku</span>"
+
+msgid "Generate and Download"
+msgstr "Vygenerovať a stiahnuť"
 
 msgid "Generate custom PDF"
 msgstr "Vygenerovať vlastné PDF"
-
-msgid "ID"
-msgstr "ID"
 
 msgid "Pdfgen Configured"
 msgstr "Pdfgen nakonfigurovaný"
@@ -32,4 +32,7 @@ msgstr "Presun"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Pravda, keď sú prítomné prihlasovacie údaje PDF Generator API."
+
+msgid "View Async Jobs"
+msgstr "Zobraziť asynchrónne úlohy"
 
