@@ -221,14 +221,52 @@ webhook receiver, with idempotent retry handling.
 
 ## Phase 7 — Distribution & App Store
 
-- [x] `static/description/index.html` — App Store listing page (features, screenshots).
+### Release roadmap — vendor-guidelines compliance
+
+Audited 2026-07-14 against <https://apps.odoo.com/apps/vendor-guidelines>.
+
+Fixed (landed with main-addon `x.7.1.0` / bridge patch bumps, all three
+version lines):
+
+- [x] Module display names ≤ 25 chars: `PDF Generator API` (main) +
+  `PDF Generator: <Type>` bridges. Technical names unchanged.
+- [x] `support` manifest key on all 7 addons → `support@pdfgeneratorapi.com`.
+- [x] Icons for `_account` and `_rental` (same icon as the other addons).
+- [x] `index.html` rewritten: describes the framework + bridges architecture
+  (it still sold the pre-split, invoice-only module — misleading per the
+  guidelines), Bootstrap classes + inline styles only (no `<style>` block,
+  which the store sanitizer may strip), fake screenshot placeholders removed,
+  Rental bridge labelled as requiring `sale_renting` (Odoo Enterprise).
+- [x] Privacy section links to <https://pdfgeneratorapi.com/privacy-notice>.
+- [x] Connector version shown in **Settings → PDF Generator API** (footer next
+  to Save/Discard) so support can ask customers which release they run.
+
+Open — store-ranking items to decide on:
+
+- [ ] Cover image / banner: `images` currently lists only the icon; a missing
+  thumbnail is one of the store's 5 ranking penalties. Needs a real
+  `banner.png` per addon.
+- [ ] Per-bridge `static/description/index.html` pages — bridges fall back to
+  `README.rst`, and a non-HTML description is another ranking penalty. The
+  rental page must state the Enterprise requirement.
+- [ ] Screenshots: settings page, wizard, template editor, generated PDF on an
+  invoice — capture from the local stack, slot into `index.html` + `images`.
+- [ ] `live_test_url` (optional): demo instance link improves conversions.
+- [ ] i18n: the new Settings-footer strings (connector version / support line)
+  are not yet in the 8 `.po` files — run the export/translate cycle.
+
+### Original checklist
+
+- [x] `static/description/index.html` — App Store listing page.
 - [x] Proper icon (currently placeholder).
 - [ ] Screenshots: settings page, wizard, generated PDF attached to invoice.
-- [ ] Privacy policy section for App Store review (what data leaves Odoo, over TLS, to which region).
+- [x] Privacy policy section for App Store review (what data leaves Odoo, over
+  TLS, to which region) — in `index.html` + `README.rst`, linking the
+  pdfgeneratorapi.com privacy notice.
 - [x] Run `pylint-odoo` at the P-level strict setting — App Store reviewers do. Wired into pre-commit (`make lint-pylint`) so the strict odoolint set runs on every commit.
-- [ ] Submit to Odoo App Store for v19. Tag `19.0.1.0.0`.
-- [ ] Backport to `18.0` branch, submit separately.
-- [ ] Backport to `17.0` branch (deferred per initial plan).
+- [ ] Submit to Odoo App Store for v19 (tag = main-addon manifest version).
+- [x] Backport to `18.0` branch (`e2fd0ba`, PR #3) — store submission still pending.
+- [x] Backport to `17.0` branch (`bbe46fb`, PR #4) — store submission still pending.
 
 ---
 

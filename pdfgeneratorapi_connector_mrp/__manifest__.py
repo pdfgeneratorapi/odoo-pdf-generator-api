@@ -1,10 +1,11 @@
 {
-    "name": "PDF Generator API Connector — Manufacturing bridge",
-    "version": "18.0.1.0.0",
+    "name": "PDF Generator: MRP",
+    "version": "18.0.1.0.1",
     "category": "Manufacturing",
     "summary": "Generate pdfgeneratorapi.com PDFs from manufacturing orders",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
+    "support": "support@pdfgeneratorapi.com",
     "license": "LGPL-3",
     "depends": ["pdfgeneratorapi_connector", "mrp"],
     "data": [
