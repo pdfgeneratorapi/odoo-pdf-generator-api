@@ -1,10 +1,11 @@
 {
-    "name": "PDF Generator API Connector — Purchase bridge",
-    "version": "17.0.1.0.0",
+    "name": "PDF Generator: Purchase",
+    "version": "17.0.1.0.1",
     "category": "Purchases",
     "summary": "Generate pdfgeneratorapi.com PDFs from purchase orders",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
+    "support": "support@pdfgeneratorapi.com",
     "license": "LGPL-3",
     "depends": ["pdfgeneratorapi_connector", "purchase"],
     "data": [

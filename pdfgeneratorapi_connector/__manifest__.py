@@ -1,10 +1,11 @@
 {
-    "name": "PDF Generator API Connector",
-    "version": "17.0.7.0.0",
+    "name": "PDF Generator API",
+    "version": "17.0.7.1.0",
     "category": "Productivity/Documents",
     "summary": "Framework: generate custom PDFs of any record via pdfgeneratorapi.com",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
+    "support": "support@pdfgeneratorapi.com",
     "license": "LGPL-3",
     "depends": ["base", "mail"],
     "data": [

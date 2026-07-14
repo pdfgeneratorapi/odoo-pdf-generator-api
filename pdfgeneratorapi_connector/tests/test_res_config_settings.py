@@ -53,6 +53,17 @@ class TestResConfigSettings(TransactionCase):
         client = config._get_pdfgen_client()
         self.assertEqual(client.editor_web_url, "http://localhost:8080")
 
+    def test_module_version_matches_installed_module(self):
+        """Settings surface the installed connector version for support triage."""
+        config = self._make_config()
+        module = (
+            self.env["ir.module.module"]
+            .sudo()
+            .search([("name", "=", "pdfgeneratorapi_connector")], limit=1)
+        )
+        self.assertEqual(config.pdfgen_module_version, module.latest_version)
+        self.assertTrue(config.pdfgen_module_version)
+
     def test_test_connection_success_returns_notification(self):
         config = self._make_config()
         fake_client = MagicMock()

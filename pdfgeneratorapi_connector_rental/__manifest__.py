@@ -1,10 +1,11 @@
 {
-    "name": "PDF Generator API Connector — Rental bridge",
-    "version": "17.0.1.0.0",
+    "name": "PDF Generator: Rental",
+    "version": "17.0.1.0.1",
     "category": "Sales",
     "summary": "Generate pdfgeneratorapi.com PDFs from rental orders (contracts, pickup/return slips)",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
+    "support": "support@pdfgeneratorapi.com",
     "license": "LGPL-3",
     "depends": ["pdfgeneratorapi_connector_sale", "sale_renting"],
     "data": [

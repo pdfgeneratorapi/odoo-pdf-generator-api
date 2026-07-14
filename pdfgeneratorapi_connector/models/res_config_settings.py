@@ -151,6 +151,25 @@ class ResConfigSettings(models.TransientModel):
         ),
     )
 
+    pdfgen_module_version = fields.Char(
+        string="Connector version",
+        compute="_compute_pdfgen_module_version",
+        help=(
+            "Installed version of the PDF Generator API connector. Quote this "
+            "when contacting support@pdfgeneratorapi.com so we know exactly "
+            "which release you are running."
+        ),
+    )
+
+    def _compute_pdfgen_module_version(self):
+        module = (
+            self.env["ir.module.module"]
+            .sudo()
+            .search([("name", "=", "pdfgeneratorapi_connector")], limit=1)
+        )
+        for settings in self:
+            settings.pdfgen_module_version = module.latest_version or _("unknown")
+
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
