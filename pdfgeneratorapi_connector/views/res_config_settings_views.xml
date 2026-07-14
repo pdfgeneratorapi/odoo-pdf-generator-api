@@ -240,10 +240,19 @@
                         </div>
                     </details>
                     <!-- Mirror the top-bar Save/Discard so users don't have to scroll back up
-                         after editing the (long) PDF Generator API settings panel. -->
-                    <div class="d-flex gap-2 justify-content-end py-3 px-3 border-top mt-3">
-                        <button name="cancel" type="object" string="Discard" class="btn btn-secondary"/>
-                        <button name="execute" type="object" string="Save" class="btn btn-primary"/>
+                         after editing the (long) PDF Generator API settings panel. The version
+                         on the left is what support asks for when triaging customer issues. -->
+                    <div class="d-flex align-items-center gap-2 py-3 px-3 border-top mt-3">
+                        <span class="text-muted small">
+                            Connector version
+                            <field name="pdfgen_module_version" readonly="1" nolabel="1" class="d-inline-block w-auto fw-bold"/>
+                            — please include it when writing to
+                            <a href="mailto:support@pdfgeneratorapi.com">support@pdfgeneratorapi.com</a>
+                        </span>
+                        <div class="d-flex gap-2 ms-auto">
+                            <button name="cancel" type="object" string="Discard" class="btn btn-secondary"/>
+                            <button name="execute" type="object" string="Save" class="btn btn-primary"/>
+                        </div>
                     </div>
                 </app>
             </xpath>

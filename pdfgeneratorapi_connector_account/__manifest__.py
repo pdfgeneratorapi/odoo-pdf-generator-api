@@ -1,10 +1,11 @@
 {
-    "name": "PDF Generator API Connector — Invoicing bridge",
-    "version": "19.0.1.1.0",
+    "name": "PDF Generator: Invoicing",
+    "version": "19.0.1.1.1",
     "category": "Accounting",
     "summary": "Generate pdfgeneratorapi.com PDFs from customer invoices and credit notes",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
+    "support": "support@pdfgeneratorapi.com",
     "license": "LGPL-3",
     "depends": ["pdfgeneratorapi_connector", "account"],
     "data": [
