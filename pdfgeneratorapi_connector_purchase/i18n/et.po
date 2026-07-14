@@ -15,14 +15,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "Display Name"
-msgstr "Kuvatav nimi"
+msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
+msgstr "<span class=\"visually-hidden\">Ava või sulge rippmenüü</span>"
+
+msgid "Generate and Download"
+msgstr "Genereeri ja laadi alla"
 
 msgid "Generate custom PDF"
 msgstr "Genereeri kohandatud PDF"
-
-msgid "ID"
-msgstr "ID"
 
 msgid "Pdfgen Configured"
 msgstr "Pdfgen seadistatud"
@@ -32,4 +32,7 @@ msgstr "Ostutellimus"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Tõene, kui PDF Generator API mandaadid on olemas."
+
+msgid "View Async Jobs"
+msgstr "Vaata asünkroonseid töid"
 

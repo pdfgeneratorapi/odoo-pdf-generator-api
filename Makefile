@@ -147,9 +147,12 @@ demo-seed:
 # in scripts/i18n_translate.py. The rental bridge can't be exported via Odoo
 # because it depends on sale_renting (Enterprise); its .pot is maintained by
 # hand and the translator script is idempotent on it.
+# Odoo <= 18 has no `odoo i18n` CLI (added in 19) — use the legacy
+# --i18n-export flag against a loaded registry instead.
 i18n-export:
 	cd $(COMPOSE_DIR) && $(foreach m,$(MODULE) $(BRIDGES),\
-		docker compose exec -T $(ODOO_SERVICE) odoo i18n export -d $(ODOO_DB) $(m) 2>&1 | tail -1 ; )
+		docker compose exec -T $(ODOO_SERVICE) odoo -d $(ODOO_DB) --no-http --stop-after-init \
+			--i18n-export=/mnt/extra-addons/$(m)/i18n/$(m).pot --modules=$(m) 2>&1 | tail -1 ; )
 
 i18n-translate:
 	uv run python scripts/i18n_translate.py

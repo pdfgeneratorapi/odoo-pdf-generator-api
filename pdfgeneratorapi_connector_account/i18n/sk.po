@@ -18,21 +18,45 @@ msgstr ""
 msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
 msgstr "<span class=\"visually-hidden\">Prepnúť rozbaľovaciu ponuku</span>"
 
+msgid "Account Move Send"
+msgstr "Odoslanie účtovného zápisu"
+
 msgid "Generate and Download"
 msgstr "Vygenerovať a stiahnuť"
 
 msgid "Generate custom PDF"
 msgstr "Vygenerovať vlastné PDF"
 
+msgid "Journal Entry"
+msgstr "Účtovný zápis"
+
+msgid "PDF Generator API"
+msgstr "PDF Generator API"
+
 msgid "Pdfgen Configured"
 msgstr "Pdfgen nakonfigurovaný"
 
-msgid "Purchase Order"
-msgstr "Nákupná objednávka"
+msgid "Pdfgen Error"
+msgstr "Chyba pdfgen"
+
+msgid "Pick a template to use the pdfgen PDF."
+msgstr "Vyberte šablónu, ak chcete použiť pdfgen PDF."
+
+msgid "Preview"
+msgstr "Náhľad"
+
+msgid "Replace the standard invoice report with the latest pdfgen-generated PDF (or generate one synchronously from the dataset's default template)."
+msgstr "Nahradí štandardný výkaz faktúry najnovším PDF vygenerovaným cez pdfgen (alebo ho synchrónne vygeneruje z predvolenej šablóny dátovej sady)."
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Pravda, keď sú prítomné prihlasovacie údaje PDF Generator API."
 
+msgid "Use pdfgen PDF"
+msgstr "Použiť pdfgen PDF"
+
 msgid "View Async Jobs"
 msgstr "Zobraziť asynchrónne úlohy"
+
+msgid "pdfgen Template"
+msgstr "Šablóna pdfgen"
 

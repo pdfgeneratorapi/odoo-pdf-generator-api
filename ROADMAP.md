@@ -240,6 +240,12 @@ version lines):
 - [x] Privacy section links to <https://pdfgeneratorapi.com/privacy-notice>.
 - [x] Connector version shown in **Settings → PDF Generator API** (footer next
   to Save/Discard) so support can ask customers which release they run.
+- [x] i18n refresh: `.pot` files re-exported (they were stale since the
+  template-library/async work — 145 terms had no dict entry), all 145
+  translated into the 8 shipped languages, and the account bridge got its
+  first `.pot` + 8 `.po` files (it was missing from the script's `ADDONS`
+  since the extraction). 284/284 msgids covered per language, `msgfmt -cv`
+  clean.
 
 Open — store-ranking items to decide on:
 
@@ -252,8 +258,6 @@ Open — store-ranking items to decide on:
 - [ ] Screenshots: settings page, wizard, template editor, generated PDF on an
   invoice — capture from the local stack, slot into `index.html` + `images`.
 - [ ] `live_test_url` (optional): demo instance link improves conversions.
-- [ ] i18n: the new Settings-footer strings (connector version / support line)
-  are not yet in the 8 `.po` files — run the export/translate cycle.
 
 ### Original checklist
 

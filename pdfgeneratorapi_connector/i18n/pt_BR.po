@@ -15,11 +15,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-msgid "<span class=\"small text-muted fw-bold\">Edit:</span>"
-msgstr "<span class=\"small text-muted fw-bold\">Editar:</span>"
+msgid "+ Create new template…"
+msgstr "+ Criar novo modelo…"
 
-msgid "<span class=\"small text-muted fw-bold\">New:</span>"
-msgstr "<span class=\"small text-muted fw-bold\">Novo:</span>"
+msgid ""
+"<span class=\"small text-info\" invisible=\"not is_library_template\">\n"
+"                        <i class=\"fa fa-info-circle me-1\"/>Opening a default template creates an editable copy under My Templates.\n"
+"                    </span>\n"
+"\n"
+"                    <span class=\"small text-muted fw-bold ps-3 border-start\">Dataset:</span>"
+msgstr ""
+"<span class=\"small text-info\" invisible=\"not is_library_template\">\n"
+"                        <i class=\"fa fa-info-circle me-1\"/>Abrir um modelo padrão cria uma cópia editável em Meus modelos.\n"
+"                    </span>\n"
+"\n"
+"                    <span class=\"small text-muted fw-bold ps-3 border-start\">Conjunto de dados:</span>"
+
+msgid "<span class=\"small text-muted fw-bold ps-3 border-start\" invisible=\"not dataset_id\">Record:</span>"
+msgstr "<span class=\"small text-muted fw-bold ps-3 border-start\" invisible=\"not dataset_id\">Registro:</span>"
+
+msgid "<span class=\"small text-muted fw-bold\">Template:</span>"
+msgstr "<span class=\"small text-muted fw-bold\">Modelo:</span>"
 
 msgid ""
 "<span class=\"text-muted small text-nowrap\">\n"
@@ -36,14 +52,104 @@ msgstr ""
 "                                                <span invisible=\"not pdfgen_show_secret\">Ocultar</span>\n"
 "                                            </span>"
 
+msgid ""
+"<span class=\"text-muted small text-nowrap\">\n"
+"                                                <i class=\"fa fa-eye me-1\" invisible=\"pdfgen_show_webhook_secret\"/>\n"
+"                                                <i class=\"fa fa-eye-slash me-1\" invisible=\"not pdfgen_show_webhook_secret\"/>\n"
+"                                                <span invisible=\"pdfgen_show_webhook_secret\">Show</span>\n"
+"                                                <span invisible=\"not pdfgen_show_webhook_secret\">Hide</span>\n"
+"                                            </span>"
+msgstr ""
+"<span class=\"text-muted small text-nowrap\">\n"
+"                                                <i class=\"fa fa-eye me-1\" invisible=\"pdfgen_show_webhook_secret\"/>\n"
+"                                                <i class=\"fa fa-eye-slash me-1\" invisible=\"not pdfgen_show_webhook_secret\"/>\n"
+"                                                <span invisible=\"pdfgen_show_webhook_secret\">Mostrar</span>\n"
+"                                                <span invisible=\"not pdfgen_show_webhook_secret\">Ocultar</span>\n"
+"                                            </span>"
+
 msgid "<span> / </span>"
 msgstr "<span> / </span>"
 
 msgid "<span> placeholders covered</span>"
 msgstr "<span> marcadores cobertos</span>"
 
+msgid ""
+"<span> record(s) will be dispatched to pdfgeneratorapi.com.\n"
+"                              You'll be redirected to the Async Jobs list to follow progress.</span>"
+msgstr ""
+"<span> registro(s) será(ão) despachado(s) para pdfgeneratorapi.com.\n"
+"                              Você será redirecionado para a lista de Trabalhos assíncronos para acompanhar o progresso.</span>"
+
+msgid ""
+"<span>Advanced Settings</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Show <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Hide <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+msgstr ""
+"<span>Configurações avançadas</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Mostrar <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Ocultar <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+
+msgid ""
+"<span>Async webhook</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Show <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Hide <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+msgstr ""
+"<span>Webhook assíncrono</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Mostrar <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Ocultar <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+
+msgid ""
+"<span>Attachments</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Show <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Hide <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+msgstr ""
+"<span>Anexos</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Mostrar <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Ocultar <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+
+msgid ""
+"<span>Credentials</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Show <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Hide <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+msgstr ""
+"<span>Credenciais</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Mostrar <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Ocultar <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+
+msgid ""
+"<span>Document types</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Show <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Hide <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+msgstr ""
+"<span>Tipos de documento</span>\n"
+"                                <span class=\"pdfgen_collapsible_toggle text-primary small fw-normal\">\n"
+"                                    <span class=\"pdfgen_collapsible_show\">Mostrar <i class=\"fa fa-chevron-right\"/></span>\n"
+"                                    <span class=\"pdfgen_collapsible_hide\">Ocultar <i class=\"fa fa-chevron-down\"/></span>\n"
+"                                </span>"
+
 msgid "<span>rendered from </span>"
 msgstr "<span>renderizado a partir de </span>"
+
+msgid "A dataset for this model already exists."
+msgstr "Já existe um conjunto de dados para este modelo."
 
 msgid "API Base URL"
 msgstr "URL base da API"
@@ -69,14 +175,47 @@ msgstr "E-mail da conta para espaços de trabalho normais, ou o identificador do
 msgid "Active"
 msgstr "Ativo"
 
+msgid "Adds a Generate custom PDF button on account.move (customer invoices, vendor bills, credit notes) and a Use pdfgen PDF toggle on the invoice Send wizard. Installs the Accounting app if not already present. Seeds a default placeholder dataset."
+msgstr "Adiciona um botão «Gerar PDF personalizado» em account.move (faturas de clientes, faturas de fornecedores, notas de crédito) e uma opção «Usar PDF do pdfgen» no assistente de envio de faturas. Instala o app Financeiro se ainda não estiver presente. Cria um conjunto de dados de marcadores padrão."
+
+msgid "Adds a Generate custom PDF button on mrp.production and seeds a default placeholder dataset. Installs the Manufacturing app if not already present."
+msgstr "Adiciona um botão «Gerar PDF personalizado» em mrp.production e cria um conjunto de dados de marcadores padrão. Instala o app Manufatura se ainda não estiver presente."
+
+msgid "Adds a Generate custom PDF button on purchase.order and seeds a default placeholder dataset. Installs the Purchase app if not already present."
+msgstr "Adiciona um botão «Gerar PDF personalizado» em purchase.order e cria um conjunto de dados de marcadores padrão. Instala o app Compras se ainda não estiver presente."
+
+msgid "Adds a Generate custom PDF button on sale.order and seeds a default placeholder dataset. Installs the Sales app if not already present. Unticking removes the bridge and its dataset; templates on pdfgeneratorapi.com are untouched."
+msgstr "Adiciona um botão «Gerar PDF personalizado» em sale.order e cria um conjunto de dados de marcadores padrão. Instala o app Vendas se ainda não estiver presente. Desmarcar remove a ponte e seu conjunto de dados; os modelos no pdfgeneratorapi.com não são afetados."
+
+msgid "Adds a Generate custom PDF button on stock.picking and seeds a default placeholder dataset. Installs the Inventory app if not already present."
+msgstr "Adiciona um botão «Gerar PDF personalizado» em stock.picking e cria um conjunto de dados de marcadores padrão. Instala o app Inventário se ainda não estiver presente."
+
+msgid "Adds a rental-specific dataset on top of the Sales bridge. Ticking this also enables the Sales bridge and installs the Rental app if not already present."
+msgstr "Adiciona um conjunto de dados específico de locação sobre a ponte de Vendas. Marcar esta opção também habilita a ponte de Vendas e instala o app Locação se ainda não estiver presente."
+
 msgid "Archived"
 msgstr "Arquivado"
+
+msgid "Async Jobs"
+msgstr "Trabalhos assíncronos"
+
+msgid "Async PDF Job"
+msgstr "Trabalho assíncrono de PDF"
+
+msgid "Async PDF Jobs"
+msgstr "Trabalhos assíncronos de PDF"
+
+msgid "Attachment"
+msgstr "Anexo"
 
 msgid "Attachment cleanup"
 msgstr "Limpeza de anexos"
 
-msgid "Attachments"
-msgstr "Anexos"
+msgid "Attachment created when the webhook delivered the finished PDF."
+msgstr "Anexo criado quando o webhook entregou o PDF finalizado."
+
+msgid "Auto Download"
+msgstr "Download automático"
 
 msgid "Browse related fields"
 msgstr "Explorar campos relacionados"
@@ -89,6 +228,9 @@ msgstr "Cancelar"
 
 msgid "Check"
 msgstr "Verificar"
+
+msgid "Check coverage"
+msgstr "Verificar cobertura"
 
 msgid "Check pdfgen template coverage against a dataset"
 msgstr "Verificar cobertura do modelo pdfgen em relação a um conjunto de dados"
@@ -108,35 +250,56 @@ msgstr "Política de limpeza"
 msgid "Close"
 msgstr "Fechar"
 
+msgid "Companies"
+msgstr "Empresas"
+
+msgid "Company"
+msgstr "Empresa"
+
+msgid "Compare this dataset's placeholders against a template's expected fields. Highlights placeholders missing from the dataset and unused fields the template doesn't render."
+msgstr "Compara os marcadores deste conjunto de dados com os campos esperados de um modelo. Destaca marcadores ausentes no conjunto de dados e campos não utilizados que o modelo não renderiza."
+
+msgid "Completed"
+msgstr "Concluído"
+
+msgid "Completed At"
+msgstr "Concluído em"
+
 msgid "Config Settings"
 msgstr "Configurações"
 
 msgid "Connected to workspace: %s"
 msgstr "Conectado ao espaço de trabalho: %s"
 
-msgid "Connection"
-msgstr "Conexão"
+msgid "Connection failed (HTTP %(status)s): %(body)s"
+msgstr "Falha na conexão (HTTP %(status)s): %(body)s"
 
-msgid "Connection failed (HTTP %s): %s"
-msgstr "Falha na conexão (HTTP %s): %s"
+msgid "Connector version"
+msgstr "Versão do conector"
 
 msgid "Control what happens to previously-generated PDFs when a user clicks Generate again on the same record."
 msgstr "Controla o que acontece com PDFs gerados anteriormente quando o usuário clica em «Gerar» novamente no mesmo registro."
 
-msgid "Could not create template (HTTP %s): %s"
-msgstr "Não foi possível criar o modelo (HTTP %s): %s"
+msgid "Could not copy the template to your account (HTTP %(status)s): %(body)s"
+msgstr "Não foi possível copiar o modelo para a sua conta (HTTP %(status)s): %(body)s"
 
-msgid "Could not load sample template data (HTTP %s): %s"
-msgstr "Não foi possível carregar os dados de amostra do modelo (HTTP %s): %s"
+msgid "Could not create template (HTTP %(status)s): %(body)s"
+msgstr "Não foi possível criar o modelo (HTTP %(status)s): %(body)s"
 
-msgid "Could not load template data (HTTP %s): %s"
-msgstr "Não foi possível carregar os dados do modelo (HTTP %s): %s"
+msgid "Could not load sample template data (HTTP %(status)s): %(body)s"
+msgstr "Não foi possível carregar os dados de amostra do modelo (HTTP %(status)s): %(body)s"
 
-msgid "Could not load the editor (HTTP %s): %s"
-msgstr "Não foi possível carregar o editor (HTTP %s): %s"
+msgid "Could not load template data (HTTP %(status)s): %(body)s"
+msgstr "Não foi possível carregar os dados do modelo (HTTP %(status)s): %(body)s"
 
-msgid "Create"
-msgstr "Criar"
+msgid "Could not load the default template (HTTP %(status)s): %(body)s"
+msgstr "Não foi possível carregar o modelo padrão (HTTP %(status)s): %(body)s"
+
+msgid "Could not load the editor (HTTP %(status)s): %(body)s"
+msgstr "Não foi possível carregar o editor (HTTP %(status)s): %(body)s"
+
+msgid "Created"
+msgstr "Criado"
 
 msgid "Created by"
 msgstr "Criado por"
@@ -144,8 +307,8 @@ msgstr "Criado por"
 msgid "Created on"
 msgstr "Criado em"
 
-msgid "Credentials"
-msgstr "Credenciais"
+msgid "Customer invoices, vendor bills, and credit notes. Also enables the Use pdfgen PDF toggle on the invoice Send wizard."
+msgstr "Faturas de clientes, faturas de fornecedores e notas de crédito. Também habilita a opção «Usar PDF do pdfgen» no assistente de envio de faturas."
 
 msgid "Dataset"
 msgstr "Conjunto de dados"
@@ -153,8 +316,44 @@ msgstr "Conjunto de dados"
 msgid "Dataset applies to every PDF generated from this model."
 msgstr "O conjunto de dados se aplica a cada PDF gerado a partir deste modelo."
 
+msgid "Dataset whose resolved payload was sent to pdfgen at dispatch."
+msgstr "Conjunto de dados cujo payload resolvido foi enviado ao pdfgen no despacho."
+
+msgid "Default Templates"
+msgstr "Modelos padrão"
+
+msgid "Default template"
+msgstr "Modelo padrão"
+
+msgid "Delivery Slips & Receipts"
+msgstr "Recibos de entrega e recebimentos"
+
+msgid "Delivery slips and goods receipts."
+msgstr "Recibos de entrega e recebimentos de mercadorias."
+
+msgid "Design pdfgeneratorapi.com templates against your Odoo data."
+msgstr "Desenhe modelos do pdfgeneratorapi.com com base nos seus dados do Odoo."
+
+msgid "Discard"
+msgstr "Descartar"
+
+msgid "Dispatch"
+msgstr "Despachar"
+
+msgid "Dispatch async PDF generation for selected records"
+msgstr "Despachar geração assíncrona de PDF para os registros selecionados"
+
+msgid "Dispatched"
+msgstr "Despachado"
+
+msgid "Dispatched At"
+msgstr "Despachado em"
+
 msgid "Display Name"
 msgstr "Nome exibido"
+
+msgid "Display name of the source record at read time."
+msgstr "Nome exibido do registro de origem no momento da leitura."
 
 msgid "Document"
 msgstr "Documento"
@@ -180,6 +379,12 @@ msgstr "Editor fechado."
 msgid "Embed the pdfgeneratorapi.com template editor"
 msgstr "Incorporar o editor de modelos do pdfgeneratorapi.com"
 
+msgid "Enable the document types you want to generate PDFs for. Each one adds a Generate custom PDF button on its records and a starter placeholder dataset you can customise."
+msgstr "Habilite os tipos de documento para os quais deseja gerar PDFs. Cada um adiciona um botão «Gerar PDF personalizado» aos seus registros e um conjunto de dados de marcadores inicial que você pode personalizar."
+
+msgid "Error"
+msgstr "Erro"
+
 msgid "Every placeholder the template references is mapped by this dataset. Generation should work."
 msgstr "Cada marcador que o modelo referencia é mapeado por este conjunto. A geração deve funcionar."
 
@@ -188,6 +393,9 @@ msgstr "Expor o assistente do PDF Generator em um modelo de documento"
 
 msgid "Expression"
 msgstr "Expressão"
+
+msgid "Failed"
+msgstr "Falhou"
 
 msgid "Field Dataset"
 msgstr "Conjunto de dados de campos"
@@ -216,20 +424,44 @@ msgstr "Gerar PDF via pdfgeneratorapi.com"
 msgid "Generate custom PDF"
 msgstr "Gerar PDF personalizado"
 
+msgid "Generate custom PDFs"
+msgstr "Gerar PDFs personalizados"
+
+msgid "Generated custom PDF via pdfgeneratorapi.com (async)."
+msgstr "PDF personalizado gerado via pdfgeneratorapi.com (assíncrono)."
+
 msgid "Generated custom PDF via pdfgeneratorapi.com."
 msgstr "PDF personalizado gerado via pdfgeneratorapi.com."
 
 msgid "HTML render of the selected template with a sample record's data. Useful to sanity-check the template + dataset combination without generating a PDF."
 msgstr "Renderização HTML do modelo selecionado com dados de um registro de amostra. Útil para verificar a combinação modelo + conjunto sem gerar um PDF."
 
+msgid "Helpers for Send wizards that substitute pdfgen PDFs"
+msgstr "Auxiliares para assistentes de envio que substituem PDFs do pdfgen"
+
 msgid "ID"
 msgstr "ID"
+
+msgid "Identifier returned by pdfgeneratorapi.com's async endpoint."
+msgstr "Identificador retornado pelo endpoint assíncrono do pdfgeneratorapi.com."
+
+msgid "Installed version of the PDF Generator API connector. Quote this when contacting support@pdfgeneratorapi.com so we know exactly which release you are running."
+msgstr "Versão instalada do conector do PDF Generator API. Informe-a ao contatar support@pdfgeneratorapi.com para que saibamos exatamente qual versão você está executando."
+
+msgid "Invalid base64 from pdfgen: %s"
+msgstr "base64 inválido do pdfgen: %s"
+
+msgid "Invoices & Credit Notes"
+msgstr "Faturas e notas de crédito"
+
+msgid "Is Library Template"
+msgstr "É modelo da biblioteca"
 
 msgid "Is List"
 msgstr "É lista"
 
-msgid "Journal Entry"
-msgstr "Lançamento contábil"
+msgid "JSON-ish list of selected record ids, comma-separated."
+msgstr "Lista tipo JSON dos ids dos registros selecionados, separados por vírgula."
 
 msgid "Keep all versions"
 msgstr "Manter todas as versões"
@@ -243,8 +475,20 @@ msgstr "Última atualização por"
 msgid "Last Updated on"
 msgstr "Última atualização em"
 
+msgid "Launch the pdfgeneratorapi.com template editor with this dataset's resolved JSON as the sample data, so placeholder paths line up while you design the template."
+msgstr "Abre o editor de modelos do pdfgeneratorapi.com com o JSON resolvido deste conjunto de dados como dados de amostra, para que os caminhos dos marcadores coincidam enquanto você desenha o modelo."
+
+msgid "Leave blank to inherit the global Settings value."
+msgstr "Deixe em branco para herdar o valor global das Configurações."
+
 msgid "List Item Fields"
 msgstr "Campos de item de lista"
+
+msgid "Manufacturing Orders"
+msgstr "Ordens de produção"
+
+msgid "Manufacturing orders / work orders."
+msgstr "Ordens de produção / ordens de trabalho."
 
 msgid "Mapping"
 msgstr "Mapeamento"
@@ -261,8 +505,14 @@ msgstr "Ausentes no conjunto"
 msgid "Model"
 msgstr "Modelo"
 
+msgid "Model %s is not available."
+msgstr "O modelo %s não está disponível."
+
 msgid "Model the field picker should browse for this row. Matches the root model for top-level rows; for children of a list placeholder, walks the parent's path to the related model."
 msgstr "Modelo que o seletor de campos deve explorar para esta linha. Coincide com o modelo raiz para linhas de nível superior; para filhos de um marcador do tipo lista, percorre o caminho do pai até o modelo relacionado."
+
+msgid "My Templates"
+msgstr "Meus modelos"
 
 msgid "Name"
 msgstr "Nome"
@@ -278,6 +528,9 @@ msgstr "Nenhum conjunto ativo encontrado para %s. Crie um em PDF Generator API >
 
 msgid "No fields match."
 msgstr "Nenhum campo corresponde."
+
+msgid "No records selected."
+msgstr "Nenhum registro selecionado."
 
 msgid "None — every dataset field is referenced by the template."
 msgstr "Nenhum — cada campo do conjunto é referenciado pelo modelo."
@@ -297,6 +550,9 @@ msgstr "Modelo do Odoo a partir do qual o PDF é gerado (ex.: account.move)."
 msgid "Open"
 msgstr "Abrir"
 
+msgid "Open in Editor"
+msgstr "Abrir no editor"
+
 msgid "Origin of the sample payload: a real record's display name, or the API's dummy data."
 msgstr "Origem do payload de amostra: o nome exibido de um registro real ou os dados simulados da API."
 
@@ -311,14 +567,44 @@ msgstr ""
 "                                    (nome de serviço Docker, endpoint privado VPC, …) ou quando sua empresa executa uma\n"
 "                                    implantação dedicada do PDF Generator API em seu próprio domínio. Exemplo: <code>https://mydomain.com/editor</code>."
 
+msgid "Override the default API endpoint and the template editor's browser URL. Most users can leave these blank."
+msgstr "Substitui o endpoint padrão da API e a URL do editor de modelos no navegador. A maioria dos usuários pode deixar estes campos em branco."
+
 msgid "PDF Generator API"
 msgstr "PDF Generator API"
+
+msgid "PDF Generator API Base URL"
+msgstr "URL base da API do PDF Generator"
+
+msgid "PDF Generator API Key"
+msgstr "Chave de API do PDF Generator"
+
+msgid "PDF Generator API Secret"
+msgstr "Segredo da API do PDF Generator"
 
 msgid "PDF Generator API is not configured. Go to Settings > PDF Generator API."
 msgstr "O PDF Generator API não está configurado. Vá para Configurações > PDF Generator API."
 
-msgid "PDF generation failed (HTTP %s): %s"
-msgstr "Falha na geração de PDF (HTTP %s): %s"
+msgid "PDF Generator Editor Web URL"
+msgstr "URL web do editor do PDF Generator"
+
+msgid "PDF Generator Webhook Base URL"
+msgstr "URL base do webhook do PDF Generator"
+
+msgid "PDF Generator Webhook Secret"
+msgstr "Segredo do webhook do PDF Generator"
+
+msgid "PDF Generator Workspace Identifier"
+msgstr "Identificador do espaço de trabalho do PDF Generator"
+
+msgid "PDF Generator async generation job"
+msgstr "Trabalho de geração assíncrona do PDF Generator"
+
+msgid "PDF Generator webhook is not configured. Set the Webhook Base URL and Webhook Secret in Settings > PDF Generator API."
+msgstr "O webhook do PDF Generator não está configurado. Defina a URL base do webhook e o Segredo do webhook em Configurações > PDF Generator API."
+
+msgid "PDF generation failed (HTTP %(status)s): %(body)s"
+msgstr "Falha na geração de PDF (HTTP %(status)s): %(body)s"
 
 msgid "Parent"
 msgstr "Pai"
@@ -332,8 +618,20 @@ msgstr "Caminhos que o modelo referencia mas que o conjunto não mapeia."
 msgid "Pdfgen Configured"
 msgstr "Pdfgen configurado"
 
+msgid "Pending"
+msgstr "Pendente"
+
+msgid "Pick a record of the dataset's model. Its resolved payload is sent to the editor's preview pane so the template renders against real data."
+msgstr "Escolha um registro do modelo do conjunto de dados. Seu payload resolvido é enviado ao painel de pré-visualização do editor para que o modelo seja renderizado com dados reais."
+
+msgid "Pick a sample record first."
+msgstr "Escolha um registro de amostra primeiro."
+
 msgid "Pick a template above to open it in the editor, or create a new one."
 msgstr "Escolha um modelo acima para abri-lo no editor, ou crie um novo."
+
+msgid "Pick a template before generating."
+msgstr "Escolha um modelo antes de gerar."
 
 msgid "Pick a template first."
 msgstr "Escolha um modelo primeiro."
@@ -350,8 +648,8 @@ msgstr "Pré-visualização"
 msgid "Preview Source"
 msgstr "Origem da pré-visualização"
 
-msgid "Preview failed (HTTP %s): %s"
-msgstr "A pré-visualização falhou (HTTP %s): %s"
+msgid "Preview failed (HTTP %(status)s): %(body)s"
+msgstr "A pré-visualização falhou (HTTP %(status)s): %(body)s"
 
 msgid "Provided by pdfgeneratorapi.com. Admins only."
 msgstr "Fornecido pelo pdfgeneratorapi.com. Somente administradores."
@@ -359,11 +657,65 @@ msgstr "Fornecido pelo pdfgeneratorapi.com. Somente administradores."
 msgid "Public API key from your pdfgeneratorapi.com account."
 msgstr "Chave de API pública da sua conta pdfgeneratorapi.com."
 
+msgid "Public base URL of this Odoo (scheme + host) so pdfgeneratorapi.com can call back when an async job finishes — e.g. https://odoo.example.com or an ngrok tunnel for local dev. Leave blank to fall back to the System Parameter `web.base.url`."
+msgstr "URL base pública deste Odoo (esquema + host) para que o pdfgeneratorapi.com possa chamar de volta quando um trabalho assíncrono terminar — ex.: https://odoo.example.com ou um túnel ngrok para desenvolvimento local. Deixe em branco para usar o Parâmetro de Sistema `web.base.url`."
+
+msgid ""
+"Public origin (scheme + host) of this Odoo so pdfgeneratorapi.com can reach\n"
+"                                    <code>/pdfgen/webhook/deliver</code>. Leave blank to fall back to the system parameter\n"
+"                                    <code>web.base.url</code>. For local dev, point this at your ngrok tunnel."
+msgstr ""
+"Origem pública (esquema + host) deste Odoo para que o pdfgeneratorapi.com consiga acessar\n"
+"                                    <code>/pdfgen/webhook/deliver</code>. Deixe em branco para usar o parâmetro de sistema\n"
+"                                    <code>web.base.url</code>. Para desenvolvimento local, aponte para o seu túnel ngrok."
+
+msgid "Purchase Orders"
+msgstr "Pedidos de compra"
+
+msgid "Purchase orders sent to vendors."
+msgstr "Pedidos de compra enviados aos fornecedores."
+
+msgid "Quotations & Sale Orders"
+msgstr "Cotações e pedidos de venda"
+
+msgid "Quotations and sale orders."
+msgstr "Cotações e pedidos de venda."
+
+msgid "Record Count"
+msgstr "Número de registros"
+
 msgid "Regional endpoint. Default: us1.pdfgeneratorapi.com."
 msgstr "Endpoint regional. Padrão: us1.pdfgeneratorapi.com."
 
+msgid "Render the dataset against a real record (or the template's own sample data if no record exists) so you can see how the PDF looks before generating it for real."
+msgstr "Renderiza o conjunto de dados com um registro real (ou com os dados de amostra do próprio modelo, se nenhum registro existir) para que você veja como o PDF fica antes de gerá-lo de verdade."
+
+msgid "Rental Orders"
+msgstr "Pedidos de locação"
+
+msgid "Rental orders (contracts, pickup/return slips). Enables the Sales bridge automatically."
+msgstr "Pedidos de locação (contratos, guias de retirada/devolução). Habilita a ponte de Vendas automaticamente."
+
 msgid "Replace previous pdfgen PDFs on the record"
 msgstr "Substituir PDFs anteriores do pdfgen no registro"
+
+msgid "Res"
+msgstr "Registro"
+
+msgid "Res Display"
+msgstr "Exibição do registro"
+
+msgid "Res Model"
+msgstr "Modelo do registro"
+
+msgid "Sample record"
+msgstr "Registro de amostra"
+
+msgid "Save"
+msgstr "Salvar"
+
+msgid "Select at least one record."
+msgstr "Selecione ao menos um registro."
 
 msgid "Sends an authenticated request to verify credentials and workspace identity."
 msgstr "Envia uma requisição autenticada para verificar credenciais e identidade do espaço de trabalho."
@@ -374,14 +726,30 @@ msgstr "Sequência"
 msgid "Settings"
 msgstr "Configurações"
 
+msgid "Shared secret used to sign each async job's callback URL. Auto-filled with a random value on first save if left blank — only rotate it if you suspect leakage. The same secret derives the per-job token the webhook receiver verifies before accepting a delivery."
+msgstr "Segredo compartilhado usado para assinar a URL de callback de cada trabalho assíncrono. Preenchido automaticamente com um valor aleatório no primeiro salvamento se deixado em branco — só o rotacione se suspeitar de vazamento. O mesmo segredo deriva o token por trabalho que o receptor do webhook verifica antes de aceitar uma entrega."
+
 msgid "Short-lived signed URL rendered by the pdfgen_editor_iframe widget. Not cached between actions — each Open editor click mints a fresh one."
 msgstr "URL assinada de curta duração renderizada pelo widget pdfgen_editor_iframe. Não é armazenada em cache entre ações — cada clique em «Abrir editor» gera uma nova."
 
 msgid "Show secret"
 msgstr "Mostrar segredo"
 
+msgid "Show webhook secret"
+msgstr "Mostrar segredo do webhook"
+
 msgid "Signs JWT tokens. Keep this confidential."
 msgstr "Assina tokens JWT. Mantenha confidencial."
+
+msgid ""
+"Signs each callback URL with an HMAC-derived per-job token. Auto-filled with a 32-byte random\n"
+"                                    value on first save when blank — only rotate if you suspect leakage."
+msgstr ""
+"Assina cada URL de callback com um token por trabalho derivado de HMAC. Preenchido automaticamente com um valor\n"
+"                                    aleatório de 32 bytes no primeiro salvamento quando em branco — só rotacione se suspeitar de vazamento."
+
+msgid "Source"
+msgstr "Origem"
 
 msgid "Source Model"
 msgstr "Modelo de origem"
@@ -389,8 +757,14 @@ msgstr "Modelo de origem"
 msgid "Source Record"
 msgstr "Registro de origem"
 
+msgid "Source record no longer exists for job %s."
+msgstr "O registro de origem não existe mais para o trabalho %s."
+
 msgid "Source record no longer exists."
 msgstr "O registro de origem não existe mais."
+
+msgid "State"
+msgstr "Situação"
 
 msgid "Target Model"
 msgstr "Modelo de destino"
@@ -401,6 +775,9 @@ msgstr "Modelo"
 msgid "Template Editor"
 msgstr "Editor de modelos"
 
+msgid "Template ID"
+msgstr "ID do modelo"
+
 msgid "Template Name"
 msgstr "Nome do modelo"
 
@@ -410,6 +787,12 @@ msgstr "Modelo salvo."
 msgid "Template string composing multiple fields. Use {dotted.path} tokens, e.g. '{street}, {city} {zip}'. When set, beats the Odoo Field column."
 msgstr "Template string compondo vários campos. Use tokens {caminho.pontos}, ex.: «{street}, {city} {zip}». Quando definido, prevalece sobre a coluna «Campo do Odoo»."
 
+msgid "Template the Send wizard auto-generates a pdfgen PDF with when a record has no pdfgen attachment yet. Pick from your live pdfgeneratorapi.com templates. Leave blank to disable auto-generation for this model."
+msgstr "Modelo com o qual o assistente de envio gera automaticamente um PDF do pdfgen quando o registro ainda não tem um anexo do pdfgen. Escolha entre seus modelos ativos no pdfgeneratorapi.com. Deixe em branco para desabilitar a geração automática para este modelo."
+
+msgid "Template was copied but the response had no id. Got: %s"
+msgstr "O modelo foi copiado, mas a resposta não tinha id. Recebido: %s"
+
 msgid "Template was created but the response had no id. Got: %s"
 msgstr "O modelo foi criado, mas a resposta não tinha id. Recebido: %s"
 
@@ -418,6 +801,9 @@ msgstr "Testar conexão"
 
 msgid "Test the connection"
 msgstr "Testar a conexão"
+
+msgid "The pdfgeneratorapi.com template id this job renders."
+msgstr "O id do modelo do pdfgeneratorapi.com que este trabalho renderiza."
 
 msgid "The root model of the dataset — same for every row."
 msgstr "O modelo raiz do conjunto — o mesmo para cada linha."
@@ -435,20 +821,35 @@ msgstr "Este conjunto aponta para %(expected)s, mas o registro é %(got)s."
 msgid "Toggle to reveal the API secret in plaintext."
 msgstr "Alterne para revelar o segredo da API em texto plano."
 
+msgid "Toggle to reveal the webhook secret in plaintext."
+msgstr "Alterne para revelar o segredo do webhook em texto plano."
+
 msgid "Total placeholders"
 msgstr "Total de marcadores"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Verdadeiro quando as credenciais do PDF Generator API estão presentes."
 
+msgid "True when the picked template comes from the public Template Library. Drives the 'a copy will be created' hint — library templates are read-only, so Open copies them into the account first."
+msgstr "Verdadeiro quando o modelo escolhido vem da Biblioteca de modelos pública. Controla a dica «uma cópia será criada» — modelos da biblioteca são somente leitura, então Abrir os copia primeiro para a conta."
+
 msgid "True when the placeholder is an array of items (repeated section)."
 msgstr "Verdadeiro quando o marcador é uma lista de itens (seção repetida)."
+
+msgid "Type a name for the new template."
+msgstr "Digite um nome para o novo modelo."
 
 msgid "Unexpected API response for preview. Got: %s"
 msgstr "Resposta inesperada da API para a pré-visualização. Recebido: %s"
 
+msgid "Unexpected API response shape from pdfgeneratorapi.com."
+msgstr "Formato inesperado da resposta da API do pdfgeneratorapi.com."
+
 msgid "Unexpected API response shape. Got keys: %s"
 msgstr "Formato inesperado da resposta da API. Chaves recebidas: %s"
+
+msgid "Unexpected template definition response. Got: %s"
+msgstr "Resposta inesperada da definição do modelo. Recebido: %s"
 
 msgid "Unknown source model: %s"
 msgstr "Modelo de origem desconhecido: %s"
@@ -462,8 +863,26 @@ msgstr "Usado para assinar tokens JWT. Mantenha confidencial."
 msgid "Used when clicking Create new template."
 msgstr "Usado ao clicar em «Criar novo modelo»."
 
-msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Keep` leaves every version attached (default); `Replace` deletes pdfgen-generated PDFs on that record before attaching the new one. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
-msgstr "O que fazer com PDFs gerados anteriormente no mesmo registro quando o usuário clica em «Gerar» novamente. «Manter» deixa todas as versões anexadas (padrão); «Substituir» exclui PDFs gerados pelo pdfgen no registro antes de anexar o novo. Somente anexos criados por este conector são afetados — PDFs enviados manualmente nunca são tocados."
+msgid "Webhook Base URL"
+msgstr "URL base do webhook"
+
+msgid "Webhook Secret"
+msgstr "Segredo do webhook"
+
+msgid "Webhook delivered no recognisable PDF payload. Got keys: %s"
+msgstr "O webhook não entregou nenhum payload de PDF reconhecível. Chaves recebidas: %s"
+
+msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Replace` deletes pdfgen-generated PDFs on that record before attaching the new one (default); `Keep` leaves every version attached. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
+msgstr "O que fazer com PDFs gerados anteriormente no mesmo registro quando o usuário clica em «Gerar» novamente. «Substituir» exclui os PDFs gerados pelo pdfgen nesse registro antes de anexar o novo (padrão); «Manter» deixa todas as versões anexadas. Somente anexos criados por este conector são afetados — PDFs enviados manualmente nunca são tocados."
+
+msgid "When True, action_generate returns an ir.actions.act_url that downloads the just-created attachment in addition to attaching it to the source record. Set via context default from the split-button's `Generate and Download` dropdown item."
+msgstr "Quando Verdadeiro, action_generate retorna um ir.actions.act_url que baixa o anexo recém-criado, além de anexá-lo ao registro de origem. Definido via padrão de contexto a partir do item «Gerar e baixar» do menu suspenso do botão dividido."
+
+msgid "When set together with a Sample record, the resolved Odoo data is sent to the editor as preview data so you can design against your real records."
+msgstr "Quando definido junto com um Registro de amostra, os dados resolvidos do Odoo são enviados ao editor como dados de pré-visualização para que você desenhe com base em seus registros reais."
+
+msgid "Where pdfgeneratorapi.com calls back when an async generation finishes. Required for the multi-record list-view dispatch flow."
+msgstr "Onde o pdfgeneratorapi.com chama de volta quando uma geração assíncrona termina. Obrigatório para o fluxo de despacho de múltiplos registros na visão de lista."
 
 msgid "Workspace Identifier"
 msgstr "Identificador do espaço de trabalho"
@@ -471,11 +890,17 @@ msgstr "Identificador do espaço de trabalho"
 msgid "Your account email for regular workspaces, or a sub-workspace identifier (format per the pdfgeneratorapi.com workspace settings page — typically `parent@domain.com:slug`) for sub-workspaces. The value is forwarded verbatim into the JWT `sub` claim so pdfgen routes requests to the right workspace."
 msgstr "E-mail da sua conta para espaços de trabalho normais, ou um identificador de sub-espaço (formato conforme a página de configurações do espaço no pdfgeneratorapi.com — normalmente «parent@domain.com:slug») para sub-espaços. O valor é encaminhado literalmente para o claim `sub` do JWT para que o pdfgen direcione as requisições ao espaço correto."
 
+msgid "auto-generated on save"
+msgstr "gerado automaticamente ao salvar"
+
 msgid "breadcrumb"
 msgstr "trilha"
 
 msgid "drag onto a row"
 msgstr "arraste para uma linha"
+
+msgid "e.g. https://abcd-1234.ngrok-free.app"
+msgstr "ex.: https://abcd-1234.ngrok-free.app"
 
 msgid "e.g. https://mydomain.com/editor"
 msgstr "ex.: https://mydomain.com/editor"
@@ -483,17 +908,29 @@ msgstr "ex.: https://mydomain.com/editor"
 msgid "openEditor returned no URL."
 msgstr "openEditor não retornou nenhuma URL."
 
+msgid "pdfgen Job ID"
+msgstr "ID do trabalho pdfgen"
+
 msgid "pdfgeneratorapi.com dataset placeholder mapping"
 msgstr "Mapeamento de marcadores do conjunto pdfgeneratorapi.com"
 
 msgid "pdfgeneratorapi.com payload dataset for an Odoo model"
 msgstr "Conjunto de dados de payload do pdfgeneratorapi.com para um modelo Odoo"
 
+msgid "support@pdfgeneratorapi.com"
+msgstr "support@pdfgeneratorapi.com"
+
+msgid "unknown"
+msgstr "desconhecido"
+
 msgid "{name} ({qty})"
 msgstr "{name} ({qty})"
 
 msgid "{street}, {city} {zip}"
 msgstr "{street}, {city} {zip}"
+
+msgid "— please include it when writing to"
+msgstr "— inclua-a ao escrever para"
 
 msgid "↑↓ navigate · Enter drills in · Esc back · / filter"
 msgstr "↑↓ navegar · Enter aprofundar · Esc voltar · / filtrar"

@@ -15,14 +15,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-msgid "Display Name"
-msgstr "Zobrazovaný název"
+msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
+msgstr "<span class=\"visually-hidden\">Přepnout rozbalovací nabídku</span>"
+
+msgid "Generate and Download"
+msgstr "Vygenerovat a stáhnout"
 
 msgid "Generate custom PDF"
 msgstr "Vygenerovat vlastní PDF"
-
-msgid "ID"
-msgstr "ID"
 
 msgid "Pdfgen Configured"
 msgstr "Pdfgen nakonfigurován"
@@ -32,4 +32,7 @@ msgstr "Převod"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Pravda, pokud jsou přítomny přihlašovací údaje PDF Generator API."
+
+msgid "View Async Jobs"
+msgstr "Zobrazit asynchronní úlohy"
 
