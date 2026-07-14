@@ -222,6 +222,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "{name} ({qty})": "{name} ({qty})",
         "{street}, {city} {zip}": "{street}, {city} {zip}",
         # --- 2026-07 refresh: async jobs, template library, settings restructure, account bridge, version footer ---
+        "A dataset for this model already exists.": "Ya existe un conjunto de datos para este modelo.",
+        "Account Move Send": "Envío de asientos contables",
+        "Production Order": "Orden de producción",
         "+ Create new template…": "+ Crear nueva plantilla…",
         '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Opening a default template creates an editable copy under My Templates.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Dataset:</span>': '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Al abrir una plantilla predeterminada se crea una copia editable en Mis plantillas.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Conjunto de datos:</span>',
         '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Record:</span>': '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Registro:</span>',
@@ -523,6 +526,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "{name} ({qty})": "{name} ({qty})",
         "{street}, {city} {zip}": "{street}, {city} {zip}",
         # --- 2026-07 refresh: async jobs, template library, settings restructure, account bridge, version footer ---
+        "A dataset for this model already exists.": "Já existe um conjunto de dados para este modelo.",
+        "Account Move Send": "Envio de lançamentos contábeis",
+        "Production Order": "Ordem de produção",
         "+ Create new template…": "+ Criar novo modelo…",
         '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Opening a default template creates an editable copy under My Templates.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Dataset:</span>': '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Abrir um modelo padrão cria uma cópia editável em Meus modelos.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Conjunto de dados:</span>',
         '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Record:</span>': '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Registro:</span>',
@@ -824,6 +830,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "{name} ({qty})": "{name} ({qty})",
         "{street}, {city} {zip}": "{street}, {city} {zip}",
         # --- 2026-07 refresh: async jobs, template library, settings restructure, account bridge, version footer ---
+        "A dataset for this model already exists.": "Esiste già un dataset per questo modello.",
+        "Account Move Send": "Invio registrazione contabile",
+        "Production Order": "Ordine di produzione",
         "+ Create new template…": "+ Crea nuovo modello…",
         '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Opening a default template creates an editable copy under My Templates.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Dataset:</span>': '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>L\'apertura di un modello predefinito crea una copia modificabile in «I miei modelli».\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Dataset:</span>',
         '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Record:</span>': '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Record:</span>',
@@ -1125,6 +1134,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "{name} ({qty})": "{name} ({qty})",
         "{street}, {city} {zip}": "{street}, {city} {zip}",
         # --- 2026-07 refresh: async jobs, template library, settings restructure, account bridge, version footer ---
+        "A dataset for this model already exists.": "Für dieses Modell existiert bereits ein Datensatz.",
+        "Account Move Send": "Buchungssatz senden",
+        "Production Order": "Fertigungsauftrag",
         "+ Create new template…": "+ Neue Vorlage erstellen…",
         '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Opening a default template creates an editable copy under My Templates.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Dataset:</span>': '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Beim Öffnen einer Standardvorlage wird eine bearbeitbare Kopie unter «Meine Vorlagen» angelegt.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Datensatz:</span>',
         '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Record:</span>': '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Beispieldatensatz:</span>',
@@ -1426,6 +1438,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "{name} ({qty})": "{name} ({qty})",
         "{street}, {city} {zip}": "{street}, {city} {zip}",
         # --- 2026-07 refresh: async jobs, template library, settings restructure, account bridge, version footer ---
+        "A dataset for this model already exists.": "Un jeu de données existe déjà pour ce modèle.",
+        "Account Move Send": "Envoi de pièce comptable",
+        "Production Order": "Ordre de fabrication",
         "+ Create new template…": "+ Créer un nouveau modèle…",
         '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Opening a default template creates an editable copy under My Templates.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Dataset:</span>': '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>L\'ouverture d\'un modèle par défaut crée une copie modifiable dans Mes modèles.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Jeu de données :</span>',
         '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Record:</span>': '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Enregistrement :</span>',
@@ -1727,6 +1742,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "{name} ({qty})": "{name} ({qty})",
         "{street}, {city} {zip}": "{street}, {city} {zip}",
         # --- 2026-07 refresh: async jobs, template library, settings restructure, account bridge, version footer ---
+        "A dataset for this model already exists.": "Datová sada pro tento model již existuje.",
+        "Account Move Send": "Odeslání účetního zápisu",
+        "Production Order": "Výrobní příkaz",
         "+ Create new template…": "+ Vytvořit novou šablonu…",
         '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Opening a default template creates an editable copy under My Templates.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Dataset:</span>': '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Otevřením výchozí šablony se vytvoří upravitelná kopie v sekci Moje šablony.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Datová sada:</span>',
         '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Record:</span>': '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Záznam:</span>',
@@ -2028,6 +2046,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "{name} ({qty})": "{name} ({qty})",
         "{street}, {city} {zip}": "{street}, {city} {zip}",
         # --- 2026-07 refresh: async jobs, template library, settings restructure, account bridge, version footer ---
+        "A dataset for this model already exists.": "Dátová sada pre tento model už existuje.",
+        "Account Move Send": "Odoslanie účtovného zápisu",
+        "Production Order": "Výrobný príkaz",
         "+ Create new template…": "+ Vytvoriť novú šablónu…",
         '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Opening a default template creates an editable copy under My Templates.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Dataset:</span>': '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Otvorením predvolenej šablóny sa vytvorí upraviteľná kópia v časti Moje šablóny.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Dátová sada:</span>',
         '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Record:</span>': '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Záznam:</span>',
@@ -2329,6 +2350,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "{name} ({qty})": "{name} ({qty})",
         "{street}, {city} {zip}": "{street}, {city} {zip}",
         # --- 2026-07 refresh: async jobs, template library, settings restructure, account bridge, version footer ---
+        "A dataset for this model already exists.": "Selle mudeli jaoks on andmekogum juba olemas.",
+        "Account Move Send": "Raamatupidamiskande saatmine",
+        "Production Order": "Tootmistellimus",
         "+ Create new template…": "+ Loo uus mall…",
         '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Opening a default template creates an editable copy under My Templates.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Dataset:</span>': '<span class="small text-info" invisible="not is_library_template">\n                        <i class="fa fa-info-circle me-1"/>Vaikemalli avamine loob muudetava koopia jaotisesse Minu mallid.\n                    </span>\n\n                    <span class="small text-muted fw-bold ps-3 border-start">Andmekogum:</span>',
         '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Record:</span>': '<span class="small text-muted fw-bold ps-3 border-start" invisible="not dataset_id">Kirje:</span>',
