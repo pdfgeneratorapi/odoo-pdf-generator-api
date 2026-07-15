@@ -35,6 +35,13 @@ ApiResponse = dict | list | str | bytes | None
 # unambiguous in Selection fields, attachment descriptions and job rows.
 LIBRARY_TEMPLATE_PREFIX = "lib:"
 
+# The public library serves every integration's templates (invoices, KYC
+# forms, FDA filings…). Only the `odoo`-tagged ones are built against the
+# datasets this connector ships, so the dropdown filters on this tag —
+# without it users are offered templates whose placeholders nothing here
+# populates.
+LIBRARY_TAG = "odoo"
+
 
 def normalize_template_id(value: str | int) -> int | str:
     """Turn a selection/storage value into what the API expects.
