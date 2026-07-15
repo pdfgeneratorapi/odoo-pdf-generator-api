@@ -64,8 +64,12 @@
                 <div class="o_pdfgen_template_editor_pane">
                     <div invisible="editor_url"
                          class="d-flex flex-column align-items-center justify-content-center text-muted h-100">
+                        <!-- A <span>, not a <p>, and nothing between it and the icon — not even a
+                             comment: the view accessibility check reads an icon's label from the
+                             immediately adjacent <span> only. Both are flex items here, so a span
+                             stacks exactly as the p did. -->
                         <i class="fa fa-pencil-square-o fa-3x mb-3"/>
-                        <p class="mb-0">Pick a template above to open it in the editor, or create a new one.</p>
+                        <span>Pick a template above to open it in the editor, or create a new one.</span>
                     </div>
                     <field name="editor_url"
                            widget="pdfgen_editor_iframe"
