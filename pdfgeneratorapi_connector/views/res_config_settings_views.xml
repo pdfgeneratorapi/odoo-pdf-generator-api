@@ -53,10 +53,16 @@
                                                    widget="boolean_toggle"
                                                    nolabel="1"
                                                    options="{'autosave': False}"/>
+                                            <!-- Each icon is followed by its own label: the view
+                                                 accessibility check only accepts a text <span> as an
+                                                 icon's *immediate* sibling, so grouping the two icons
+                                                 together makes the first one fail validation. Only one
+                                                 icon/label pair is ever visible, so this renders the
+                                                 same either way. -->
                                             <span class="text-muted small text-nowrap">
                                                 <i class="fa fa-eye me-1" invisible="pdfgen_show_secret"/>
-                                                <i class="fa fa-eye-slash me-1" invisible="not pdfgen_show_secret"/>
                                                 <span invisible="pdfgen_show_secret">Show</span>
+                                                <i class="fa fa-eye-slash me-1" invisible="not pdfgen_show_secret"/>
                                                 <span invisible="not pdfgen_show_secret">Hide</span>
                                             </span>
                                         </div>
@@ -227,10 +233,12 @@
                                                    widget="boolean_toggle"
                                                    nolabel="1"
                                                    options="{'autosave': False}"/>
+                                            <!-- Icon immediately followed by its own label — see the
+                                                 API Secret toggle above. -->
                                             <span class="text-muted small text-nowrap">
                                                 <i class="fa fa-eye me-1" invisible="pdfgen_show_webhook_secret"/>
-                                                <i class="fa fa-eye-slash me-1" invisible="not pdfgen_show_webhook_secret"/>
                                                 <span invisible="pdfgen_show_webhook_secret">Show</span>
+                                                <i class="fa fa-eye-slash me-1" invisible="not pdfgen_show_webhook_secret"/>
                                                 <span invisible="not pdfgen_show_webhook_secret">Hide</span>
                                             </span>
                                         </div>
