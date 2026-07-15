@@ -15,6 +15,7 @@ from odoo.exceptions import UserError
 
 from .pdfgen_api_client import (
     DEFAULT_BASE_URL,
+    LIBRARY_TAG,
     LIBRARY_TEMPLATE_PREFIX,
     PdfGenApiClient,
     PdfGenApiError,
@@ -74,10 +75,10 @@ def pdfgen_template_selection(
     wizards, the module-level `build_pdfgen_client` on the dataset).
 
     Order: optional "+ Create new template…" magic entry, then the public
-    Template Library ("Default Templates", values `lib:<publicId>`), then
-    the account's own templates ("My Templates", values `str(id)`). The
-    `pdfgen_template_selection` JS widget groups the dropdown by these
-    value shapes.
+    Template Library ("Default Templates", values `lib:<publicId>`, filtered
+    to the `odoo` tag), then the account's own templates ("My Templates",
+    values `str(id)`). The `pdfgen_template_selection` JS widget groups the
+    dropdown by these value shapes.
 
     Gating mirrors the historical behaviour: no working client or a failed
     own-templates fetch → empty list (a user who can't list their templates
@@ -101,7 +102,7 @@ def pdfgen_template_selection(
         result.append(("__new__", env._("+ Create new template…")))
     if include_library:
         try:
-            lib_response = client.list_library_templates()
+            lib_response = client.list_library_templates(tags=LIBRARY_TAG)
         except Exception as e:
             _logger.warning("list_library_templates failed: %s", e)
             lib_response = None

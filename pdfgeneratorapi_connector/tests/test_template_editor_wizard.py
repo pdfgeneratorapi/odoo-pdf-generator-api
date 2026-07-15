@@ -233,6 +233,17 @@ class TestTemplateEditorWizard(TransactionCase):
             ],
         )
 
+    def test_selection_filters_library_to_the_odoo_tag(self):
+        """The public library serves every integration's templates; only the
+        `odoo`-tagged ones target the datasets this connector ships, so the
+        dropdown must ask the API to filter rather than listing all of them."""
+        client = MagicMock()
+        client.list_templates.return_value = {"response": []}
+        client.list_library_templates.return_value = {"response": []}
+        with self._patch_client(client):
+            self.env["pdfgen.template.editor.wizard"]._selection_template_id()
+        client.list_library_templates.assert_called_once_with(tags="odoo")
+
     def test_selection_library_failure_keeps_own_templates(self):
         """The library section is additive — a dead library endpoint must
         not take down the rest of the dropdown."""
