@@ -5,6 +5,10 @@ from odoo.exceptions import UserError
 
 from .pdfgen_api_client import DEFAULT_BASE_URL, PdfGenApiClient, PdfGenApiError
 
+# The core addon. Bridges are `<core>_<doc type>`, so this doubles as the
+# prefix for finding every installed pdfgen module.
+PDFGEN_CORE_MODULE = "pdfgeneratorapi_connector"
+
 
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
@@ -156,14 +160,25 @@ class ResConfigSettings(models.TransientModel):
         readonly=True,
         default=lambda self: self._pdfgen_installed_version(),
         help=(
-            "Installed version of the PDF Generator API connector. Quote this "
-            "when contacting support@pdfgeneratorapi.com so we know exactly "
-            "which release you are running."
+            "Installed version of the PDF Generator API connector, followed by "
+            "each installed document bridge. Quote this when contacting "
+            "support@pdfgeneratorapi.com so we know exactly which release you "
+            "are running."
         ),
     )
 
     def _pdfgen_installed_version(self):
-        """Connector version as recorded in ir.module.module.
+        """Installed versions of the connector and every document bridge.
+
+        Reports the bridges too, not just the core module: they carry their
+        own manifest versions, so a core version alone cannot answer "is this
+        deployment current?" — a fix living entirely in a bridge (a view, a
+        dataset) moves no core digit at all.
+
+        Bridge versions are printed without the series prefix the core version
+        already states ("19.0.1.0.2" -> "1.0.2"). A bridge on a *different*
+        series is printed in full: that is a broken deployment, and hiding it
+        is exactly the failure this line exists to catch.
 
         Deliberately a default rather than a compute. The web client opens
         Settings as a *new* record and fills the form via default_get()/
@@ -175,12 +190,35 @@ class ResConfigSettings(models.TransientModel):
         dependencies" in web/models/models.py); 17 and 18 did not. A default is
         supplied by default_get on every version.
         """
-        module = (
+        modules = (
             self.env["ir.module.module"]
             .sudo()
-            .search([("name", "=", "pdfgeneratorapi_connector")], limit=1)
+            .search(
+                [
+                    ("name", "=like", f"{PDFGEN_CORE_MODULE}%"),
+                    ("state", "=", "installed"),
+                ]
+            )
         )
-        return module.latest_version or _("unknown")
+        core = modules.filtered(lambda m: m.name == PDFGEN_CORE_MODULE)
+        core_version = core.latest_version if core else ""
+        if not core_version:
+            return _("unknown")
+        # "19.0.7.1.4" -> "19.0." — the series the bridges are expected to share.
+        series = ".".join(core_version.split(".")[:2]) + "."
+        bridges = []
+        for module in modules.sorted("name"):
+            if module.name == PDFGEN_CORE_MODULE or not module.latest_version:
+                continue
+            label = module.name[len(PDFGEN_CORE_MODULE) + 1 :]
+            version = module.latest_version
+            if version.startswith(series):
+                version = version[len(series) :]
+            bridges.append(f"{label} {version}")
+        if not bridges:
+            return core_version
+        joined = ", ".join(bridges)
+        return f"{core_version} ({joined})"
 
     @api.model_create_multi
     def create(self, vals_list):
