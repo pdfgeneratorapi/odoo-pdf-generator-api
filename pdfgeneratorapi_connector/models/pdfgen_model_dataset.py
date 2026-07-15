@@ -49,13 +49,17 @@ class PdfGenModelDataset(models.Model):
         # at call time so tests can patch it here.
         return pdfgen_template_selection(self.env, lambda: build_pdfgen_client(self.env))
 
-    _sql_constraints = [
-        (
-            "unique_model_id",
-            "unique(model_id)",
-            "A dataset for this model already exists.",
-        ),
-    ]
+    # Odoo 19 ignores `_sql_constraints` outright (it only logs a warning), so
+    # this has to be a models.Constraint or the uniqueness is silently dropped.
+    # The attribute name and definition string deliberately match what the old
+    # entry spelled: Odoo derives the constraint name from the attribute and
+    # compares the definition against the string it stored as a Postgres
+    # comment, so keeping both lets a database upgraded from 18.0 recognise its
+    # existing constraint instead of rebuilding it.
+    _unique_model_id = models.Constraint(
+        "unique(model_id)",
+        "A dataset for this model already exists.",
+    )
 
     @api.model_create_multi
     def create(self, vals_list: list[dict]) -> Self:

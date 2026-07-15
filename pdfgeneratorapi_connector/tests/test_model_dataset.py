@@ -12,6 +12,8 @@ expression-vs-path precedence, the `target_model` fall-back, and the
 from unittest.mock import MagicMock, patch
 
 from odoo.tests.common import TransactionCase, tagged
+from odoo.tools import mute_logger
+from psycopg2 import IntegrityError
 
 
 @tagged("post_install", "-at_install")
@@ -28,6 +30,20 @@ class TestModelDataset(TransactionCase):
                 "model_id": self.partner_model.id,
             }
         )
+
+    def test_only_one_dataset_per_model(self):
+        """A second dataset for the same model is refused by the database.
+
+        Deliberately exercises the constraint through a real INSERT rather
+        than inspecting the model attribute: Odoo 19 ignores `_sql_constraints`
+        and merely logs a warning, so this rule silently disappeared from the
+        19 line — no constraint on the table, duplicates freely creatable —
+        while every test still passed.
+        """
+        self._new_dataset()
+        with mute_logger("odoo.sql_db"), self.assertRaises(IntegrityError):
+            self._new_dataset()
+            self.env.flush_all()
 
     def test_expression_beats_odoo_field_path(self):
         dataset = self._new_dataset()
