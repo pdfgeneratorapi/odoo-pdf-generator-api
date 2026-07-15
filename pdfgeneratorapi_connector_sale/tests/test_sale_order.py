@@ -80,3 +80,26 @@ class TestSaleOrderPdfgen(SaleCommon):
             limit=1,
         )
         self.assertTrue(attachment)
+
+
+@tagged("post_install", "-at_install")
+class TestSaleListButtonReach(SaleCommon):
+    """Sales has two sibling list branches — orders and quotations — both
+    primary children of `sale.sale_order_tree`. Extending the orders leaf left
+    Quotations (the default landing view) without the button, which no test
+    caught because nothing asserted the *resolved* arch of the views the menus
+    actually render.
+    """
+
+    def _has_button(self, xmlid):
+        view = self.env.ref(xmlid)
+        arch = self.env["sale.order"].get_view(view.id, "list")["arch"]
+        return "action_open_pdfgen_wizard_from_list" in arch
+
+    def test_button_reaches_every_sale_order_list(self):
+        for xmlid in (
+            "sale.view_quotation_tree_with_onboarding",  # Sales > Quotations (default)
+            "sale.view_quotation_tree",
+            "sale.view_order_tree",  # Sales > Orders
+        ):
+            self.assertTrue(self._has_button(xmlid), f"Generate button missing from {xmlid}")

@@ -2,7 +2,7 @@ import base64
 from unittest.mock import MagicMock, patch
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests.common import tagged
+from odoo.tests.common import TransactionCase, tagged
 
 PDF_B64 = base64.b64encode(b"%PDF-1.4 fake po pdf").decode()
 
@@ -102,3 +102,25 @@ class TestPurchaseOrderPdfgen(AccountTestInvoicingCommon):
             limit=1,
         )
         self.assertTrue(attachment)
+
+
+@tagged("post_install", "-at_install")
+class TestPurchaseListButtonReach(TransactionCase):
+    """Purchase has three independent primary root list views with no common
+    ancestor, so each needs its own extension. Inheriting only
+    `purchase_order_tree` put the button on RFQs and left Purchase Orders
+    (`purchase_order_view_tree`) without it.
+    """
+
+    def _has_button(self, xmlid):
+        view = self.env.ref(xmlid)
+        arch = self.env["purchase.order"].get_view(view.id, "list")["arch"]
+        return "action_open_pdfgen_wizard_from_list" in arch
+
+    def test_button_reaches_every_purchase_order_list(self):
+        for xmlid in (
+            "purchase.purchase_order_view_tree",  # Purchase > Purchase Orders
+            "purchase.purchase_order_tree",  # RFQs (default view)
+            "purchase.purchase_order_kpis_tree",
+        ):
+            self.assertTrue(self._has_button(xmlid), f"Generate button missing from {xmlid}")
