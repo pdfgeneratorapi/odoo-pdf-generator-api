@@ -66,3 +66,30 @@ class TestAccountMovePdfgen(AccountTestInvoicingCommon):
         action = empty.action_view_pdfgen_async_jobs_from_list()
         self.assertEqual(action["res_model"], "pdfgen.async.job")
         self.assertEqual(action["domain"], [("res_model", "=", "account.move")])
+
+
+@tagged("post_install", "-at_install")
+class TestAccountMoveListButtonReach(AccountTestInvoicingCommon):
+    """Customer invoices, vendor bills and credit notes are all primary
+    children of `account.view_invoice_tree`. Extending the out-invoice leaf
+    reached only Customer Invoices. Journal Entries hang off a separate root
+    and must stay untouched.
+    """
+
+    def _has_button(self, xmlid):
+        view = self.env.ref(xmlid)
+        arch = self.env["account.move"].get_view(view.id, "list")["arch"]
+        return "action_open_pdfgen_wizard_from_list" in arch
+
+    def test_button_reaches_every_invoice_list(self):
+        for xmlid in (
+            "account.view_out_invoice_tree",
+            "account.view_in_invoice_tree",
+            "account.view_out_credit_note_tree",
+        ):
+            self.assertTrue(self._has_button(xmlid), f"Generate button missing from {xmlid}")
+
+    def test_button_does_not_leak_into_journal_entries(self):
+        """Journal Entries are not a pdfgen document type — the button must not
+        appear there just because the invoice lists gained it."""
+        self.assertFalse(self._has_button("account.view_move_tree"))

@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator: Sales",
-    "version": "17.0.1.0.1",
+    "version": "17.0.1.0.2",
     "category": "Sales",
     "summary": "Generate pdfgeneratorapi.com PDFs from quotations and sale orders",
     "author": "PDF Generator API",

@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator: Purchase",
-    "version": "17.0.1.0.1",
+    "version": "17.0.1.0.2",
     "category": "Purchases",
     "summary": "Generate pdfgeneratorapi.com PDFs from purchase orders",
     "author": "PDF Generator API",

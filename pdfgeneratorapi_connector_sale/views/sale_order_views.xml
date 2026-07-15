@@ -31,10 +31,17 @@
         </field>
     </record>
 
+    <!-- Extend the shared base (`sale.sale_order_tree`), not `view_order_tree`.
+         Sales has two sibling list branches — orders and quotations — both
+         `mode="primary"` children of the base. A primary view resolves its
+         parent's arch *with extensions applied* before layering its own, so
+         extending the base reaches both; extending `view_order_tree` reached
+         only Sales > Orders and left Quotations (the default landing view,
+         via view_quotation_tree_with_onboarding) without the button. -->
     <record id="view_order_list_pdfgen" model="ir.ui.view">
         <field name="name">sale.order.list.pdfgen</field>
         <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="inherit_id" ref="sale.sale_order_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//tree" position="inside">
                 <header>
