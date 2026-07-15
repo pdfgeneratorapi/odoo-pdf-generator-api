@@ -64,6 +64,36 @@ class TestResConfigSettings(TransactionCase):
         self.assertEqual(config.pdfgen_module_version, module.latest_version)
         self.assertTrue(config.pdfgen_module_version)
 
+    def test_module_version_reaches_the_web_client(self):
+        """Guard the client path, not just attribute access.
+
+        `config.pdfgen_module_version` always computes on a cache miss, so the
+        test above can never catch this class of bug. The web client opens
+        Settings as a *new* record and fills the form from default_get()/
+        onchange(); Odoo <= 18 stamps False into the cache for every
+        fields_spec entry default_get does not supply, so a dependency-less
+        computed field reached the browser as False and the footer was blank.
+        """
+        Settings = self.env["res.config.settings"]
+        expected = (
+            self.env["ir.module.module"]
+            .sudo()
+            .search([("name", "=", "pdfgeneratorapi_connector")], limit=1)
+            .latest_version
+        )
+        self.assertTrue(expected, "module must be installed for this test to mean anything")
+
+        # default_get is the version-agnostic guard: no Odoo version returns a
+        # computed field from it, so this fails on 17, 18 and 19 alike if the
+        # field ever regresses to `compute=`.
+        defaults = Settings.default_get(["pdfgen_module_version"])
+        self.assertEqual(defaults.get("pdfgen_module_version"), expected)
+
+        # onchange is literally what the browser calls when opening Settings.
+        # This is the assertion that reproduced the blank footer on 17/18.
+        result = Settings.onchange({}, [], {"company_id": {}, "pdfgen_module_version": {}})
+        self.assertEqual(result["value"]["pdfgen_module_version"], expected)
+
     def test_test_connection_success_returns_notification(self):
         config = self._make_config()
         fake_client = MagicMock()

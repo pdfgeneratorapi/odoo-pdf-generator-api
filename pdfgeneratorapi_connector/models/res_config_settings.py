@@ -153,7 +153,8 @@ class ResConfigSettings(models.TransientModel):
 
     pdfgen_module_version = fields.Char(
         string="Connector version",
-        compute="_compute_pdfgen_module_version",
+        readonly=True,
+        default=lambda self: self._pdfgen_installed_version(),
         help=(
             "Installed version of the PDF Generator API connector. Quote this "
             "when contacting support@pdfgeneratorapi.com so we know exactly "
@@ -161,14 +162,25 @@ class ResConfigSettings(models.TransientModel):
         ),
     )
 
-    def _compute_pdfgen_module_version(self):
+    def _pdfgen_installed_version(self):
+        """Connector version as recorded in ir.module.module.
+
+        Deliberately a default rather than a compute. The web client opens
+        Settings as a *new* record and fills the form via default_get()/
+        onchange(); on Odoo <= 18 those paths stamp False into the cache for
+        every fields_spec entry default_get does not supply, and a non-stored
+        computed field with no @api.depends is never invalidated afterwards, so
+        it reached the browser as False and the footer rendered blank. Odoo 19
+        fixed this upstream ("don't assign computed fields without
+        dependencies" in web/models/models.py); 17 and 18 did not. A default is
+        supplied by default_get on every version.
+        """
         module = (
             self.env["ir.module.module"]
             .sudo()
             .search([("name", "=", "pdfgeneratorapi_connector")], limit=1)
         )
-        for settings in self:
-            settings.pdfgen_module_version = module.latest_version or _("unknown")
+        return module.latest_version or _("unknown")
 
     @api.model_create_multi
     def create(self, vals_list):
