@@ -31,10 +31,59 @@
         </field>
     </record>
 
+    <!-- Purchase, unlike Sales and Invoicing, has no shared base list view:
+         `purchase_order_tree` (the default, used by RFQs),
+         `purchase_order_view_tree` (used by Purchase Orders) and
+         `purchase_order_kpis_tree` are three independent `mode="primary"`
+         roots with no common ancestor. There is nothing to extend once, so
+         each root needs its own extension — inheriting only
+         `purchase_order_tree` put the button on RFQs and left Purchase Orders
+         without it. The header is repeated verbatim below: backend list arch
+         is not QWeb, so it can't be factored out with t-call. -->
     <record id="view_purchase_order_list_pdfgen" model="ir.ui.view">
         <field name="name">purchase.order.list.pdfgen</field>
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <header>
+                    <button name="action_open_pdfgen_wizard_from_list"
+                            type="object"
+                            string="Generate custom PDF"
+                            class="btn-primary"/>
+                    <button name="action_view_pdfgen_async_jobs_from_list"
+                            type="object"
+                            string="View Async Jobs"
+                            class="btn-secondary"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_view_list_pdfgen" model="ir.ui.view">
+        <field name="name">purchase.order.view.list.pdfgen</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <header>
+                    <button name="action_open_pdfgen_wizard_from_list"
+                            type="object"
+                            string="Generate custom PDF"
+                            class="btn-primary"/>
+                    <button name="action_view_pdfgen_async_jobs_from_list"
+                            type="object"
+                            string="View Async Jobs"
+                            class="btn-secondary"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_kpis_list_pdfgen" model="ir.ui.view">
+        <field name="name">purchase.order.kpis.list.pdfgen</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//list" position="inside">
                 <header>
