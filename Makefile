@@ -1,6 +1,7 @@
-# Route the Odoo container by the branch we're on so the pre-commit hook
-# tests against the matching major version. Override with `ODOO_SERVICE=...`
-# on the command line to force a specific service.
+# Route the Odoo container by the branch we're on so the pre-commit hook tests
+# against the matching major version, then route the database off whichever
+# service that resolves to. Override with `ODOO_SERVICE=...` on the command
+# line to force a specific service; the database follows it.
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null)
 ifeq ($(GIT_BRANCH),18.0)
     DEFAULT_ODOO_SERVICE := odoo18
@@ -10,7 +11,20 @@ else
     DEFAULT_ODOO_SERVICE := odoo
 endif
 ODOO_SERVICE ?= $(DEFAULT_ODOO_SERVICE)
-ODOO_DB ?= odoo
+# Route the database off the *resolved* service rather than the branch: each
+# container serves exactly one database, and `ODOO_SERVICE=odoo18` from a
+# master checkout must not aim the v18 container at the 19.0 database — `-u`
+# there would migrate it to the wrong series. Keying on the branch would still
+# get that case wrong, since the branch is master. Override with `ODOO_DB=...`
+# for a scratch database.
+ifeq ($(ODOO_SERVICE),odoo18)
+    DEFAULT_ODOO_DB := odoo18_v18
+else ifeq ($(ODOO_SERVICE),odoo17)
+    DEFAULT_ODOO_DB := odoo17_v17
+else
+    DEFAULT_ODOO_DB := odoo
+endif
+ODOO_DB ?= $(DEFAULT_ODOO_DB)
 MODULE := pdfgeneratorapi_connector
 BRIDGES := pdfgeneratorapi_connector_account pdfgeneratorapi_connector_sale pdfgeneratorapi_connector_purchase pdfgeneratorapi_connector_stock pdfgeneratorapi_connector_mrp
 comma := ,
