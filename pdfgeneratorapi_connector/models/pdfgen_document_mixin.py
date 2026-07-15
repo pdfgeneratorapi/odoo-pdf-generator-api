@@ -127,6 +127,59 @@ def pdfgen_template_selection(
     return result
 
 
+def _library_copy_param(env: api.Environment, public_id: str) -> str:
+    """ir.config_parameter key caching a library template's account copy.
+
+    Keyed by workspace: the copy is an entity inside one pdfgen workspace, so
+    a second company pointing at a different workspace must not reuse the
+    first one's template id.
+    """
+    workspace = pdfgen_config(env, "workspace_identifier") or "default"
+    return f"pdfgen.library_copy.{workspace}.{public_id}"
+
+
+def pdfgen_resolve_template_id(
+    env: api.Environment,
+    client: PdfGenApiClient,
+    template_id: str | int,
+) -> int | str:
+    """Resolve a dropdown value into an id the API can act on.
+
+    Account templates pass straight through. Library ("Default") templates
+    cannot: they are blueprints, not workspace entities — `/templates/library/
+    <publicId>` returns a definition with no id, and `/documents/generate`
+    answers 404 "Entity not found" for a public id. They have to be copied
+    into the account first, exactly as the Template Editor does on edit.
+
+    The copy is made once per (workspace, public id) and the resulting numeric
+    id cached in ir.config_parameter, so repeat generates reuse it instead of
+    minting a duplicate template on every click.
+    """
+    text = str(template_id or "")
+    if not text.startswith(LIBRARY_TEMPLATE_PREFIX):
+        return template_id
+    public_id = text[len(LIBRARY_TEMPLATE_PREFIX) :]
+    icp = env["ir.config_parameter"].sudo()
+    param = _library_copy_param(env, public_id)
+    cached = icp.get_param(param)
+    if cached:
+        return int(cached)
+    response = client.get_library_template(public_id)
+    definition = response.get("response", response) if isinstance(response, dict) else response
+    if not isinstance(definition, dict):
+        raise UserError(
+            env._("Unexpected default-template response. Got: %s", type(definition).__name__)
+        )
+    created = client.create_template(definition=definition)
+    template = created.get("response", created) if isinstance(created, dict) else created
+    new_id = template.get("id") if isinstance(template, dict) else None
+    if new_id is None:
+        raise UserError(env._("The default template was copied but the response had no id."))
+    icp.set_param(param, str(new_id))
+    _logger.info("copied library template %s into the account as %s", public_id, new_id)
+    return int(new_id)
+
+
 class PdfgenDocumentMixin(models.AbstractModel):
     _name = "pdfgen.document.mixin"
     _description = "Expose the PDF Generator wizard on a document model"

@@ -121,11 +121,17 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
         if not record_ids:
             raise UserError(_("No records selected."))
 
+        from ..models.pdfgen_document_mixin import pdfgen_resolve_template_id
+
         records = self.env[self.res_model].browse(record_ids).exists()
         client = self._build_client()
         template_label = dict(self._fields["template_id"]._description_selection(self.env)).get(
             self.template_id, self.template_id
         )
+        # Resolve once, not per record: a Default Template is copied into the
+        # account on first use, and dispatching 50 records must reuse that one
+        # copy rather than mint 50 of them.
+        template_id = pdfgen_resolve_template_id(self.env, client, self.template_id)
 
         created_ids = []
         for record in records:
@@ -143,7 +149,7 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
             try:
                 data = self.dataset_id.resolve_payload(record)
                 pdfgen_job_id = client.generate_async(
-                    template_id=self.template_id,
+                    template_id=template_id,
                     data=data,
                     callback_url=job.callback_url(),
                     name=f"{(record.display_name or record._name).replace('/', '_')}.pdf",
