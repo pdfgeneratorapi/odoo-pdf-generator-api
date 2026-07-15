@@ -34,7 +34,7 @@ from odoo.exceptions import UserError
 
 from ..enums import Format, Output
 from .pdfgen_api_client import ApiResponse, PdfGenApiError
-from .pdfgen_document_mixin import build_pdfgen_client
+from .pdfgen_document_mixin import build_pdfgen_client, pdfgen_resolve_template_id
 
 _logger = logging.getLogger(__name__)
 
@@ -161,7 +161,7 @@ class PdfgenSendMixin(models.AbstractModel):
             client = build_pdfgen_client(self.env)
             data = dataset.resolve_payload(record)
             response = client.generate(
-                template_id=template_id,
+                template_id=pdfgen_resolve_template_id(self.env, client, template_id),
                 data=data,
                 name=f"preview-{record._name}-{record.id}.html",
                 output=Output.BASE64,
@@ -199,7 +199,7 @@ class PdfgenSendMixin(models.AbstractModel):
         filename = f"{stem}.pdf"
         try:
             response = client.generate(
-                template_id=template_id,
+                template_id=pdfgen_resolve_template_id(self.env, client, template_id),
                 data=data,
                 name=filename,
                 output=Output.BASE64,

@@ -68,13 +68,17 @@ class TestPdfgenAsyncDispatchWizard(TransactionCase):
             self.assertTrue(job.pdfgen_job_id)
             self.assertTrue(job.dispatched_at)
 
-    def test_dispatch_with_library_template_passes_value_through(self):
-        """`lib:` selection values reach `generate_async` intact — the client
-        strips the prefix into a public id when building the request body."""
+    def test_dispatch_with_library_template_generates_from_the_account_copy(self):
+        """`lib:` values must NOT reach generate_async — the API 404s on a
+        library public id. The definition is copied into the account first and
+        the dispatch runs against that copy's numeric id. The job row keeps the
+        `lib:` value, which is what the dropdown labels off."""
         self._new_dataset()
         partner = self.env["res.partner"].create({"name": "L"})
         client = MagicMock()
         client.generate_async.return_value = "job-lib"
+        client.get_library_template.return_value = {"response": {"name": "Lib A"}}
+        client.create_template.return_value = {"response": {"id": 909}}
         wiz = self.env["pdfgen.async.dispatch.wizard"].create(
             {
                 "res_model": "res.partner",
@@ -84,12 +88,33 @@ class TestPdfgenAsyncDispatchWizard(TransactionCase):
         )
         with self._patch_client(client):
             wiz.action_dispatch()
-        self.assertEqual(client.generate_async.call_args.kwargs["template_id"], "lib:pub-a")
+        self.assertEqual(client.generate_async.call_args.kwargs["template_id"], 909)
         job = self.env["pdfgen.async.job"].search(
             [("res_model", "=", "res.partner"), ("res_id", "=", partner.id)], limit=1
         )
         self.assertEqual(job.state, "dispatched")
         self.assertEqual(job.template_id, "lib:pub-a")
+
+    def test_dispatch_batch_copies_the_library_template_once(self):
+        """Resolution happens before the per-record loop — dispatching N
+        records from a Default Template must leave one copy behind, not N."""
+        self._new_dataset()
+        partners = self.env["res.partner"].create([{"name": "A"}, {"name": "B"}, {"name": "C"}])
+        client = MagicMock()
+        client.generate_async.return_value = "job-x"
+        client.get_library_template.return_value = {"response": {"name": "Lib A"}}
+        client.create_template.return_value = {"response": {"id": 909}}
+        wiz = self.env["pdfgen.async.dispatch.wizard"].create(
+            {
+                "res_model": "res.partner",
+                "res_ids": ",".join(str(p.id) for p in partners),
+                "template_id": "lib:pub-a",
+            }
+        )
+        with self._patch_client(client):
+            wiz.action_dispatch()
+        self.assertEqual(client.generate_async.call_count, 3)
+        client.create_template.assert_called_once()
 
     def test_dispatch_marks_failed_when_api_raises(self):
         from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (

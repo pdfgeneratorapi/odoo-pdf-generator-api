@@ -116,13 +116,16 @@ class GeneratePdfWizard(models.TransientModel):
                     self.res_model,
                 )
             )
+        from ..models.pdfgen_document_mixin import pdfgen_resolve_template_id
+
         client = self._build_client()
         data = dataset.resolve_payload(record)
         stem = record.display_name or record._name
         filename = f"{stem.replace('/', '_')}.pdf"
         try:
+            template_id = pdfgen_resolve_template_id(self.env, client, self.template_id)
             response = client.generate(
-                template_id=self.template_id,
+                template_id=template_id,
                 data=data,
                 name=filename,
                 output=Output.BASE64,

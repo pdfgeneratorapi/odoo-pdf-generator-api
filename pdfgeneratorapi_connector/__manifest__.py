@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator API",
-    "version": "17.0.7.1.2",
+    "version": "17.0.7.1.3",
     "category": "Productivity/Documents",
     "summary": "Framework: generate custom PDFs of any record via pdfgeneratorapi.com",
     "author": "PDF Generator API",
