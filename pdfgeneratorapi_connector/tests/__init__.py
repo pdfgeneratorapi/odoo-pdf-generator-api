@@ -2,6 +2,7 @@ from . import (
     test_async_dispatch_wizard,
     test_async_job,
     test_coverage_wizard,
+    test_library_template_resolution,
     test_model_dataset,
     test_multi_company,
     test_res_config_settings,

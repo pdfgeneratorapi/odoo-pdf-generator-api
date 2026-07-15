@@ -362,8 +362,12 @@ class PdfGenApiClient:
         The response envelope is `{"response": <dict>, "meta": {}}`. The dict shape
         defines every placeholder path (nested dicts + arrays of dicts) the template
         will interpolate.
+
+        Takes an account template id. `lib:` values must be resolved to an
+        account copy first (`pdfgen_resolve_template_id`) — this endpoint has
+        no library counterpart.
         """
-        return self._request("GET", f"/templates/{int(template_id)}/data")
+        return self._request("GET", f"/templates/{normalize_template_id(template_id)}/data")
 
     def generate(
         self,

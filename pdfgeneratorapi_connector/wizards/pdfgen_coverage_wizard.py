@@ -122,10 +122,13 @@ class PdfgenCoverageWizard(models.TransientModel):
         return paths
 
     def action_check(self) -> dict:
+        from ..models.pdfgen_document_mixin import pdfgen_resolve_template_id
+
         self.ensure_one()
         client = self._build_client()
+        template_id = pdfgen_resolve_template_id(self.env, client, self.template_id)
         try:
-            response = client.get_template_data(self.template_id)
+            response = client.get_template_data(template_id)
         except PdfGenApiError as e:
             raise UserError(
                 _(
@@ -151,7 +154,7 @@ class PdfgenCoverageWizard(models.TransientModel):
         # is silently swallowed — the coverage numbers are the important result.
         display_name = ""
         try:
-            detail = client._request("GET", f"/templates/{int(self.template_id)}")
+            detail = client._request("GET", f"/templates/{int(template_id)}")
             if isinstance(detail, dict):
                 remote = detail.get("response") or {}
                 if isinstance(remote, dict):
@@ -178,12 +181,14 @@ class PdfgenCoverageWizard(models.TransientModel):
         in the template). Falls back to the template's own sample data when no
         record exists — useful for fresh databases or models with no instances yet.
         """
+        from ..models.pdfgen_document_mixin import pdfgen_resolve_template_id
+
         self.ensure_one()
         client = self._build_client()
         data, source = self._preview_payload(client)
         try:
             response = client.generate(
-                template_id=self.template_id,
+                template_id=pdfgen_resolve_template_id(self.env, client, self.template_id),
                 data=data,
                 name="coverage-preview",
                 output=Output.BASE64,
@@ -220,6 +225,8 @@ class PdfgenCoverageWizard(models.TransientModel):
         Returns a `(data, source_label)` tuple. Tries a real record first, falls
         back to `/templates/{id}/data` sample payload.
         """
+        from ..models.pdfgen_document_mixin import pdfgen_resolve_template_id
+
         dataset = self.dataset_id
         if dataset.model and dataset.model in self.env:
             record = self.env[dataset.model].search([], limit=1)
@@ -234,7 +241,9 @@ class PdfgenCoverageWizard(models.TransientModel):
                         e,
                     )
         try:
-            response = client.get_template_data(self.template_id)
+            response = client.get_template_data(
+                pdfgen_resolve_template_id(self.env, client, self.template_id)
+            )
         except PdfGenApiError as e:
             raise UserError(
                 _(
