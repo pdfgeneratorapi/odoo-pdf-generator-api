@@ -61,8 +61,48 @@ class TestResConfigSettings(TransactionCase):
             .sudo()
             .search([("name", "=", "pdfgeneratorapi_connector")], limit=1)
         )
-        self.assertEqual(config.pdfgen_module_version, module.latest_version)
         self.assertTrue(config.pdfgen_module_version)
+        self.assertTrue(config.pdfgen_module_version.startswith(module.latest_version))
+
+    def test_module_version_reports_installed_bridges(self):
+        """The core version alone can't answer "is this deployment current?" —
+        bridges carry their own manifest versions, so a fix living entirely in
+        a bridge moves no core digit. Each installed bridge is listed, with the
+        series prefix the core version already states stripped off.
+        """
+        Module = self.env["ir.module.module"].sudo()
+        core = Module.search([("name", "=", "pdfgeneratorapi_connector")], limit=1)
+        bridges = Module.search(
+            [
+                ("name", "=like", "pdfgeneratorapi_connector_%"),
+                ("state", "=", "installed"),
+            ]
+        )
+        self.assertTrue(bridges, "install at least one bridge for this test to mean anything")
+
+        value = self._make_config().pdfgen_module_version
+        self.assertTrue(value.startswith(core.latest_version))
+        series = ".".join(core.latest_version.split(".")[:2]) + "."
+        for bridge in bridges:
+            label = bridge.name[len("pdfgeneratorapi_connector_") :]
+            short = bridge.latest_version.removeprefix(series)
+            self.assertIn(f"{label} {short}", value)
+        # The series is stated once by the core version, not repeated per bridge.
+        self.assertEqual(value.count(series), 1)
+
+    def test_module_version_lists_only_installed_bridges(self):
+        """An uninstalled bridge must not be advertised as running."""
+        Module = self.env["ir.module.module"].sudo()
+        uninstalled = Module.search(
+            [
+                ("name", "=like", "pdfgeneratorapi_connector_%"),
+                ("state", "!=", "installed"),
+            ]
+        )
+        value = self._make_config().pdfgen_module_version
+        for bridge in uninstalled:
+            label = bridge.name[len("pdfgeneratorapi_connector_") :]
+            self.assertNotIn(f"{label} ", value)
 
     def test_module_version_reaches_the_web_client(self):
         """Guard the client path, not just attribute access.
@@ -75,13 +115,15 @@ class TestResConfigSettings(TransactionCase):
         computed field reached the browser as False and the footer was blank.
         """
         Settings = self.env["res.config.settings"]
-        expected = (
+        core_version = (
             self.env["ir.module.module"]
             .sudo()
             .search([("name", "=", "pdfgeneratorapi_connector")], limit=1)
             .latest_version
         )
-        self.assertTrue(expected, "module must be installed for this test to mean anything")
+        self.assertTrue(core_version, "module must be installed for this test to mean anything")
+        expected = Settings._pdfgen_installed_version()
+        self.assertTrue(expected.startswith(core_version))
 
         # default_get is the version-agnostic guard: no Odoo version returns a
         # computed field from it, so this fails on 17, 18 and 19 alike if the
