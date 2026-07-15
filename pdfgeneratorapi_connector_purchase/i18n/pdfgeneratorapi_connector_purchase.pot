@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0-20260421\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 09:29+0000\n"
-"PO-Revision-Date: 2026-07-14 09:29+0000\n"
+"POT-Creation-Date: 2026-07-15 15:09+0000\n"
+"PO-Revision-Date: 2026-07-15 15:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -27,7 +27,9 @@ msgstr ""
 
 #. module: pdfgeneratorapi_connector_purchase
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_form_pdfgen
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_kpis_list_pdfgen
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_list_pdfgen
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_view_list_pdfgen
 msgid "Generate custom PDF"
 msgstr ""
 
@@ -47,6 +49,8 @@ msgid "True when PDF Generator API credentials are present."
 msgstr ""
 
 #. module: pdfgeneratorapi_connector_purchase
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_kpis_list_pdfgen
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_list_pdfgen
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_purchase.view_purchase_order_view_list_pdfgen
 msgid "View Async Jobs"
 msgstr ""

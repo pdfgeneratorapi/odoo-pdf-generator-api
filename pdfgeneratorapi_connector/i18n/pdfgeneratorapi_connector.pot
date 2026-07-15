@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0-20260421\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 09:29+0000\n"
-"PO-Revision-Date: 2026-07-14 09:29+0000\n"
+"POT-Creation-Date: 2026-07-15 15:09+0000\n"
+"PO-Revision-Date: 2026-07-15 15:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,6 +20,11 @@ msgstr ""
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_document_mixin.py:0
 #, python-format
 msgid "+ Create new template…"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector
+#: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.view_pdfgen_template_editor_wizard_form
+msgid "<i class=\"fa fa-pencil-square-o fa-3x mb-3\" title=\"No template open\"/>"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
@@ -49,8 +54,8 @@ msgstr ""
 msgid ""
 "<span class=\"text-muted small text-nowrap\">\n"
 "                                                <i class=\"fa fa-eye me-1\" invisible=\"pdfgen_show_secret\"/>\n"
-"                                                <i class=\"fa fa-eye-slash me-1\" invisible=\"not pdfgen_show_secret\"/>\n"
 "                                                <span invisible=\"pdfgen_show_secret\">Show</span>\n"
+"                                                <i class=\"fa fa-eye-slash me-1\" invisible=\"not pdfgen_show_secret\"/>\n"
 "                                                <span invisible=\"not pdfgen_show_secret\">Hide</span>\n"
 "                                            </span>"
 msgstr ""
@@ -60,8 +65,8 @@ msgstr ""
 msgid ""
 "<span class=\"text-muted small text-nowrap\">\n"
 "                                                <i class=\"fa fa-eye me-1\" invisible=\"pdfgen_show_webhook_secret\"/>\n"
-"                                                <i class=\"fa fa-eye-slash me-1\" invisible=\"not pdfgen_show_webhook_secret\"/>\n"
 "                                                <span invisible=\"pdfgen_show_webhook_secret\">Show</span>\n"
+"                                                <i class=\"fa fa-eye-slash me-1\" invisible=\"not pdfgen_show_webhook_secret\"/>\n"
 "                                                <span invisible=\"not pdfgen_show_webhook_secret\">Hide</span>\n"
 "                                            </span>"
 msgstr ""
@@ -767,9 +772,10 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #: model:ir.model.fields,help:pdfgeneratorapi_connector.field_res_config_settings__pdfgen_module_version
 msgid ""
-"Installed version of the PDF Generator API connector. Quote this when "
-"contacting support@pdfgeneratorapi.com so we know exactly which release you "
-"are running."
+"Installed version of the PDF Generator API connector, followed by each "
+"installed document bridge. Quote this when contacting "
+"support@pdfgeneratorapi.com so we know exactly which release you are "
+"running."
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
@@ -1477,6 +1483,13 @@ msgid "Test the connection"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
+#. odoo-python
+#: code:addons/pdfgeneratorapi_connector/models/pdfgen_document_mixin.py:0
+#, python-format
+msgid "The default template was copied but the response had no id."
+msgstr ""
+
+#. module: pdfgeneratorapi_connector
 #: model:ir.model.fields,help:pdfgeneratorapi_connector.field_pdfgen_async_job__template_id
 msgid "The pdfgeneratorapi.com template id this job renders."
 msgstr ""
@@ -1559,6 +1572,13 @@ msgstr ""
 #: code:addons/pdfgeneratorapi_connector/wizards/generate_pdf_wizard.py:0
 #, python-format
 msgid "Unexpected API response shape. Got keys: %s"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector
+#. odoo-python
+#: code:addons/pdfgeneratorapi_connector/models/pdfgen_document_mixin.py:0
+#, python-format
+msgid "Unexpected default-template response. Got: %s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
