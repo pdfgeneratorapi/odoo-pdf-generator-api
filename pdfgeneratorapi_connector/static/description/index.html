@@ -1,17 +1,87 @@
 <!-- Odoo Apps Store listing. Sanitizer-safe: no <style>, no <script>, no
-     external assets — Bootstrap classes + inline styles only. -->
+     external assets. Bootstrap classes + inline styles only. -->
 <section class="container" style="max-width: 960px; padding: 16px 16px 48px;">
 
     <div style="background: linear-gradient(135deg, #02D1AE 0%, #02998a 100%); border-radius: 16px; padding: 48px 40px; margin: 24px 0 40px; color: #ffffff;">
         <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 12px; font-weight: 600; color: #ffffff; margin-bottom: 12px;">PDF Generator API for Odoo</p>
-        <h1 style="color: #ffffff; font-weight: 700; font-size: 34px; margin-bottom: 16px;">Design and generate custom PDFs from any Odoo record — no QWeb required</h1>
+        <h1 style="color: #ffffff; font-weight: 700; font-size: 34px; margin-bottom: 16px;">Design and generate custom PDFs from any Odoo record, no QWeb required</h1>
         <p style="font-size: 18px; color: #ffffff; margin-bottom: 0; max-width: 680px;">This module plugs <strong style="color: #ffffff;">pdfgeneratorapi.com</strong> into Odoo: design templates with a visual drag-and-drop editor, map Odoo fields to template placeholders without code, and generate PDFs from invoices, quotations, purchase orders, transfers, manufacturing orders, and rental orders.</p>
     </div>
 
     <div class="row">
         <div class="col-12">
+          <img src="template_settings_2.png" alt="The pdfgeneratorapi.com drag-and-drop editor embedded in Odoo, designing an invoice template against a real record" style="max-width: 100%; height: auto; display: block; margin: 12px 0; border: 1px solid #e5e7eb; border-radius: 8px;"/>
+            <h2 style="font-weight: 700;">Key features</h2>
+            <ul style="font-size: 15px; padding-left: 20px; line-height: 1.65; margin-top: 16px;">
+                <li style="margin-bottom: 14px;"><strong>Drag-and-drop template editor.</strong> Open the pdfgeneratorapi.com editor inside Odoo. Design templates visually, with no QWeb, no XML overrides, and no developer required. Preview against a real Odoo record while you design.</li>
+                <li style="margin-bottom: 14px;"><strong>Smart field mapping.</strong> Per-model datasets map Odoo fields to template placeholders, including repeated sections (order lines, taxes) and expressions composing several fields. Editable from the UI with a drag-and-drop field palette, no code required.</li>
+                <li style="margin-bottom: 14px;"><strong>Send-by-email integration.</strong> With the Invoicing bridge installed, the Send wizard adds a toggle and a template picker with a live preview, so customers receive your PDF Generator API design instead of the default invoice report.</li>
+                <li style="margin-bottom: 14px;"><strong>Async batch dispatch.</strong> Select hundreds of records in a list view and generate PDFs for all of them in one click. Per-record async jobs with a signed webhook callback keep Odoo responsive while pdfgeneratorapi.com renders in the background. Follow every job through the <strong>Async Jobs</strong> list (Pending, Dispatched, Completed, Failed).</li>
+                <li style="margin-bottom: 14px;"><strong>Coverage diagnostics.</strong> A built-in <strong>Check coverage</strong> wizard compares your template's placeholders against the dataset and reports an <em>X / Y placeholders covered</em> count, plus what is <em>Missing from dataset</em> and <em>Unused by template</em>, so you catch broken templates before your customers do.</li>
+                <li style="margin-bottom: 0;"><strong>Multi-company &amp; secure.</strong> Per-company API credentials with a global fallback, JWT-signed requests (HS256), webhook signature verification, and secret redaction in logs. An audit message is posted to the record's chatter on every generation.</li>
+            </ul>
+        </div>
+    </div>
+
+    <hr style="margin: 40px 0;"/>
+
+    <div class="row">
+        <div class="col-12">
+            <h2 style="font-weight: 700;">See it in action</h2>
+            <p style="color: #475569;">From credentials to a branded PDF in your customer's inbox. Every step happens inside Odoo.</p>
+        </div>
+
+        <div class="col-12" style="margin-top: 28px;">
+            <h3 style="font-size: 18px; font-weight: 600;"><span style="color: #02D1AE;">1.</span> Connect your workspace</h3>
+            <p style="font-size: 14px; color: #475569;">Paste your pdfgeneratorapi.com <strong>API key</strong>, <strong>secret</strong>, and <strong>workspace identifier</strong> under <em>Settings &#8594; PDF Generator API</em> and click <strong>Test Connection</strong>. Then tick the document types you need. Each one installs its bridge module and seeds a ready-to-edit field dataset.</p>
+            <img src="settings_1.png" alt="PDF Generator API settings showing the API credentials fields and the document-type toggles for invoices, sales, purchase, delivery, manufacturing and rental" style="max-width: 100%; height: auto; display: block; margin: 12px 0; border: 1px solid #e5e7eb; border-radius: 8px;"/>
+        </div>
+
+        <div class="col-12" style="margin-top: 28px;">
+            <h3 style="font-size: 18px; font-weight: 600;"><span style="color: #02D1AE;">2.</span> Tune the advanced options <span style="font-weight: 400; color: #94a3b8; font-size: 14px;">(optional)</span></h3>
+            <p style="font-size: 14px; color: #475569;">Override the regional API endpoint or the editor's browser URL for on-premise and Docker setups, and decide what happens to older PDFs when you re-generate: <em>Keep all versions</em> or <em>Replace previously generated PDFs on the record</em>. Manually uploaded files are never touched.</p>
+            <img src="settings_2.png" alt="Advanced settings with API base URL and editor web URL overrides, and the attachment cleanup policy options" style="max-width: 100%; height: auto; display: block; margin: 12px 0; border: 1px solid #e5e7eb; border-radius: 8px;"/>
+        </div>
+
+        <div class="col-12" style="margin-top: 28px;">
+            <h3 style="font-size: 18px; font-weight: 600;"><span style="color: #02D1AE;">3.</span> Map Odoo fields to placeholders</h3>
+            <p style="font-size: 14px; color: #475569;">Every document type gets a field dataset. Map each template placeholder to an Odoo field or a composed <em>expression</em>, mark repeating sections (order lines, taxes) as lists, and drag fields straight from the palette onto a row, no code required. <strong>Check coverage</strong> tells you exactly which placeholders are still unmapped.</p>
+            <img src="field_datasets_settings_1.png" alt="Field Datasets list showing the seeded datasets for invoice, manufacturing order, purchase order, sale order and stock transfer" style="max-width: 100%; height: auto; display: block; margin: 12px 0; border: 1px solid #e5e7eb; border-radius: 8px;"/>
+            <img src="field_datasets_settings_2.png" alt="Field dataset form with the placeholder-to-Odoo-field mapping table and the drag-and-drop field palette on the right" style="max-width: 100%; height: auto; display: block; margin: 12px 0; border: 1px solid #e5e7eb; border-radius: 8px;"/>
+        </div>
+
+        <div class="col-12" style="margin-top: 28px;">
+            <h3 style="font-size: 18px; font-weight: 600;"><span style="color: #02D1AE;">4.</span> Design in the visual editor</h3>
+            <p style="font-size: 14px; color: #475569;">Pick a template, a dataset, and a real record, then <strong>Open</strong> the pdfgeneratorapi.com editor right inside Odoo and design against live data. Opening one of the default templates creates an editable copy under <em>My Templates</em>, so the originals stay intact.</p>
+            <img src="template_settings_2.png" alt="The pdfgeneratorapi.com drag-and-drop editor embedded in Odoo, designing an invoice template against a real record" style="max-width: 100%; height: auto; display: block; margin: 12px 0; border: 1px solid #e5e7eb; border-radius: 8px;"/>
+        </div>
+
+        <div class="col-12" style="margin-top: 28px;">
+            <h3 style="font-size: 18px; font-weight: 600;"><span style="color: #02D1AE;">5.</span> Generate on any record</h3>
+            <p style="font-size: 14px; color: #475569;">Click <strong>Generate custom PDF</strong> on a supported record. The PDF is attached and an audit line is posted to the chatter. Prefer to grab the file straight away? Use the <strong>Generate and Download</strong> option in the dropdown.</p>
+            <img src="genrate_pdf_1.png" alt="A sale order with the Generate custom PDF split button open, showing the Generate and Download option" style="max-width: 100%; height: auto; display: block; margin: 12px 0; border: 1px solid #e5e7eb; border-radius: 8px;"/>
+        </div>
+
+        <div class="col-12" style="margin-top: 28px;">
+            <h3 style="font-size: 18px; font-weight: 600;"><span style="color: #02D1AE;">6.</span> Email your design</h3>
+            <p style="font-size: 14px; color: #475569;">With the Invoicing bridge installed, the invoice <em>Send</em> wizard shows a toggle and a template picker with a live preview. Flip it on and your customer receives your branded design in place of the standard Odoo report.</p>
+            <img src="send_invoice_1.png" alt="Invoice Send wizard with the PDF Generator API toggle enabled and a preview of the generated branded invoice" style="max-width: 100%; height: auto; display: block; margin: 12px 0; border: 1px solid #e5e7eb; border-radius: 8px;"/>
+        </div>
+
+        <div class="col-12" style="margin-top: 28px;">
+            <h3 style="font-size: 18px; font-weight: 600;"><span style="color: #02D1AE;">7.</span> Batch-generate asynchronously</h3>
+            <p style="font-size: 14px; color: #475569;">Select any number of records in a list view, click <strong>Generate custom PDF</strong>, choose a template, and <strong>Dispatch</strong>. Each record runs as its own async job with a signed webhook callback, and you are redirected to the <strong>Async Jobs</strong> list to follow progress.</p>
+            <img src="batch_generation_1.png" alt="Sales quotations list with two records selected and the Generate custom PDF and View Async Jobs toolbar buttons" style="max-width: 100%; height: auto; display: block; margin: 12px 0; border: 1px solid #e5e7eb; border-radius: 8px;"/>
+            <img src="batch_generation_2.png" alt="Batch dispatch dialog confirming records will be sent to pdfgeneratorapi.com, with dataset and template pickers" style="max-width: 100%; height: auto; display: block; margin: 12px 0; border: 1px solid #e5e7eb; border-radius: 8px;"/>
+        </div>
+    </div>
+
+    <hr style="margin: 40px 0;"/>
+
+    <div class="row">
+        <div class="col-12">
             <h2 style="font-weight: 700;">How it is organised</h2>
-            <p>This is the <strong>framework module</strong>: it ships the API client, the template editor embed, per-model field datasets, coverage diagnostics, and the async job machinery. It adds no buttons to your documents by itself — you pick the document types you want under <strong>Settings &#8594; PDF Generator API &#8594; Document types</strong>, and Odoo installs the matching bridge module automatically:</p>
+            <p>This is the <strong>framework module</strong>: it ships the API client, the template editor embed, per-model field datasets, coverage diagnostics, and the async job machinery. It adds no buttons to your documents by itself; you pick the document types you want under <strong>Settings &#8594; PDF Generator API &#8594; Document types</strong>, and Odoo installs the matching bridge module automatically:</p>
             <table class="table table-bordered" style="font-size: 14px;">
                 <thead>
                     <tr style="background-color: #f8fafc;">
@@ -22,9 +92,9 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Customer invoices &amp; credit notes</td>
+                        <td>Customer invoices, vendor bills &amp; credit notes</td>
                         <td><code>pdfgeneratorapi_connector_account</code></td>
-                        <td>Generate button on invoices, plus a <em>Use pdfgen PDF</em> toggle in the Send wizard so customers receive your design instead of the standard report</td>
+                        <td>Generate button on invoices, plus a toggle in the Send wizard so customers receive your PDF Generator API design instead of the standard report</td>
                     </tr>
                     <tr>
                         <td>Quotations &amp; sale orders</td>
@@ -53,83 +123,7 @@
                     </tr>
                 </tbody>
             </table>
-            <p class="text-muted" style="font-size: 14px;">The same machinery extends to any other Odoo model: create a field dataset for the model and inherit the document mixin — no hardcoded document types anywhere.</p>
-        </div>
-    </div>
-
-    <hr style="margin: 40px 0;"/>
-
-    <div class="row">
-        <div class="col-12">
-            <h2 style="font-weight: 700;">Key features</h2>
-        </div>
-        <div class="col-md-6" style="margin-top: 20px;">
-            <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px; height: 100%;">
-                <h3 style="font-size: 18px; font-weight: 600;">Drag-and-drop template editor</h3>
-                <p style="font-size: 14px; color: #475569; margin-bottom: 0;">Open the pdfgeneratorapi.com editor inside Odoo. Design templates visually — no QWeb, no XML overrides, no developer required. Preview against a real Odoo record while you design.</p>
-            </div>
-        </div>
-        <div class="col-md-6" style="margin-top: 20px;">
-            <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px; height: 100%;">
-                <h3 style="font-size: 18px; font-weight: 600;">Smart field mapping</h3>
-                <p style="font-size: 14px; color: #475569; margin-bottom: 0;">Per-model datasets map Odoo fields to template placeholders, including repeated sections (order lines, taxes) and expressions composing several fields. Editable from the UI with a drag-and-drop field palette — no code.</p>
-            </div>
-        </div>
-        <div class="col-md-6" style="margin-top: 20px;">
-            <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px; height: 100%;">
-                <h3 style="font-size: 18px; font-weight: 600;">Send-by-email integration</h3>
-                <p style="font-size: 14px; color: #475569; margin-bottom: 0;">With the Invoicing bridge installed, the Send wizard can substitute the standard Odoo report with your latest generated PDF — customers receive your custom design, not the default invoice.</p>
-            </div>
-        </div>
-        <div class="col-md-6" style="margin-top: 20px;">
-            <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px; height: 100%;">
-                <h3 style="font-size: 18px; font-weight: 600;">Async batch dispatch</h3>
-                <p style="font-size: 14px; color: #475569; margin-bottom: 0;">Select hundreds of records in a list view and generate PDFs for all of them in one click. Per-record async jobs with a signed webhook callback keep Odoo responsive while pdfgeneratorapi.com renders in the background.</p>
-            </div>
-        </div>
-        <div class="col-md-6" style="margin-top: 20px;">
-            <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px; height: 100%;">
-                <h3 style="font-size: 18px; font-weight: 600;">Coverage diagnostics</h3>
-                <p style="font-size: 14px; color: #475569; margin-bottom: 0;">A built-in wizard inspects your template's placeholders and reports which ones are mapped, unmapped, or unused — catch broken templates before your customers do.</p>
-            </div>
-        </div>
-        <div class="col-md-6" style="margin-top: 20px;">
-            <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px; height: 100%;">
-                <h3 style="font-size: 18px; font-weight: 600;">Multi-company &amp; secure</h3>
-                <p style="font-size: 14px; color: #475569; margin-bottom: 0;">Per-company API credentials with a global fallback, JWT-signed requests (HS256), webhook signature verification, and secret redaction in logs. An audit message is posted to the record's chatter on every generation.</p>
-            </div>
-        </div>
-    </div>
-
-    <hr style="margin: 40px 0;"/>
-
-    <div class="row">
-        <div class="col-12">
-            <h2 style="font-weight: 700;">How it works</h2>
-        </div>
-        <div class="col-md-6" style="margin-top: 16px;">
-            <div style="border-left: 3px solid #02D1AE; padding: 4px 0 4px 18px;">
-                <h3 style="font-size: 17px; font-weight: 600;">1. Connect your workspace</h3>
-                <p style="font-size: 14px; color: #475569; margin-bottom: 0;">Paste your pdfgeneratorapi.com API key, secret, and workspace identifier in <em>Settings &#8594; PDF Generator API</em>. Click <strong>Test Connection</strong> to verify.</p>
-            </div>
-        </div>
-        <div class="col-md-6" style="margin-top: 16px;">
-            <div style="border-left: 3px solid #02D1AE; padding: 4px 0 4px 18px;">
-                <h3 style="font-size: 17px; font-weight: 600;">2. Pick your document types</h3>
-                <p style="font-size: 14px; color: #475569; margin-bottom: 0;">Tick the document types you need under <em>Document types</em>. Saving installs the matching bridge and seeds a ready-to-edit field dataset.</p>
-            </div>
-        </div>
-        <div class="col-md-6" style="margin-top: 16px;">
-            <div style="border-left: 3px solid #02D1AE; padding: 4px 0 4px 18px;">
-                <h3 style="font-size: 17px; font-weight: 600;">3. Design or import a template</h3>
-                <p style="font-size: 14px; color: #475569; margin-bottom: 0;">Open the visual editor inside Odoo. Drag fields from the palette, style headers, add line tables, and preview against a real record.</p>
-            </div>
-        </div>
-        <div class="col-md-6" style="margin-top: 16px;">
-            <div style="border-left: 3px solid #02D1AE; padding: 4px 0 4px 18px;">
-                <h3 style="font-size: 17px; font-weight: 600;">4. Generate and send</h3>
-                <p style="font-size: 14px; color: #475569; margin-bottom: 0;">Click <strong>Generate custom PDF</strong> on any supported record — the PDF is attached to the record and logged in the chatter, ready to download or send.</p>
-            </div>
+            <p class="text-muted" style="font-size: 14px;">The same machinery extends to any other Odoo model: create a field dataset for the model and inherit the document mixin, with no hardcoded document types anywhere.</p>
         </div>
     </div>
 
@@ -150,7 +144,7 @@
                     <tr><td>Odoo.sh</td><td style="color: #047857; font-weight: 600;">Yes</td><td style="color: #047857; font-weight: 600;">Yes</td></tr>
                     <tr><td>Odoo on-premise (Enterprise)</td><td style="color: #047857; font-weight: 600;">Yes</td><td style="color: #047857; font-weight: 600;">Yes</td></tr>
                     <tr><td>Odoo Community</td><td style="color: #047857; font-weight: 600;">Yes</td><td style="color: #047857; font-weight: 600;">Yes</td></tr>
-                    <tr><td>Odoo Online (SaaS)</td><td style="color: #b91c1c; font-weight: 600;">No</td><td>&#8212;</td></tr>
+                    <tr><td>Odoo Online (SaaS)</td><td style="color: #b91c1c; font-weight: 600;">No</td><td>N/A</td></tr>
                 </tbody>
             </table>
             <p class="text-muted" style="font-size: 13px;">Odoo Online does not allow third-party apps; this module cannot run there. The Rental bridge additionally requires the Rental app (<code>sale_renting</code>), which ships with Odoo Enterprise.</p>
@@ -163,7 +157,7 @@
         <div class="col-12">
             <h2 style="font-weight: 700;">Configuration</h2>
             <ol style="font-size: 15px; padding-left: 20px;">
-                <li>Sign up at <strong>pdfgeneratorapi.com</strong> and copy your <strong>API key</strong>, <strong>API secret</strong>, and <strong>workspace identifier</strong> (usually your account email). This module requires a pdfgeneratorapi.com account — the PDF rendering itself happens on their service.</li>
+                <li>Sign up at <strong>pdfgeneratorapi.com</strong> and copy your <strong>API key</strong>, <strong>API secret</strong>, and <strong>workspace identifier</strong> (usually your account email). This module requires a pdfgeneratorapi.com account; the PDF rendering itself happens on their service.</li>
                 <li>In Odoo, open <strong>Settings &#8594; PDF Generator API</strong>.</li>
                 <li>Paste the credentials and click <strong>Test Connection</strong>.</li>
                 <li>Tick the document types you want, save, and click <strong>Generate custom PDF</strong> on any matching record.</li>
@@ -177,7 +171,7 @@
         <div class="col-12">
             <h2 style="font-weight: 700;">Privacy &amp; data flow</h2>
             <div class="alert alert-info" style="background-color: #f8fafc; border-left: 4px solid #02D1AE; border-radius: 6px; color: #334155; font-size: 14px;">
-                <p>When you generate a PDF, the record data mapped in your dataset is transmitted to pdfgeneratorapi.com over HTTPS — for an invoice, typically: number, dates, state, currency, company and customer details (name, address, VAT), line items (description, quantity, price, taxes), totals, payment reference, and notes.</p>
+                <p>When you generate a PDF, the record data mapped in your dataset is transmitted to pdfgeneratorapi.com over HTTPS. For an invoice, this typically includes: number, dates, state, currency, company and customer details (name, address, VAT), line items (description, quantity, price, taxes), totals, payment reference, and notes.</p>
                 <p>Requests are signed with a short-lived JWT (HS256) using your API secret. <strong>No data leaves Odoo outside an explicit Generate action</strong> (or an async batch you dispatched).</p>
                 <p style="margin-bottom: 0;">See the <strong>PDF Generator API privacy notice</strong> (at pdfgeneratorapi.com/privacy-notice) for how transmitted data is handled.</p>
             </div>
@@ -185,7 +179,7 @@
     </div>
 
     <div class="d-flex justify-content-between" style="margin-top: 48px; padding-top: 24px; border-top: 1px solid #e5e7eb; color: #64748b; font-size: 13px; flex-wrap: wrap;">
-        <span>&#169; PDF Generator API &#8212; licensed under LGPL-3</span>
+        <span>&#169; PDF Generator API, licensed under LGPL-3</span>
         <span>Support: <a href="mailto:support@pdfgeneratorapi.com" style="color: #02998a;">support@pdfgeneratorapi.com</a></span>
     </div>
 
