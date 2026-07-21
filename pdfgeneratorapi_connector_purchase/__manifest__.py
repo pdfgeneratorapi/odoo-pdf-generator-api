@@ -12,7 +12,5 @@
         "data/pdfgen_model_dataset_purchase_order.xml",
         "views/purchase_order_views.xml",
     ],
-    "images": [
-        "static/description/pdfgeneratorapi_odoo_cover_560x315.png"
-    ]
+    "images": ["static/description/pdfgeneratorapi_odoo_cover_560x315.png"],
 }
