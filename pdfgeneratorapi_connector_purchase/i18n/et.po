@@ -30,8 +30,8 @@ msgstr "Genereeri kohandatud PDF"
 msgid "ID"
 msgstr "ID"
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen seadistatud"
+msgid "PDF API configured"
+msgstr "PDF API seadistatud"
 
 msgid "Purchase Order"
 msgstr "Ostutellimus"

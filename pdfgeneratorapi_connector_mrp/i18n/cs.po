@@ -33,8 +33,8 @@ msgstr "ID"
 msgid "Manufacturing Order"
 msgstr "Výrobní zakázka"
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen nakonfigurován"
+msgid "PDF API configured"
+msgstr "PDF API nakonfigurováno"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Pravda, pokud jsou přítomny přihlašovací údaje PDF Generator API."

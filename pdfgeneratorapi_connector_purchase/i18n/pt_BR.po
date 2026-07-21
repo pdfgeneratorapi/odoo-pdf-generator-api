@@ -30,8 +30,8 @@ msgstr "Gerar PDF personalizado"
 msgid "ID"
 msgstr "ID"
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen configurado"
+msgid "PDF API configured"
+msgstr "PDF API configurado"
 
 msgid "Purchase Order"
 msgstr "Pedido de compra"

@@ -58,10 +58,10 @@ class PdfgenAsyncJob(models.Model):
         "pdfgen.model.dataset",
         readonly=True,
         ondelete="set null",
-        help="Dataset whose resolved payload was sent to pdfgen at dispatch.",
+        help="Dataset whose resolved payload was sent to PDF API at dispatch.",
     )
     pdfgen_job_id = fields.Char(
-        string="pdfgen Job ID",
+        string="PDF API Job ID",
         readonly=True,
         index=True,
         help="Identifier returned by pdfgeneratorapi.com's async endpoint.",

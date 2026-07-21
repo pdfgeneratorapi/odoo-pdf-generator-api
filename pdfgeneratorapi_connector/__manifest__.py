@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator API",
-    "version": "19.0.7.1.6",
+    "version": "19.0.7.2.1",
     "category": "Productivity/Documents",
     "summary": "Framework: generate custom PDFs of any record via pdfgeneratorapi.com",
     "author": "PDF Generator API",
@@ -16,6 +16,7 @@
         "views/pdfgen_template_editor_wizard_views.xml",
         "views/pdfgen_model_dataset_views.xml",
         "views/generate_pdf_wizard_views.xml",
+        "views/mail_compose_message_views.xml",
         "views/pdfgen_async_dispatch_wizard_views.xml",
         "views/pdfgen_async_job_views.xml",
         "views/menu.xml",

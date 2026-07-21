@@ -47,24 +47,25 @@ class ResConfigSettings(models.TransientModel):
             "Your account email for regular workspaces, or a sub-workspace "
             "identifier (format per the pdfgeneratorapi.com workspace settings "
             "page — typically `parent@domain.com:slug`) for sub-workspaces. "
-            "The value is forwarded verbatim into the JWT `sub` claim so pdfgen "
-            "routes requests to the right workspace."
+            "The value is forwarded verbatim into the JWT `sub` claim so PDF "
+            "API routes requests to the right workspace."
         ),
     )
     pdfgen_attachment_cleanup = fields.Selection(
         selection=[
             ("keep", "Keep all versions"),
-            ("replace", "Replace previous pdfgen PDFs on the record"),
+            ("replace", "Replace previous PDF API documents on the record"),
         ],
         string="Attachment cleanup",
         config_parameter="pdfgen.attachment_cleanup",
         default="replace",
         help=(
             "What to do with previously-generated PDFs on the same record when "
-            "the user clicks Generate again. `Replace` deletes pdfgen-generated "
-            "PDFs on that record before attaching the new one (default); `Keep` "
-            "leaves every version attached. Only attachments created by this "
-            "connector are affected — manually uploaded PDFs are never touched."
+            "the user clicks Generate again. `Replace` deletes the PDF API "
+            "documents already on that record before attaching the new one "
+            "(default); `Keep` leaves every version attached. Only attachments "
+            "created by this connector are affected — manually uploaded PDFs "
+            "are never touched."
         ),
     )
     pdfgen_show_secret = fields.Boolean(
@@ -108,7 +109,7 @@ class ResConfigSettings(models.TransientModel):
         string="Invoices & Credit Notes",
         help=(
             "Adds a Generate custom PDF button on account.move (customer "
-            "invoices, vendor bills, credit notes) and a Use pdfgen PDF "
+            "invoices, vendor bills, credit notes) and a Use PDF API document "
             "toggle on the invoice Send wizard. Installs the Accounting app "
             "if not already present. Seeds a default placeholder dataset."
         ),
