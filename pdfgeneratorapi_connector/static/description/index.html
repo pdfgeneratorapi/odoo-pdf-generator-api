@@ -5,7 +5,7 @@
     <div style="background: linear-gradient(135deg, #02D1AE 0%, #02998a 100%); border-radius: 16px; padding: 48px 40px; margin: 24px 0 40px; color: #ffffff;">
         <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 12px; font-weight: 600; color: #ffffff; margin-bottom: 12px;">PDF Generator API for Odoo</p>
         <h1 style="color: #ffffff; font-weight: 700; font-size: 34px; margin-bottom: 16px;">Design and generate custom PDFs from any Odoo record — no QWeb required</h1>
-        <p style="font-size: 18px; color: #ffffff; margin-bottom: 0; max-width: 680px;">This module plugs <a href="https://pdfgeneratorapi.com" style="color: #ffffff; text-decoration: underline;">pdfgeneratorapi.com</a> into Odoo: design templates with a visual drag-and-drop editor, map Odoo fields to template placeholders without code, and generate PDFs from invoices, quotations, purchase orders, transfers, manufacturing orders, and rental orders.</p>
+        <p style="font-size: 18px; color: #ffffff; margin-bottom: 0; max-width: 680px;">This module plugs <strong style="color: #ffffff;">pdfgeneratorapi.com</strong> into Odoo: design templates with a visual drag-and-drop editor, map Odoo fields to template placeholders without code, and generate PDFs from invoices, quotations, purchase orders, transfers, manufacturing orders, and rental orders.</p>
     </div>
 
     <div class="row">
@@ -163,7 +163,7 @@
         <div class="col-12">
             <h2 style="font-weight: 700;">Configuration</h2>
             <ol style="font-size: 15px; padding-left: 20px;">
-                <li>Sign up at <a href="https://pdfgeneratorapi.com" style="color: #02998a;">pdfgeneratorapi.com</a> and copy your <strong>API key</strong>, <strong>API secret</strong>, and <strong>workspace identifier</strong> (usually your account email). This module requires a pdfgeneratorapi.com account — the PDF rendering itself happens on their service.</li>
+                <li>Sign up at <strong>pdfgeneratorapi.com</strong> and copy your <strong>API key</strong>, <strong>API secret</strong>, and <strong>workspace identifier</strong> (usually your account email). This module requires a pdfgeneratorapi.com account — the PDF rendering itself happens on their service.</li>
                 <li>In Odoo, open <strong>Settings &#8594; PDF Generator API</strong>.</li>
                 <li>Paste the credentials and click <strong>Test Connection</strong>.</li>
                 <li>Tick the document types you want, save, and click <strong>Generate custom PDF</strong> on any matching record.</li>
@@ -179,7 +179,7 @@
             <div class="alert alert-info" style="background-color: #f8fafc; border-left: 4px solid #02D1AE; border-radius: 6px; color: #334155; font-size: 14px;">
                 <p>When you generate a PDF, the record data mapped in your dataset is transmitted to pdfgeneratorapi.com over HTTPS — for an invoice, typically: number, dates, state, currency, company and customer details (name, address, VAT), line items (description, quantity, price, taxes), totals, payment reference, and notes.</p>
                 <p>Requests are signed with a short-lived JWT (HS256) using your API secret. <strong>No data leaves Odoo outside an explicit Generate action</strong> (or an async batch you dispatched).</p>
-                <p style="margin-bottom: 0;">See the <a href="https://pdfgeneratorapi.com/privacy-notice" style="color: #02998a;">PDF Generator API privacy notice</a> for how transmitted data is handled.</p>
+                <p style="margin-bottom: 0;">See the <strong>PDF Generator API privacy notice</strong> (at pdfgeneratorapi.com/privacy-notice) for how transmitted data is handled.</p>
             </div>
         </div>
     </div>
