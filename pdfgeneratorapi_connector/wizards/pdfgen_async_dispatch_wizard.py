@@ -1,17 +1,26 @@
-"""Multi-record dispatcher.
+"""Multi-record generator.
 
 Opened from a list view with `active_model` + `active_ids` in context.
-For every selected record:
+Takes one of two routes depending on whether async delivery can actually
+work — see `async_available`.
+
+Async (Webhook Base URL configured), for every selected record:
 
   1. Build a `pdfgen.async.job` row (state=pending).
   2. Call `client.generate_async(...)` with the job's signed callback URL.
   3. Flip the row to `dispatched`, store pdfgen's returned job id.
 
 Failed dispatches mark the row `failed` so the user sees the error in
-the Async Jobs list rather than getting a vague stack trace.
+the Async Jobs list rather than getting a vague stack trace. Afterwards
+the wizard redirects to the jobs list filtered to the just-created rows.
 
-After dispatch the wizard redirects to the jobs list filtered to the
-just-created rows.
+Sync (no Webhook Base URL), for every selected record: one blocking
+`/documents/generate` call, attach, promote, post to the chatter — the
+single-record wizard's flow, repeated. Without a callback URL the API
+has nowhere to deliver to, so dispatching async would leave every job
+stuck on `dispatched` forever; generating one at a time is slower but
+actually produces documents. A failing record is logged and skipped so
+one bad payload doesn't cost the whole selection.
 """
 
 import logging
@@ -48,6 +57,16 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
         "pdfgen.model.dataset",
         compute="_compute_dataset_id",
         readonly=True,
+    )
+    async_available = fields.Boolean(
+        string="Async delivery available",
+        compute="_compute_async_available",
+        readonly=True,
+        help=(
+            "True when a Webhook Base URL is configured, so pdfgeneratorapi.com "
+            "has somewhere to deliver finished documents. Without it the "
+            "records are generated one at a time instead."
+        ),
     )
 
     @api.model
@@ -89,6 +108,27 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
             else:
                 wiz.dataset_id = False
 
+    @api.depends_context("uid", "allowed_company_ids")
+    def _compute_async_available(self) -> None:
+        available = self._pdfgen_async_available()
+        for wiz in self:
+            wiz.async_available = available
+
+    @api.model
+    def _pdfgen_async_available(self) -> bool:
+        """True when async dispatch can actually complete.
+
+        Gated on the explicit Webhook Base URL rather than the
+        `web.base.url` fallback `pdfgen.async.job.callback_url` uses: that
+        fallback is whatever the browser happens to reach Odoo on
+        (`http://localhost:8069` on most installs), which the API cannot
+        call back to. Betting a 50-record batch on it means 50 jobs stuck
+        on `dispatched`.
+        """
+        from ..models.pdfgen_document_mixin import pdfgen_config
+
+        return bool(pdfgen_config(self.env, "webhook_base_url"))
+
     def _record_ids(self) -> list[int]:
         if not self.res_ids:
             return []
@@ -125,6 +165,9 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
         from ..models.pdfgen_document_mixin import pdfgen_resolve_template_id
 
         records = self.env[self.res_model].browse(record_ids).exists()
+        if not self.async_available:
+            return self._generate_sync(records)
+
         client = self._build_client()
         template_label = dict(self._fields["template_id"]._description_selection(self.env)).get(
             self.template_id, self.template_id
@@ -181,3 +224,62 @@ class PdfgenAsyncDispatchWizard(models.TransientModel):
             "domain": [("id", "in", created_ids)],
             "target": "current",
         }
+
+    def _generate_sync(self, records: models.Model) -> dict:
+        """Generate the selected records one request at a time.
+
+        Mirrors what the single-record wizard does per record — generate,
+        attach with the `pdfgen:` marker, promote to the model's canonical
+        PDF, post to the chatter — so a bulk run and a one-off produce the
+        same result. Per-record errors are collected rather than raised: a
+        UserError mid-loop would roll back the whole batch, throwing away
+        the documents that did come back.
+        """
+        self.ensure_one()
+        mixin = self.env["pdfgen.send.mixin"]
+        generated, failed = [], []
+        for record in records:
+            try:
+                attachment = mixin._pdfgen_generate_attachment(self.template_id, record)
+            except (PdfGenApiError, UserError) as e:
+                _logger.warning(
+                    "sync generation failed for %s(%s): %s", self.res_model, record.id, e
+                )
+                failed.append((record, e))
+                continue
+            mixin._pdfgen_promote_attachment(record, attachment)
+            if hasattr(record, "message_post"):
+                record.message_post(
+                    body=_("Generated custom PDF via pdfgeneratorapi.com."),
+                    attachment_ids=[attachment.id],
+                )
+            generated.append(record.id)
+
+        if not generated:
+            # Nothing survived, so there is nothing to lose by rolling back —
+            # and an error dialog beats landing on an empty list.
+            raise UserError(
+                _(
+                    "No documents were generated. First error: %s",
+                    failed[0][1] if failed else _("no records to process."),
+                )
+            )
+        return {
+            "type": "ir.actions.act_window",
+            "name": self._sync_result_title(len(generated), len(failed)),
+            "res_model": self.res_model,
+            "view_mode": "list,form",
+            "domain": [("id", "in", generated)],
+            "target": "current",
+        }
+
+    @staticmethod
+    def _sync_result_title(done: int, failed: int) -> str:
+        """Breadcrumb title for the result list — the only place a partial
+        failure is visible in the UI, so it carries the counts. (A
+        `display_notification` action would be tidier, but a wizard dialog
+        swallows client actions; the per-record errors are in the log.)
+        """
+        if failed:
+            return _("%(done)s generated, %(failed)s failed", done=done, failed=failed)
+        return _("%s document(s) generated", done)

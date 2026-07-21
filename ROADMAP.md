@@ -216,6 +216,22 @@ attachment.
 
 ---
 
+## Phase 6.1 — Multi-record: sync when async can't deliver (landed)
+
+Bulk generation used to dispatch async unconditionally. Without a
+**Webhook Base URL** there is nowhere for pdfgeneratorapi.com to deliver
+to, so every job sat on `dispatched` forever and the user got no
+documents. The wizard now checks first and generates the selection one
+request at a time instead.
+
+- [x] `async_available` on the dispatch wizard — true only when an explicit Webhook Base URL is configured. Deliberately *not* satisfied by the `web.base.url` fallback `callback_url()` uses: that is whatever the browser reaches Odoo on (`http://localhost:8069` on most installs), which the API cannot call back to.
+- [x] Sync path reuses `pdfgen.send.mixin._pdfgen_generate_attachment` per record, then promotes and posts to the chatter — a bulk run and a one-off produce the same result. Library templates still cost one copy per batch (the resolver caches it in `ir.config_parameter`).
+- [x] Per-record failures are logged and skipped rather than raised, so one bad payload doesn't roll back the documents that did come back. All-failed raises instead, since there is nothing to keep.
+- [x] Wizard tells the user which mode it is in: warning alert + **Generate** button without a webhook URL, the original info alert + **Dispatch** with one. The result lands on a list of the generated records, titled with the counts — a `display_notification` action would be tidier but a wizard dialog swallows client actions in v19.
+- [x] 9 Odoo tests on the sync path (mode detection, one call per record, no jobs created, chatter post, partial failure, total failure, library-template reuse).
+
+---
+
 ## Phase 6 — Async dispatch from list view (landed)
 
 Selecting N rows in a list view (account.move, sale.order,
