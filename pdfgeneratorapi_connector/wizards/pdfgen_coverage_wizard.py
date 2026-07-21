@@ -28,7 +28,7 @@ _logger = logging.getLogger(__name__)
 
 class PdfgenCoverageWizard(models.TransientModel):
     _name = "pdfgen.coverage.wizard"
-    _description = "Check pdfgen template coverage against a dataset"
+    _description = "Check PDF API template coverage against a dataset"
 
     dataset_id = fields.Many2one(
         "pdfgen.model.dataset",

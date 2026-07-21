@@ -18,17 +18,23 @@ msgstr ""
 msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
 msgstr "<span class=\"visually-hidden\">Basculer le menu déroulant</span>"
 
+msgid "Display Name"
+msgstr "Nom affiché"
+
 msgid "Generate and Download"
 msgstr "Générer et télécharger"
 
 msgid "Generate custom PDF"
 msgstr "Générer un PDF personnalisé"
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen configuré"
+msgid "ID"
+msgstr "ID"
 
-msgid "Production Order"
+msgid "Manufacturing Order"
 msgstr "Ordre de fabrication"
+
+msgid "PDF API configured"
+msgstr "PDF API configuré"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Vrai lorsque les identifiants PDF Generator API sont présents."

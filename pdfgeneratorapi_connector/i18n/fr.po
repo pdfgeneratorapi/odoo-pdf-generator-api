@@ -178,8 +178,8 @@ msgstr "E-mail du compte pour les espaces de travail normaux, ou l'identifiant d
 msgid "Active"
 msgstr "Actif"
 
-msgid "Adds a Generate custom PDF button on account.move (customer invoices, vendor bills, credit notes) and a Use pdfgen PDF toggle on the invoice Send wizard. Installs the Accounting app if not already present. Seeds a default placeholder dataset."
-msgstr "Ajoute un bouton « Générer un PDF personnalisé » sur account.move (factures clients, factures fournisseurs, avoirs) et une option « Utiliser le PDF pdfgen » dans l'assistant d'envoi de factures. Installe l'application Comptabilité si elle n'est pas déjà présente. Crée un jeu de données de marqueurs par défaut."
+msgid "Adds a Generate custom PDF button on account.move (customer invoices, vendor bills, credit notes) and a Use PDF API document toggle on the invoice Send wizard. Installs the Accounting app if not already present. Seeds a default placeholder dataset."
+msgstr "Ajoute un bouton « Générer un PDF personnalisé » sur account.move (factures clients, factures fournisseurs, avoirs) et une option « Utiliser le document PDF API » dans l'assistant d'envoi de factures. Installe l'application Comptabilité si elle n'est pas déjà présente. Crée un jeu de données de marqueurs par défaut."
 
 msgid "Adds a Generate custom PDF button on mrp.production and seeds a default placeholder dataset. Installs the Manufacturing app if not already present."
 msgstr "Ajoute un bouton « Générer un PDF personnalisé » sur mrp.production et crée un jeu de données de marqueurs par défaut. Installe l'application Fabrication si elle n'est pas déjà présente."
@@ -232,11 +232,11 @@ msgstr "Annuler"
 msgid "Check"
 msgstr "Vérifier"
 
+msgid "Check PDF API template coverage against a dataset"
+msgstr "Vérifier la couverture du modèle PDF API par rapport à un jeu de données"
+
 msgid "Check coverage"
 msgstr "Vérifier la couverture"
-
-msgid "Check pdfgen template coverage against a dataset"
-msgstr "Vérifier la couverture du modèle pdfgen par rapport à un jeu de données"
 
 msgid "Check template coverage"
 msgstr "Vérifier la couverture du modèle"
@@ -310,8 +310,8 @@ msgstr "Créé par"
 msgid "Created on"
 msgstr "Créé le"
 
-msgid "Customer invoices, vendor bills, and credit notes. Also enables the Use pdfgen PDF toggle on the invoice Send wizard."
-msgstr "Factures clients, factures fournisseurs et avoirs. Active également l'option « Utiliser le PDF pdfgen » dans l'assistant d'envoi de factures."
+msgid "Customer invoices, vendor bills, and credit notes. Also enables the Use PDF API document toggle on the invoice Send wizard."
+msgstr "Factures clients, factures fournisseurs et avoirs. Active également l'option « Utiliser le document PDF API » dans l'assistant d'envoi de factures."
 
 msgid "Dataset"
 msgstr "Jeu de données"
@@ -319,8 +319,8 @@ msgstr "Jeu de données"
 msgid "Dataset applies to every PDF generated from this model."
 msgstr "Le jeu de données s'applique à chaque PDF généré à partir de ce modèle."
 
-msgid "Dataset whose resolved payload was sent to pdfgen at dispatch."
-msgstr "Jeu de données dont la charge utile résolue a été envoyée à pdfgen au moment de l'envoi."
+msgid "Dataset whose resolved payload was sent to PDF API at dispatch."
+msgstr "Jeu de données dont la charge utile résolue a été envoyée à PDF API au moment de l'envoi."
 
 msgid "Default Templates"
 msgstr "Modèles par défaut"
@@ -378,6 +378,9 @@ msgstr "URL web de l'éditeur (optionnelle)"
 
 msgid "Editor closed."
 msgstr "Éditeur fermé."
+
+msgid "Email composition wizard"
+msgstr ""
 
 msgid "Embed the pdfgeneratorapi.com template editor"
 msgstr "Intégrer l'éditeur de modèles pdfgeneratorapi.com"
@@ -439,8 +442,8 @@ msgstr "PDF personnalisé généré via pdfgeneratorapi.com."
 msgid "HTML render of the selected template with a sample record's data. Useful to sanity-check the template + dataset combination without generating a PDF."
 msgstr "Rendu HTML du modèle sélectionné avec les données d'un enregistrement d'exemple. Utile pour vérifier la combinaison modèle + jeu de données sans générer de PDF."
 
-msgid "Helpers for Send wizards that substitute pdfgen PDFs"
-msgstr "Utilitaires pour les assistants d'envoi qui substituent des PDF pdfgen"
+msgid "Helpers for Send wizards that substitute PDF API documents"
+msgstr "Utilitaires pour les assistants d'envoi qui substituent des PDF PDF API"
 
 msgid "ID"
 msgstr "ID"
@@ -451,8 +454,8 @@ msgstr "Identifiant renvoyé par le point de terminaison asynchrone de pdfgenera
 msgid "Installed version of the PDF Generator API connector, followed by each installed document bridge. Quote this when contacting support@pdfgeneratorapi.com so we know exactly which release you are running."
 msgstr "Version installée du connecteur PDF Generator API, suivie de chaque pont de documents installé. Mentionnez-la lorsque vous contactez support@pdfgeneratorapi.com afin que nous sachions exactement quelle version vous utilisez."
 
-msgid "Invalid base64 from pdfgen: %s"
-msgstr "base64 invalide reçu de pdfgen : %s"
+msgid "Invalid base64 from PDF API: %s"
+msgstr "base64 invalide reçu de PDF API : %s"
 
 msgid "Invoices & Credit Notes"
 msgstr "Factures et avoirs"
@@ -469,8 +472,8 @@ msgstr "Liste de type JSON des ids des enregistrements sélectionnés, séparés
 msgid "Keep all versions"
 msgstr "Conserver toutes les versions"
 
-msgid "Keep: every generation adds a new attachment. Replace: pdfgen-generated PDFs on that record are deleted first. Manually uploaded PDFs are never touched."
-msgstr "Conserver : chaque génération ajoute une nouvelle pièce jointe. Remplacer : les PDF générés par pdfgen sur cet enregistrement sont d'abord supprimés. Les PDF téléversés manuellement ne sont jamais touchés."
+msgid "Keep: every generation adds a new attachment. Replace: PDF API documents already on that record are deleted first. Manually uploaded PDFs are never touched."
+msgstr "Conserver : chaque génération ajoute une nouvelle pièce jointe. Remplacer : les PDF générés par PDF API sur cet enregistrement sont d'abord supprimés. Les PDF téléversés manuellement ne sont jamais touchés."
 
 msgid "Last Updated by"
 msgstr "Dernière mise à jour par"
@@ -573,6 +576,18 @@ msgstr ""
 msgid "Override the default API endpoint and the template editor's browser URL. Most users can leave these blank."
 msgstr "Remplacez le point de terminaison API par défaut et l'URL navigateur de l'éditeur de modèles. La plupart des utilisateurs peuvent laisser ces champs vides."
 
+msgid "PDF API Job ID"
+msgstr "ID de tâche PDF API"
+
+msgid "PDF API Template"
+msgstr "Modèle PDF API"
+
+msgid "PDF API configured"
+msgstr "PDF API configuré"
+
+msgid "PDF API notice"
+msgstr "Avis PDF API"
+
 msgid "PDF Generator API"
 msgstr "PDF Generator API"
 
@@ -618,9 +633,6 @@ msgstr "Chemins que le jeu de données mappe mais que ce modèle ne référence 
 msgid "Paths the template references but the dataset doesn't map."
 msgstr "Chemins que le modèle référence mais que le jeu de données ne mappe pas."
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen configuré"
-
 msgid "Pending"
 msgstr "En attente"
 
@@ -638,6 +650,9 @@ msgstr "Choisissez un modèle avant de générer."
 
 msgid "Pick a template first."
 msgstr "Choisissez d'abord un modèle."
+
+msgid "Pick a template to attach a PDF API document."
+msgstr "Choisissez un modèle pour joindre un document PDF API."
 
 msgid "Placeholder Path"
 msgstr "Chemin du marqueur"
@@ -699,8 +714,11 @@ msgstr "Commandes de location"
 msgid "Rental orders (contracts, pickup/return slips). Enables the Sales bridge automatically."
 msgstr "Commandes de location (contrats, bons de retrait/retour). Active automatiquement la passerelle Ventes."
 
-msgid "Replace previous pdfgen PDFs on the record"
-msgstr "Remplacer les PDF pdfgen précédents sur l'enregistrement"
+msgid "Replace previous PDF API documents on the record"
+msgstr "Remplacer les PDF PDF API précédents sur l'enregistrement"
+
+msgid "Replace the standard report attachment with the latest document generated by pdfgeneratorapi.com (or generate one from the template picked below)."
+msgstr "Remplace le rapport standard joint par le dernier document généré par pdfgeneratorapi.com (ou en génère un à partir du modèle choisi ci-dessous)."
 
 msgid "Res"
 msgstr "Res"
@@ -790,8 +808,8 @@ msgstr "Modèle enregistré."
 msgid "Template string composing multiple fields. Use {dotted.path} tokens, e.g. '{street}, {city} {zip}'. When set, beats the Odoo Field column."
 msgstr "Chaîne modèle composant plusieurs champs. Utilisez des jetons {chemin.points}, par ex. « {street}, {city} {zip} ». Lorsqu'elle est définie, elle prévaut sur la colonne « Champ Odoo »."
 
-msgid "Template the Send wizard auto-generates a pdfgen PDF with when a record has no pdfgen attachment yet. Pick from your live pdfgeneratorapi.com templates. Leave blank to disable auto-generation for this model."
-msgstr "Modèle avec lequel l'assistant d'envoi génère automatiquement un PDF pdfgen lorsqu'un enregistrement n'a pas encore de pièce jointe pdfgen. Choisissez parmi vos modèles pdfgeneratorapi.com en ligne. Laissez vide pour désactiver la génération automatique pour ce modèle."
+msgid "Template the Send wizard auto-generates a document with when a record has no PDF API document yet. Pick from your live pdfgeneratorapi.com templates. Leave blank to disable auto-generation for this model."
+msgstr "Modèle avec lequel l'assistant d'envoi génère automatiquement un PDF PDF API lorsqu'un enregistrement n'a pas encore de pièce jointe PDF API. Choisissez parmi vos modèles pdfgeneratorapi.com en ligne. Laissez vide pour désactiver la génération automatique pour ce modèle."
 
 msgid "Template was copied but the response had no id. Got: %s"
 msgstr "Le modèle a été copié mais la réponse ne contenait pas d'id. Reçu : %s"
@@ -866,6 +884,9 @@ msgstr "Modèle source inconnu : %s"
 msgid "Unused by template"
 msgstr "Non utilisés par le modèle"
 
+msgid "Use PDF API document"
+msgstr "Utiliser le document PDF API"
+
 msgid "Used to sign JWT tokens. Keep this confidential."
 msgstr "Utilisé pour signer les jetons JWT. À garder confidentiel."
 
@@ -881,8 +902,8 @@ msgstr "Secret du webhook"
 msgid "Webhook delivered no recognisable PDF payload. Got keys: %s"
 msgstr "Le webhook n'a livré aucune charge utile PDF reconnaissable. Clés reçues : %s"
 
-msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Replace` deletes pdfgen-generated PDFs on that record before attaching the new one (default); `Keep` leaves every version attached. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
-msgstr "Que faire des PDF générés précédemment sur le même enregistrement lorsque l'utilisateur clique à nouveau sur « Générer ». « Remplacer » supprime les PDF générés par pdfgen sur cet enregistrement avant d'attacher le nouveau (par défaut) ; « Conserver » laisse chaque version attachée. Seules les pièces jointes créées par ce connecteur sont concernées — les PDF téléversés manuellement ne sont jamais touchés."
+msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Replace` deletes the PDF API documents already on that record before attaching the new one (default); `Keep` leaves every version attached. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
+msgstr "Que faire des PDF générés précédemment sur le même enregistrement lorsque l'utilisateur clique à nouveau sur « Générer ». « Remplacer » supprime les PDF générés par PDF API sur cet enregistrement avant d'attacher le nouveau (par défaut) ; « Conserver » laisse chaque version attachée. Seules les pièces jointes créées par ce connecteur sont concernées — les PDF téléversés manuellement ne sont jamais touchés."
 
 msgid "When True, action_generate returns an ir.actions.act_url that downloads the just-created attachment in addition to attaching it to the source record. Set via context default from the split-button's `Generate and Download` dropdown item."
 msgstr "Lorsque Vrai, action_generate renvoie une ir.actions.act_url qui télécharge la pièce jointe qui vient d'être créée en plus de l'attacher à l'enregistrement source. Définie via le contexte par défaut de l'élément « Générer et télécharger » du menu déroulant du bouton scindé."
@@ -896,7 +917,7 @@ msgstr "Où pdfgeneratorapi.com rappelle lorsqu'une génération asynchrone se t
 msgid "Workspace Identifier"
 msgstr "Identifiant de l'espace de travail"
 
-msgid "Your account email for regular workspaces, or a sub-workspace identifier (format per the pdfgeneratorapi.com workspace settings page — typically `parent@domain.com:slug`) for sub-workspaces. The value is forwarded verbatim into the JWT `sub` claim so pdfgen routes requests to the right workspace."
+msgid "Your account email for regular workspaces, or a sub-workspace identifier (format per the pdfgeneratorapi.com workspace settings page — typically `parent@domain.com:slug`) for sub-workspaces. The value is forwarded verbatim into the JWT `sub` claim so PDF API routes requests to the right workspace."
 msgstr "L'e-mail de votre compte pour les espaces de travail normaux, ou un identifiant de sous-espace (format selon la page des paramètres de l'espace sur pdfgeneratorapi.com — généralement « parent@domain.com:slug ») pour les sous-espaces. La valeur est transmise telle quelle dans la revendication `sub` du JWT afin que pdfgen achemine les requêtes vers le bon espace."
 
 msgid "auto-generated on save"
@@ -916,9 +937,6 @@ msgstr "par ex. https://mydomain.com/editor"
 
 msgid "openEditor returned no URL."
 msgstr "openEditor n'a renvoyé aucune URL."
-
-msgid "pdfgen Job ID"
-msgstr "ID de tâche pdfgen"
 
 msgid "pdfgeneratorapi.com dataset placeholder mapping"
 msgstr "Mappage des marqueurs du jeu de données pdfgeneratorapi.com"

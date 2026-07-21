@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="email_compose_message_wizard_form_pdfgen" model="ir.ui.view">
+        <field name="name">mail.compose.message.form.pdfgen</field>
+        <field name="model">mail.compose.message</field>
+        <field name="inherit_id" ref="mail.email_compose_message_wizard_form"/>
+        <field name="arch" type="xml">
+            <!-- Sits right under the attachment list of the (non mass-mail)
+                 body block, so the toggle reads as an option on the file
+                 that's about to be sent. Hidden unless the composer's model
+                 has an active pdfgen dataset. -->
+            <xpath expr="//field[@name='attachment_ids'][@widget='many2many_binary']"
+                   position="after">
+                <field name="pdfgen_configured" invisible="1"/>
+                <div class="o_pdfgen_composer mt-2" invisible="not pdfgen_configured">
+                    <group>
+                        <field name="pdfgen_use_custom" widget="boolean_toggle"/>
+                        <field name="pdfgen_template_id"
+                               widget="pdfgen_template_selection"
+                               invisible="not pdfgen_use_custom"
+                               required="pdfgen_use_custom"/>
+                        <field name="pdfgen_error"
+                               nolabel="1"
+                               colspan="2"
+                               invisible="not pdfgen_error"
+                               readonly="1"
+                               class="text-danger"/>
+                    </group>
+                    <div invisible="not pdfgen_use_custom or not pdfgen_template_id"
+                         class="o_pdfgen_send_preview border rounded p-3 mb-3">
+                        <div class="text-muted small mb-2">Preview</div>
+                        <field name="pdfgen_preview_html" nolabel="1" readonly="1"/>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

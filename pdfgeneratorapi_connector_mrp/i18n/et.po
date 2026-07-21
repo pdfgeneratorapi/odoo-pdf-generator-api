@@ -18,17 +18,23 @@ msgstr ""
 msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
 msgstr "<span class=\"visually-hidden\">Ava või sulge rippmenüü</span>"
 
+msgid "Display Name"
+msgstr "Kuvatav nimi"
+
 msgid "Generate and Download"
 msgstr "Genereeri ja laadi alla"
 
 msgid "Generate custom PDF"
 msgstr "Genereeri kohandatud PDF"
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen seadistatud"
+msgid "ID"
+msgstr "ID"
 
-msgid "Production Order"
+msgid "Manufacturing Order"
 msgstr "Tootmistellimus"
+
+msgid "PDF API configured"
+msgstr "PDF API seadistatud"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Tõene, kui PDF Generator API mandaadid on olemas."

@@ -105,7 +105,7 @@
                             <div class="col-12 mb-3">
                                 <field name="module_pdfgeneratorapi_connector_account" widget="boolean_toggle"/>
                                 <label for="module_pdfgeneratorapi_connector_account"/>
-                                <div class="text-muted small">Customer invoices, vendor bills, and credit notes. Also enables the Use pdfgen PDF toggle on the invoice Send wizard.</div>
+                                <div class="text-muted small">Customer invoices, vendor bills, and credit notes. Also enables the Use PDF API document toggle on the invoice Send wizard.</div>
                             </div>
                             <div class="col-12 mb-3">
                                 <field name="module_pdfgeneratorapi_connector_sale" widget="boolean_toggle"/>
@@ -181,7 +181,7 @@
                         <div class="row mt16 o_settings_container">
                             <div class="col-12 mb-4">
                                 <div class="o_form_label fw-bold">Cleanup policy</div>
-                                <div class="text-muted small mb-2">Keep: every generation adds a new attachment. Replace: pdfgen-generated PDFs on that record are deleted first. Manually uploaded PDFs are never touched.</div>
+                                <div class="text-muted small mb-2">Keep: every generation adds a new attachment. Replace: PDF API documents already on that record are deleted first. Manually uploaded PDFs are never touched.</div>
                                 <field name="pdfgen_attachment_cleanup" widget="radio"/>
                             </div>
                         </div>

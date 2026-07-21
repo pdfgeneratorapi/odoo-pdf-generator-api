@@ -135,26 +135,23 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
 
     # ---------------------------------------------------- toggle default
 
-    def test_should_default_on_when_pdfgen_newer(self):
+    def test_should_default_on_when_the_model_has_a_dataset(self):
+        """Connector set up for the model => toggle starts ON, whatever the
+        attachment history looks like."""
         wiz = self._wizard()
-        self._attach(description=False, days_ago=2)  # standard older
-        self._attach(description="pdfgen:template:1", days_ago=0)
         self.assertTrue(wiz._pdfgen_should_default_on(self.invoice))
-
-    def test_should_default_off_when_standard_newer(self):
-        wiz = self._wizard()
         self._attach(description="pdfgen:template:1", days_ago=2)
-        self._attach(description=False, days_ago=0)
-        self.assertFalse(wiz._pdfgen_should_default_on(self.invoice))
+        self._attach(description=False, days_ago=0)  # standard is newer
+        self.assertTrue(wiz._pdfgen_should_default_on(self.invoice))
 
     def test_should_default_on_with_dataset_default_only(self):
         wiz = self._wizard()
         self._set_dataset_default_template("99")
         self.assertTrue(wiz._pdfgen_should_default_on(self.invoice))
 
-    def test_should_default_off_with_no_pdfgen_and_no_default(self):
+    def test_should_default_off_without_a_dataset(self):
         wiz = self._wizard()
-        self._attach(description=False)  # only standard report
+        self.dataset.active = False
         self.assertFalse(wiz._pdfgen_should_default_on(self.invoice))
 
     # ---------------------------------------------------- preview render
@@ -178,6 +175,8 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
         client.generate.return_value = {"response": HTML_B64}
         with patch(_BUILD_CLIENT, return_value=client):
             html = wiz._pdfgen_render_preview_html("new", self.invoice)
+        # Rendered markup is sandboxed in an iframe (escaped into srcdoc).
+        self.assertIn("<iframe", html)
         self.assertIn("Preview", html)
         client.generate.assert_called_once()
 
@@ -190,6 +189,7 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
             return_value=client,
         ):
             html = wiz._pdfgen_render_preview_html("42", self.invoice)
+        self.assertIn("<iframe", html)
         self.assertIn("Preview", html)
         client.generate.assert_called_once()
         self.assertEqual(client.generate.call_args.kwargs["format"], "html")
@@ -344,9 +344,9 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
         wiz = self._wizard()
         self.assertTrue(wiz.pdfgen_configured)
 
-    def test_wizard_pdfgen_use_custom_default_off_with_no_pdfgen(self):
+    def test_wizard_pdfgen_use_custom_defaults_on_when_configured(self):
         wiz = self._wizard()
-        self.assertFalse(wiz.pdfgen_use_custom)
+        self.assertTrue(wiz.pdfgen_use_custom)
 
     def test_wizard_pdfgen_template_id_resolves_when_toggled_on(self):
         self._set_dataset_default_template("99")
@@ -361,12 +361,16 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
         wiz.invalidate_recordset(["pdfgen_template_id"])
         self.assertFalse(wiz.pdfgen_template_id)
 
-    def test_wizard_apply_substitution_requires_template(self):
+    def test_wizard_apply_substitution_asks_for_a_template(self):
+        """No template picked yet: the widget is returned untouched (standard
+        report still attached) and the user gets a prompt, not an error."""
         wiz = self._wizard()
         wiz.pdfgen_use_custom = True
         wiz.pdfgen_template_id = False
-        with self.assertRaises(UserError):
-            wiz._pdfgen_apply_substitution([])
+        placeholder = [{"id": "ph", "name": "x.pdf", "placeholder": True}]
+        self.assertEqual(wiz._pdfgen_apply_substitution(placeholder), placeholder)
+        self.assertIn("template", wiz.pdfgen_error)
+        self.assertTrue(wiz.pdfgen_use_custom, "the toggle must stay on")
 
     def test_wizard_apply_substitution_regenerates_when_template_changed(self):
         # Existing pdfgen attachment with template=old; user picks different one.
@@ -471,18 +475,17 @@ class TestPdfgenSendMixin(AccountTestInvoicingCommon):
         self.assertTrue(any(w.get("id") == att.id for w in widget))
         self.assertFalse(any(w.get("placeholder") for w in widget))
 
-    def test_compute_widget_records_user_error_and_disables_toggle(self):
+    def test_compute_widget_prompts_for_a_template(self):
         wiz = (
             self.env["account.move.send"]
             .with_context(active_ids=[self.invoice.id])
             .create({"move_ids": [(6, 0, [self.invoice.id])]})
         )
-        # No pdfgen attachment, no template → _pdfgen_apply_substitution
-        # raises UserError (no template picked); the compute should swallow
-        # it into pdfgen_error and flip the toggle off.
+        # No pdfgen attachment and no template: the compute keeps the standard
+        # report and surfaces a prompt without turning the toggle off.
         wiz.pdfgen_use_custom = True
         wiz.pdfgen_template_id = False
         # Force the compute by reading.
         _ = wiz.mail_attachments_widget
-        self.assertFalse(wiz.pdfgen_use_custom)
-        self.assertTrue(wiz.pdfgen_error)
+        self.assertTrue(wiz.pdfgen_use_custom)
+        self.assertIn("template", wiz.pdfgen_error)

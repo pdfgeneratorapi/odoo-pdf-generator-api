@@ -122,7 +122,7 @@ class PdfgenWebhookController(http.Controller):
             job.write(
                 {
                     "state": "failed",
-                    "error": _("Invalid base64 from pdfgen: %s", e),
+                    "error": _("Invalid base64 from PDF API: %s", e),
                     "completed_at": fields.Datetime.now(),
                 }
             )

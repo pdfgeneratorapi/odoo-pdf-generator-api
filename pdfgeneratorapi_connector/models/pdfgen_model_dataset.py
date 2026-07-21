@@ -37,8 +37,8 @@ class PdfGenModelDataset(models.Model):
         selection="_selection_default_template_id",
         string="Default template",
         help=(
-            "Template the Send wizard auto-generates a pdfgen PDF with when a "
-            "record has no pdfgen attachment yet. Pick from your live "
+            "Template the Send wizard auto-generates a document with when a "
+            "record has no PDF API document yet. Pick from your live "
             "pdfgeneratorapi.com templates. Leave blank to disable auto-"
             "generation for this model."
         ),

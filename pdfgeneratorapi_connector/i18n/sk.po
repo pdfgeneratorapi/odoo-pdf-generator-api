@@ -178,7 +178,7 @@ msgstr "E-mail účtu pre bežné pracovné priestory alebo identifikátor podra
 msgid "Active"
 msgstr "Aktívne"
 
-msgid "Adds a Generate custom PDF button on account.move (customer invoices, vendor bills, credit notes) and a Use pdfgen PDF toggle on the invoice Send wizard. Installs the Accounting app if not already present. Seeds a default placeholder dataset."
+msgid "Adds a Generate custom PDF button on account.move (customer invoices, vendor bills, credit notes) and a Use PDF API document toggle on the invoice Send wizard. Installs the Accounting app if not already present. Seeds a default placeholder dataset."
 msgstr "Pridá tlačidlo „Vygenerovať vlastné PDF“ na account.move (zákaznícke faktúry, dodávateľské faktúry, dobropisy) a prepínač „Použiť pdfgen PDF“ v sprievodcovi odoslaním faktúry. Nainštaluje aplikáciu Účtovníctvo, ak ešte nie je prítomná. Vytvorí predvolenú dátovú sadu zástupných symbolov."
 
 msgid "Adds a Generate custom PDF button on mrp.production and seeds a default placeholder dataset. Installs the Manufacturing app if not already present."
@@ -232,11 +232,11 @@ msgstr "Zrušiť"
 msgid "Check"
 msgstr "Skontrolovať"
 
+msgid "Check PDF API template coverage against a dataset"
+msgstr "Skontrolovať pokrytie šablóny PDF API voči dátovej sade"
+
 msgid "Check coverage"
 msgstr "Skontrolovať pokrytie"
-
-msgid "Check pdfgen template coverage against a dataset"
-msgstr "Skontrolovať pokrytie šablóny pdfgen voči dátovej sade"
 
 msgid "Check template coverage"
 msgstr "Skontrolovať pokrytie šablóny"
@@ -310,7 +310,7 @@ msgstr "Vytvoril"
 msgid "Created on"
 msgstr "Vytvorené"
 
-msgid "Customer invoices, vendor bills, and credit notes. Also enables the Use pdfgen PDF toggle on the invoice Send wizard."
+msgid "Customer invoices, vendor bills, and credit notes. Also enables the Use PDF API document toggle on the invoice Send wizard."
 msgstr "Zákaznícke faktúry, dodávateľské faktúry a dobropisy. Zároveň povolí prepínač „Použiť pdfgen PDF“ v sprievodcovi odoslaním faktúry."
 
 msgid "Dataset"
@@ -319,8 +319,8 @@ msgstr "Dátová sada"
 msgid "Dataset applies to every PDF generated from this model."
 msgstr "Dátová sada sa použije pre každé PDF vygenerované z tohto modelu."
 
-msgid "Dataset whose resolved payload was sent to pdfgen at dispatch."
-msgstr "Dátová sada, ktorej vyhodnotený užitočný obsah bol odoslaný do pdfgen v čase odoslania."
+msgid "Dataset whose resolved payload was sent to PDF API at dispatch."
+msgstr "Dátová sada, ktorej vyhodnotený užitočný obsah bol odoslaný do PDF API v čase odoslania."
 
 msgid "Default Templates"
 msgstr "Predvolené šablóny"
@@ -378,6 +378,9 @@ msgstr "Webová URL editora (voliteľné)"
 
 msgid "Editor closed."
 msgstr "Editor zatvorený."
+
+msgid "Email composition wizard"
+msgstr ""
 
 msgid "Embed the pdfgeneratorapi.com template editor"
 msgstr "Vložiť editor šablón pdfgeneratorapi.com"
@@ -439,8 +442,8 @@ msgstr "Vlastné PDF vygenerované cez pdfgeneratorapi.com."
 msgid "HTML render of the selected template with a sample record's data. Useful to sanity-check the template + dataset combination without generating a PDF."
 msgstr "HTML vykreslenie vybranej šablóny s údajmi vzorového záznamu. Užitočné na overenie kombinácie šablóna + dátová sada bez generovania PDF."
 
-msgid "Helpers for Send wizards that substitute pdfgen PDFs"
-msgstr "Pomocné funkcie pre sprievodcov odoslaním, ktoré dosadzujú PDF z pdfgen"
+msgid "Helpers for Send wizards that substitute PDF API documents"
+msgstr "Pomocné funkcie pre sprievodcov odoslaním, ktoré dosadzujú PDF z PDF API"
 
 msgid "ID"
 msgstr "ID"
@@ -451,8 +454,8 @@ msgstr "Identifikátor vrátený asynchrónnym koncovým bodom pdfgeneratorapi.c
 msgid "Installed version of the PDF Generator API connector, followed by each installed document bridge. Quote this when contacting support@pdfgeneratorapi.com so we know exactly which release you are running."
 msgstr "Nainštalovaná verzia konektora PDF Generator API, nasledovaná každým nainštalovaným dokumentovým mostíkom. Uveďte ju pri kontaktovaní support@pdfgeneratorapi.com, aby sme presne vedeli, ktoré vydanie používate."
 
-msgid "Invalid base64 from pdfgen: %s"
-msgstr "Neplatný base64 z pdfgen: %s"
+msgid "Invalid base64 from PDF API: %s"
+msgstr "Neplatný base64 z PDF API: %s"
 
 msgid "Invoices & Credit Notes"
 msgstr "Faktúry a dobropisy"
@@ -469,8 +472,8 @@ msgstr "Zoznam ID vybraných záznamov vo formáte podobnom JSON, oddelený čia
 msgid "Keep all versions"
 msgstr "Ponechať všetky verzie"
 
-msgid "Keep: every generation adds a new attachment. Replace: pdfgen-generated PDFs on that record are deleted first. Manually uploaded PDFs are never touched."
-msgstr "Ponechať: každé generovanie pridá novú prílohu. Nahradiť: PDF vygenerované pdfgen na tom zázname sa najprv odstránia. Manuálne nahrané PDF sa nikdy nedotýkajú."
+msgid "Keep: every generation adds a new attachment. Replace: PDF API documents already on that record are deleted first. Manually uploaded PDFs are never touched."
+msgstr "Ponechať: každé generovanie pridá novú prílohu. Nahradiť: PDF vygenerované PDF API na tom zázname sa najprv odstránia. Manuálne nahrané PDF sa nikdy nedotýkajú."
 
 msgid "Last Updated by"
 msgstr "Naposledy aktualizoval"
@@ -573,6 +576,18 @@ msgstr ""
 msgid "Override the default API endpoint and the template editor's browser URL. Most users can leave these blank."
 msgstr "Prepíše predvolený koncový bod API a URL editora šablón v prehliadači. Väčšina používateľov ich môže nechať prázdne."
 
+msgid "PDF API Job ID"
+msgstr "ID úlohy PDF API"
+
+msgid "PDF API Template"
+msgstr "Šablóna PDF API"
+
+msgid "PDF API configured"
+msgstr "PDF API nakonfigurované"
+
+msgid "PDF API notice"
+msgstr "Upozornenie PDF API"
+
 msgid "PDF Generator API"
 msgstr "PDF Generator API"
 
@@ -618,9 +633,6 @@ msgstr "Cesty, ktoré dátová sada mapuje, ale táto šablóna ich neodkazuje."
 msgid "Paths the template references but the dataset doesn't map."
 msgstr "Cesty, na ktoré šablóna odkazuje, ale dátová sada ich nemapuje."
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen nakonfigurovaný"
-
 msgid "Pending"
 msgstr "Čaká"
 
@@ -638,6 +650,9 @@ msgstr "Pred generovaním vyberte šablónu."
 
 msgid "Pick a template first."
 msgstr "Najprv vyberte šablónu."
+
+msgid "Pick a template to attach a PDF API document."
+msgstr "Vyberte šablónu na priloženie dokumentu PDF API."
 
 msgid "Placeholder Path"
 msgstr "Cesta zástupného symbolu"
@@ -699,8 +714,11 @@ msgstr "Objednávky prenájmu"
 msgid "Rental orders (contracts, pickup/return slips). Enables the Sales bridge automatically."
 msgstr "Objednávky prenájmu (zmluvy, doklady o prevzatí/vrátení). Automaticky povolí prepojenie Predaj."
 
-msgid "Replace previous pdfgen PDFs on the record"
-msgstr "Nahradiť predchádzajúce pdfgen PDF na zázname"
+msgid "Replace previous PDF API documents on the record"
+msgstr "Nahradiť predchádzajúce PDF API PDF na zázname"
+
+msgid "Replace the standard report attachment with the latest document generated by pdfgeneratorapi.com (or generate one from the template picked below)."
+msgstr "Nahradí priložený štandardný výkaz najnovším dokumentom vygenerovaným cez pdfgeneratorapi.com (alebo ho vygeneruje zo šablóny zvolenej nižšie)."
 
 msgid "Res"
 msgstr "Záznam"
@@ -790,8 +808,8 @@ msgstr "Šablóna uložená."
 msgid "Template string composing multiple fields. Use {dotted.path} tokens, e.g. '{street}, {city} {zip}'. When set, beats the Odoo Field column."
 msgstr "Šablónový reťazec skladajúci viaceré polia. Použite tokeny {bodkovaná.cesta}, napr. „{street}, {city} {zip}“. Ak je nastavený, má prednosť pred stĺpcom „Pole Odoo“."
 
-msgid "Template the Send wizard auto-generates a pdfgen PDF with when a record has no pdfgen attachment yet. Pick from your live pdfgeneratorapi.com templates. Leave blank to disable auto-generation for this model."
-msgstr "Šablóna, pomocou ktorej sprievodca odoslaním automaticky vygeneruje pdfgen PDF, keď záznam ešte nemá prílohu pdfgen. Vyberte zo svojich aktívnych šablón na pdfgeneratorapi.com. Nechajte prázdne pre vypnutie automatického generovania pre tento model."
+msgid "Template the Send wizard auto-generates a document with when a record has no PDF API document yet. Pick from your live pdfgeneratorapi.com templates. Leave blank to disable auto-generation for this model."
+msgstr "Šablóna, pomocou ktorej sprievodca odoslaním automaticky vygeneruje PDF API PDF, keď záznam ešte nemá prílohu PDF API. Vyberte zo svojich aktívnych šablón na pdfgeneratorapi.com. Nechajte prázdne pre vypnutie automatického generovania pre tento model."
 
 msgid "Template was copied but the response had no id. Got: %s"
 msgstr "Šablóna bola skopírovaná, ale odpoveď neobsahovala id. Prijaté: %s"
@@ -866,6 +884,9 @@ msgstr "Neznámy zdrojový model: %s"
 msgid "Unused by template"
 msgstr "Šablónou nepoužité"
 
+msgid "Use PDF API document"
+msgstr "Použiť dokument PDF API"
+
 msgid "Used to sign JWT tokens. Keep this confidential."
 msgstr "Slúži na podpisovanie tokenov JWT. Zachovajte dôvernosť."
 
@@ -881,8 +902,8 @@ msgstr "Tajný kľúč webhooku"
 msgid "Webhook delivered no recognisable PDF payload. Got keys: %s"
 msgstr "Webhook nedoručil žiadny rozpoznateľný užitočný obsah PDF. Prijaté kľúče: %s"
 
-msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Replace` deletes pdfgen-generated PDFs on that record before attaching the new one (default); `Keep` leaves every version attached. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
-msgstr "Čo robiť s predtým vygenerovanými PDF na rovnakom zázname, keď používateľ znova klikne na „Generovať“. „Nahradiť“ pred pripojením nového odstráni PDF vygenerované pdfgen na danom zázname (predvolené); „Ponechať“ necháva každú verziu pripojenú. Ovplyvnené sú iba prílohy vytvorené týmto konektorom — manuálne nahrané PDF sa nikdy nedotýkajú."
+msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Replace` deletes the PDF API documents already on that record before attaching the new one (default); `Keep` leaves every version attached. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
+msgstr "Čo robiť s predtým vygenerovanými PDF na rovnakom zázname, keď používateľ znova klikne na „Generovať“. „Nahradiť“ pred pripojením nového odstráni PDF vygenerované PDF API na danom zázname (predvolené); „Ponechať“ necháva každú verziu pripojenú. Ovplyvnené sú iba prílohy vytvorené týmto konektorom — manuálne nahrané PDF sa nikdy nedotýkajú."
 
 msgid "When True, action_generate returns an ir.actions.act_url that downloads the just-created attachment in addition to attaching it to the source record. Set via context default from the split-button's `Generate and Download` dropdown item."
 msgstr "Keď je Pravda, action_generate vráti ir.actions.act_url, ktorá okrem pripojenia k zdrojovému záznamu stiahne aj práve vytvorenú prílohu. Nastavuje sa cez predvolený kontext z položky „Vygenerovať a stiahnuť“ v rozbaľovacej ponuke deleného tlačidla."
@@ -896,7 +917,7 @@ msgstr "Kam pdfgeneratorapi.com zavolá späť po dokončení asynchrónneho gen
 msgid "Workspace Identifier"
 msgstr "Identifikátor pracovného priestoru"
 
-msgid "Your account email for regular workspaces, or a sub-workspace identifier (format per the pdfgeneratorapi.com workspace settings page — typically `parent@domain.com:slug`) for sub-workspaces. The value is forwarded verbatim into the JWT `sub` claim so pdfgen routes requests to the right workspace."
+msgid "Your account email for regular workspaces, or a sub-workspace identifier (format per the pdfgeneratorapi.com workspace settings page — typically `parent@domain.com:slug`) for sub-workspaces. The value is forwarded verbatim into the JWT `sub` claim so PDF API routes requests to the right workspace."
 msgstr "E-mail vášho účtu pre bežné pracovné priestory alebo identifikátor podradeného pracovného priestoru (formát podľa stránky nastavení pracovného priestoru na pdfgeneratorapi.com — typicky „parent@domain.com:slug“) pre podradené pracovné priestory. Hodnota sa preposiela doslovne do claim `sub` JWT, aby pdfgen smeroval požiadavky do správneho pracovného priestoru."
 
 msgid "auto-generated on save"
@@ -916,9 +937,6 @@ msgstr "napr. https://mydomain.com/editor"
 
 msgid "openEditor returned no URL."
 msgstr "openEditor nevrátil žiadnu URL."
-
-msgid "pdfgen Job ID"
-msgstr "ID úlohy pdfgen"
 
 msgid "pdfgeneratorapi.com dataset placeholder mapping"
 msgstr "Mapovanie zástupných symbolov dátovej sady pdfgeneratorapi.com"
