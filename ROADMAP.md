@@ -151,6 +151,24 @@ Bonus bridges: `_purchase` (Phase 3.3), `_stock` (Phase 3.4).
 - [x] Close-type event → info notification "Editor closed." + clears `editor_url` so the iframe collapses.
 - [x] 6 Hoot tests covering mount, origin validation, save dispatch, close dispatch, unknown-shape rejection, and the `event` key variant.
 
+### Phase 4.6 — Send: same substitution in every module (landed)
+
+`account.move` has a dedicated Send wizard; every other document —
+quotations, purchase orders, delivery slips, … — goes through Odoo's
+mail composer, which kept attaching the standard QWeb report. One
+`mail.compose.message` override in the base addon now covers all of
+them: the same **PDF Generator API** panel, template picker and preview
+the Invoicing flow has.
+
+- [x] `mail.compose.message` inherits `pdfgen.send.mixin`; the panel shows whenever the composed model has an active dataset, so bridges get it for free (no per-addon wizard).
+- [x] Substitution swaps the attachments the composer rendered from the template's `report_template_ids` (`res_model='mail.compose.message'`, `res_id=0`); files the user uploaded by hand live on the document's own thread and are never touched.
+- [x] Toggling off re-renders the standard report rather than restoring a stash — the composer's save/reload cycle does not carry hidden wizard state.
+- [x] The composer never re-runs computes on a field edit (it goes straight to `web_save`), so edits are reconciled in `create` / `write` via `_pdfgen_sync_attachments`.
+- [x] Toggle now defaults ON wherever the connector is set up for the model (`_pdfgen_should_default_on` = active dataset), in both Send flows. A missing template prompts instead of erroring, leaving the standard report attached until one is picked.
+- [x] User-facing labels say "PDF API" ("Use PDF API document", "PDF API Template").
+- [x] API-rendered HTML previews are sandboxed in an iframe — Odoo's readonly Html viewer crashes on a full `<html>` document.
+- [x] 14 Odoo tests on the composer (default state, substitution, template switch, toggle round-trip, manual uploads, mass-mail opt-out, send).
+
 ### Phase 4.5 — Send: substitute the standard report with the latest pdfgen PDF (account.move) (landed)
 
 When a user clicks **Send** on a customer invoice, the Send wizard now

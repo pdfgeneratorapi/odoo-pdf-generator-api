@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0-20260409\n"
+"Project-Id-Version: Odoo Server 19.0-20260409\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-15 15:08+0000\n"
-"PO-Revision-Date: 2026-07-15 15:08+0000\n"
+"POT-Creation-Date: 2026-07-21 13:24+0000\n"
+"PO-Revision-Date: 2026-07-21 13:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,6 +18,11 @@ msgstr ""
 #. module: pdfgeneratorapi_connector_sale
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector_sale.view_order_form_pdfgen
 msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_sale
+#: model:ir.model.fields,field_description:pdfgeneratorapi_connector_sale.field_sale_order__display_name
+msgid "Display Name"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector_sale
@@ -32,8 +37,13 @@ msgid "Generate custom PDF"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector_sale
+#: model:ir.model.fields,field_description:pdfgeneratorapi_connector_sale.field_sale_order__id
+msgid "ID"
+msgstr ""
+
+#. module: pdfgeneratorapi_connector_sale
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector_sale.field_sale_order__pdfgen_configured
-msgid "Pdfgen Configured"
+msgid "PDF API configured"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector_sale

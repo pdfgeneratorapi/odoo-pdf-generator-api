@@ -27,8 +27,8 @@ msgstr "Vygenerovať vlastné PDF"
 msgid "Manufacturing Order"
 msgstr "Výrobná zákazka"
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen nakonfigurovaný"
+msgid "PDF API configured"
+msgstr "PDF API nakonfigurované"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Pravda, keď sú prítomné prihlasovacie údaje PDF Generator API."

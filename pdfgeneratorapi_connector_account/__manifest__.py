@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator: Invoicing",
-    "version": "18.0.1.1.2",
+    "version": "18.0.1.2.1",
     "category": "Accounting",
     "summary": "Generate pdfgeneratorapi.com PDFs from customer invoices and credit notes",
     "author": "PDF Generator API",

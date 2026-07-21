@@ -19,6 +19,8 @@
                            invisible="not pdfgen_use_custom"
                            required="pdfgen_use_custom"/>
                     <field name="pdfgen_error"
+                           nolabel="1"
+                           colspan="2"
                            invisible="not pdfgen_error"
                            readonly="1"
                            class="text-danger"/>

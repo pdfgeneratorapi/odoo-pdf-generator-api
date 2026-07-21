@@ -18,14 +18,20 @@ msgstr ""
 msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
 msgstr "<span class=\"visually-hidden\">Přepnout rozbalovací nabídku</span>"
 
+msgid "Display Name"
+msgstr "Zobrazovaný název"
+
 msgid "Generate and Download"
 msgstr "Vygenerovat a stáhnout"
 
 msgid "Generate custom PDF"
 msgstr "Vygenerovat vlastní PDF"
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen nakonfigurován"
+msgid "ID"
+msgstr "ID"
+
+msgid "PDF API configured"
+msgstr "PDF API nakonfigurováno"
 
 msgid "Sales Order"
 msgstr "Prodejní objednávka"

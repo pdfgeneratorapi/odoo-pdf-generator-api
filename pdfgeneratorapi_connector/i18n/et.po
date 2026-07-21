@@ -178,7 +178,7 @@ msgstr "Kasutajakonto e-post tavaliste tööruumide jaoks või alamtööruumi id
 msgid "Active"
 msgstr "Aktiivne"
 
-msgid "Adds a Generate custom PDF button on account.move (customer invoices, vendor bills, credit notes) and a Use pdfgen PDF toggle on the invoice Send wizard. Installs the Accounting app if not already present. Seeds a default placeholder dataset."
+msgid "Adds a Generate custom PDF button on account.move (customer invoices, vendor bills, credit notes) and a Use PDF API document toggle on the invoice Send wizard. Installs the Accounting app if not already present. Seeds a default placeholder dataset."
 msgstr "Lisab nupu „Genereeri kohandatud PDF“ mudelile account.move (kliendiarved, ostuarved, kreeditarved) ja lüliti „Kasuta pdfgen-PDF-i“ arve saatmise viisardile. Paigaldab Raamatupidamise rakenduse, kui seda veel pole. Loob vaikimisi kohahoidjate andmekogumi."
 
 msgid "Adds a Generate custom PDF button on mrp.production and seeds a default placeholder dataset. Installs the Manufacturing app if not already present."
@@ -232,11 +232,11 @@ msgstr "Tühista"
 msgid "Check"
 msgstr "Kontrolli"
 
+msgid "Check PDF API template coverage against a dataset"
+msgstr "Kontrolli PDF API-malli katvust andmekogumi suhtes"
+
 msgid "Check coverage"
 msgstr "Kontrolli katvust"
-
-msgid "Check pdfgen template coverage against a dataset"
-msgstr "Kontrolli pdfgen-malli katvust andmekogumi suhtes"
 
 msgid "Check template coverage"
 msgstr "Kontrolli malli katvust"
@@ -310,7 +310,7 @@ msgstr "Looja"
 msgid "Created on"
 msgstr "Loomise kuupäev"
 
-msgid "Customer invoices, vendor bills, and credit notes. Also enables the Use pdfgen PDF toggle on the invoice Send wizard."
+msgid "Customer invoices, vendor bills, and credit notes. Also enables the Use PDF API document toggle on the invoice Send wizard."
 msgstr "Kliendiarved, ostuarved ja kreeditarved. Lubab ühtlasi lüliti „Kasuta pdfgen-PDF-i“ arve saatmise viisardis."
 
 msgid "Dataset"
@@ -319,8 +319,8 @@ msgstr "Andmekogum"
 msgid "Dataset applies to every PDF generated from this model."
 msgstr "Andmekogum rakendub igale sellest mudelist genereeritud PDF-ile."
 
-msgid "Dataset whose resolved payload was sent to pdfgen at dispatch."
-msgstr "Andmekogum, mille lahendatud saadetis saadeti lähetamisel pdfgen-i."
+msgid "Dataset whose resolved payload was sent to PDF API at dispatch."
+msgstr "Andmekogum, mille lahendatud saadetis saadeti lähetamisel PDF API-i."
 
 msgid "Default Templates"
 msgstr "Vaikemallid"
@@ -378,6 +378,9 @@ msgstr "Redaktori veebi-URL (valikuline)"
 
 msgid "Editor closed."
 msgstr "Redaktor suletud."
+
+msgid "Email composition wizard"
+msgstr ""
 
 msgid "Embed the pdfgeneratorapi.com template editor"
 msgstr "Manusta pdfgeneratorapi.com mallide redaktor"
@@ -439,8 +442,8 @@ msgstr "Kohandatud PDF genereeritud pdfgeneratorapi.com kaudu."
 msgid "HTML render of the selected template with a sample record's data. Useful to sanity-check the template + dataset combination without generating a PDF."
 msgstr "Valitud malli HTML-vaade näidiskirje andmetega. Kasulik malli ja andmekogumi kombinatsiooni kontrollimiseks ilma PDF-i genereerimata."
 
-msgid "Helpers for Send wizards that substitute pdfgen PDFs"
-msgstr "Abivahendid saatmisviisarditele, mis asendavad pdfgen-PDF-e"
+msgid "Helpers for Send wizards that substitute PDF API documents"
+msgstr "Abivahendid saatmisviisarditele, mis asendavad PDF API-PDF-e"
 
 msgid "ID"
 msgstr "ID"
@@ -451,8 +454,8 @@ msgstr "Identifikaator, mille tagastas pdfgeneratorapi.com asünkroonne lõpp-pu
 msgid "Installed version of the PDF Generator API connector, followed by each installed document bridge. Quote this when contacting support@pdfgeneratorapi.com so we know exactly which release you are running."
 msgstr "PDF Generator API konnektori paigaldatud versioon, millele järgneb iga paigaldatud dokumendisild. Märkige see, kui pöördute aadressile support@pdfgeneratorapi.com, et teaksime täpselt, millist väljalaset kasutate."
 
-msgid "Invalid base64 from pdfgen: %s"
-msgstr "Vigane base64 pdfgen-ist: %s"
+msgid "Invalid base64 from PDF API: %s"
+msgstr "Vigane base64 PDF API-ist: %s"
 
 msgid "Invoices & Credit Notes"
 msgstr "Arved ja kreeditarved"
@@ -469,8 +472,8 @@ msgstr "JSON-laadne loend valitud kirjete ID-dest, komadega eraldatud."
 msgid "Keep all versions"
 msgstr "Säilita kõik versioonid"
 
-msgid "Keep: every generation adds a new attachment. Replace: pdfgen-generated PDFs on that record are deleted first. Manually uploaded PDFs are never touched."
-msgstr "Säilita: iga genereerimine lisab uue manuse. Asenda: sellel kirjel olevad pdfgen-i genereeritud PDF-id kustutatakse esmalt. Käsitsi üleslaaditud PDF-e ei puudutata kunagi."
+msgid "Keep: every generation adds a new attachment. Replace: PDF API documents already on that record are deleted first. Manually uploaded PDFs are never touched."
+msgstr "Säilita: iga genereerimine lisab uue manuse. Asenda: sellel kirjel olevad PDF API-i genereeritud PDF-id kustutatakse esmalt. Käsitsi üleslaaditud PDF-e ei puudutata kunagi."
 
 msgid "Last Updated by"
 msgstr "Viimati uuendas"
@@ -573,6 +576,18 @@ msgstr ""
 msgid "Override the default API endpoint and the template editor's browser URL. Most users can leave these blank."
 msgstr "Kirjuta üle API vaikelõpp-punkt ja malliredaktori brauseri URL. Enamik kasutajaid võib need tühjaks jätta."
 
+msgid "PDF API Job ID"
+msgstr "PDF API-i töö ID"
+
+msgid "PDF API Template"
+msgstr "PDF API mall"
+
+msgid "PDF API configured"
+msgstr "PDF API seadistatud"
+
+msgid "PDF API notice"
+msgstr "PDF API teade"
+
 msgid "PDF Generator API"
 msgstr "PDF Generator API"
 
@@ -618,9 +633,6 @@ msgstr "Teed, mida andmekogum vastendab, kuid see mall ei viita."
 msgid "Paths the template references but the dataset doesn't map."
 msgstr "Teed, millele mall viitab, kuid andmekogum neid ei vastenda."
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen seadistatud"
-
 msgid "Pending"
 msgstr "Ootel"
 
@@ -638,6 +650,9 @@ msgstr "Vali enne genereerimist mall."
 
 msgid "Pick a template first."
 msgstr "Vali esmalt mall."
+
+msgid "Pick a template to attach a PDF API document."
+msgstr "Vali mall, et lisada PDF API dokument."
 
 msgid "Placeholder Path"
 msgstr "Kohahoidja tee"
@@ -699,8 +714,11 @@ msgstr "Renditellimused"
 msgid "Rental orders (contracts, pickup/return slips). Enables the Sales bridge automatically."
 msgstr "Renditellimused (lepingud, väljastus-/tagastuslehed). Lubab müügisilla automaatselt."
 
-msgid "Replace previous pdfgen PDFs on the record"
-msgstr "Asenda varasemad pdfgen-PDF-id kirjel"
+msgid "Replace previous PDF API documents on the record"
+msgstr "Asenda varasemad PDF API-PDF-id kirjel"
+
+msgid "Replace the standard report attachment with the latest document generated by pdfgeneratorapi.com (or generate one from the template picked below)."
+msgstr "Asenda manuses olev standardaruanne uusima pdfgeneratorapi.com-i genereeritud dokumendiga (või genereeri see allpool valitud mallist)."
 
 msgid "Res"
 msgstr "Kirje"
@@ -790,8 +808,8 @@ msgstr "Mall salvestatud."
 msgid "Template string composing multiple fields. Use {dotted.path} tokens, e.g. '{street}, {city} {zip}'. When set, beats the Odoo Field column."
 msgstr "Malliväljend, mis koostab mitu välja. Kasuta tokeneid {punkti.ga.tee}, nt „{street}, {city} {zip}“. Kui määratud, on eelisõigus veeru „Odoo väli“ ees."
 
-msgid "Template the Send wizard auto-generates a pdfgen PDF with when a record has no pdfgen attachment yet. Pick from your live pdfgeneratorapi.com templates. Leave blank to disable auto-generation for this model."
-msgstr "Mall, millega saatmisviisard genereerib automaatselt pdfgen-PDF-i, kui kirjel pole veel pdfgen-manust. Vali oma pdfgeneratorapi.com aktiivsete mallide hulgast. Jäta tühjaks, et keelata selle mudeli automaatne genereerimine."
+msgid "Template the Send wizard auto-generates a document with when a record has no PDF API document yet. Pick from your live pdfgeneratorapi.com templates. Leave blank to disable auto-generation for this model."
+msgstr "Mall, millega saatmisviisard genereerib automaatselt PDF API-PDF-i, kui kirjel pole veel PDF API-manust. Vali oma pdfgeneratorapi.com aktiivsete mallide hulgast. Jäta tühjaks, et keelata selle mudeli automaatne genereerimine."
 
 msgid "Template was copied but the response had no id. Got: %s"
 msgstr "Mall kopeeriti, kuid vastuses polnud ID-d. Saadi: %s"
@@ -866,6 +884,9 @@ msgstr "Tundmatu lähtemudel: %s"
 msgid "Unused by template"
 msgstr "Malli poolt kasutamata"
 
+msgid "Use PDF API document"
+msgstr "Kasuta PDF API dokumenti"
+
 msgid "Used to sign JWT tokens. Keep this confidential."
 msgstr "Kasutatakse JWT-märgiste allkirjastamiseks. Hoia konfidentsiaalsena."
 
@@ -881,8 +902,8 @@ msgstr "Webhooki salavõti"
 msgid "Webhook delivered no recognisable PDF payload. Got keys: %s"
 msgstr "Webhook ei toimetanud kohale äratuntavat PDF-saadetist. Saadud võtmed: %s"
 
-msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Replace` deletes pdfgen-generated PDFs on that record before attaching the new one (default); `Keep` leaves every version attached. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
-msgstr "Mida teha samal kirjel olevate varem genereeritud PDF-idega, kui kasutaja klõpsab uuesti „Genereeri“. „Asenda“ kustutab sellel kirjel pdfgen-i genereeritud PDF-id enne uue manustamist (vaikimisi); „Säilita“ jätab iga versiooni manustatuks. Mõjutatud on ainult selle konnektori loodud manused — käsitsi üleslaaditud PDF-e ei puudutata kunagi."
+msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Replace` deletes the PDF API documents already on that record before attaching the new one (default); `Keep` leaves every version attached. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
+msgstr "Mida teha samal kirjel olevate varem genereeritud PDF-idega, kui kasutaja klõpsab uuesti „Genereeri“. „Asenda“ kustutab sellel kirjel PDF API-i genereeritud PDF-id enne uue manustamist (vaikimisi); „Säilita“ jätab iga versiooni manustatuks. Mõjutatud on ainult selle konnektori loodud manused — käsitsi üleslaaditud PDF-e ei puudutata kunagi."
 
 msgid "When True, action_generate returns an ir.actions.act_url that downloads the just-created attachment in addition to attaching it to the source record. Set via context default from the split-button's `Generate and Download` dropdown item."
 msgstr "Kui tõene, tagastab action_generate ir.actions.act_url-i, mis laadib äsja loodud manuse alla lisaks selle manustamisele lähtekirjele. Määratakse konteksti vaikeväärtusega jagatud nupu rippmenüü valikust „Genereeri ja laadi alla“."
@@ -896,7 +917,7 @@ msgstr "Kuhu pdfgeneratorapi.com teeb tagasikutse, kui asünkroonne genereerimin
 msgid "Workspace Identifier"
 msgstr "Tööruumi identifikaator"
 
-msgid "Your account email for regular workspaces, or a sub-workspace identifier (format per the pdfgeneratorapi.com workspace settings page — typically `parent@domain.com:slug`) for sub-workspaces. The value is forwarded verbatim into the JWT `sub` claim so pdfgen routes requests to the right workspace."
+msgid "Your account email for regular workspaces, or a sub-workspace identifier (format per the pdfgeneratorapi.com workspace settings page — typically `parent@domain.com:slug`) for sub-workspaces. The value is forwarded verbatim into the JWT `sub` claim so PDF API routes requests to the right workspace."
 msgstr "Teie konto e-post tavaliste tööruumide jaoks või alamtööruumi identifikaator (vorming vastavalt pdfgeneratorapi.com tööruumi sätete lehele — tavaliselt „parent@domain.com:slug“) alamtööruumide jaoks. Väärtus edastatakse sõna-sõnalt JWT `sub` claimi, et pdfgen suunaks päringud õigesse tööruumi."
 
 msgid "auto-generated on save"
@@ -916,9 +937,6 @@ msgstr "nt https://mydomain.com/editor"
 
 msgid "openEditor returned no URL."
 msgstr "openEditor ei tagastanud URL-i."
-
-msgid "pdfgen Job ID"
-msgstr "pdfgen-i töö ID"
 
 msgid "pdfgeneratorapi.com dataset placeholder mapping"
 msgstr "pdfgeneratorapi.com andmekogumi kohahoidja vastendus"

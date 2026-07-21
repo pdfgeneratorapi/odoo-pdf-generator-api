@@ -18,14 +18,20 @@ msgstr ""
 msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
 msgstr "<span class=\"visually-hidden\">Dropdown umschalten</span>"
 
+msgid "Display Name"
+msgstr "Anzeigename"
+
 msgid "Generate and Download"
 msgstr "Generieren und herunterladen"
 
 msgid "Generate custom PDF"
 msgstr "Eigenes PDF generieren"
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen konfiguriert"
+msgid "ID"
+msgstr "ID"
+
+msgid "PDF API configured"
+msgstr "PDF API konfiguriert"
 
 msgid "Transfer"
 msgstr "Lagerbewegung"

@@ -27,8 +27,8 @@ msgstr "Générer un PDF personnalisé"
 msgid "Manufacturing Order"
 msgstr "Ordre de fabrication"
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen configuré"
+msgid "PDF API configured"
+msgstr "PDF API configuré"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Vrai lorsque les identifiants PDF Generator API sont présents."
