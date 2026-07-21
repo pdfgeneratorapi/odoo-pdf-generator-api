@@ -262,3 +262,183 @@ class TestPdfgenAsyncDispatchWizard(TransactionCase):
         )
         self.assertEqual(wiz["res_model"], "res.partner")
         self.assertEqual(wiz["res_ids"], "7,8")
+
+
+@tagged("post_install", "-at_install")
+class TestPdfgenDispatchWithoutWebhook(TransactionCase):
+    """No Webhook Base URL configured: the wizard generates the selection
+    one request at a time instead of dispatching jobs nothing can deliver."""
+
+    _BUILD_CLIENT = (
+        "odoo.addons.pdfgeneratorapi_connector.models." + "pdfgen_send_mixin.build_pdfgen_client"
+    )
+    PDF_B64 = "JVBERi0xLjQgZmFrZQ=="  # b"%PDF-1.4 fake"
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        icp = cls.env["ir.config_parameter"].sudo()
+        icp.set_param("pdfgen.api_base_url", "https://us1.pdfgeneratorapi.com/api/v4")
+        icp.set_param("pdfgen.api_key", "k")
+        icp.set_param("pdfgen.api_secret", "s")
+        icp.set_param("pdfgen.workspace_identifier", "w")
+        icp.set_param("pdfgen.webhook_secret", "shhh")
+        # The point of this class: no callback URL anywhere.
+        icp.set_param("pdfgen.webhook_base_url", "")
+
+    def _client(self):
+        client = MagicMock()
+        client.generate.return_value = {"response": self.PDF_B64}
+        return client
+
+    def _dataset(self):
+        dataset = self.env["pdfgen.model.dataset"].create(
+            {"name": "Partner dataset", "model_id": self.env.ref("base.model_res_partner").id}
+        )
+        self.env["pdfgen.model.dataset.line"].create(
+            {"dataset_id": dataset.id, "placeholder_path": "name", "odoo_field_path": "name"}
+        )
+        return dataset
+
+    def _wizard(self, partners, template_id="42"):
+        return self.env["pdfgen.async.dispatch.wizard"].create(
+            {
+                "res_model": "res.partner",
+                "res_ids": ",".join(str(p.id) for p in partners),
+                "template_id": template_id,
+            }
+        )
+
+    def _attachments(self, partners):
+        return self.env["ir.attachment"].search(
+            [
+                ("res_model", "=", "res.partner"),
+                ("res_id", "in", partners.ids),
+                ("description", "=like", "pdfgen:%"),
+            ]
+        )
+
+    def test_async_available_follows_the_webhook_base_url(self):
+        wiz = self.env["pdfgen.async.dispatch.wizard"].new(
+            {"res_model": "res.partner", "res_ids": "1"}
+        )
+        self.assertFalse(wiz.async_available)
+        self.env["ir.config_parameter"].sudo().set_param(
+            "pdfgen.webhook_base_url", "https://odoo.example.com"
+        )
+        wiz.invalidate_recordset(["async_available"])
+        self.assertTrue(wiz.async_available)
+
+    def test_web_base_url_alone_does_not_enable_async(self):
+        """web.base.url is whatever the browser reaches Odoo on — usually
+        localhost, which the API can never call back."""
+        self.env["ir.config_parameter"].sudo().set_param("web.base.url", "http://localhost:8069")
+        wiz = self.env["pdfgen.async.dispatch.wizard"].new(
+            {"res_model": "res.partner", "res_ids": "1"}
+        )
+        self.assertFalse(wiz.async_available)
+
+    def test_generates_one_request_per_record(self):
+        self._dataset()
+        partners = self.env["res.partner"].create([{"name": "A"}, {"name": "B"}, {"name": "C"}])
+        client = self._client()
+        wiz = self._wizard(partners)
+        with patch(self._BUILD_CLIENT, return_value=client):
+            action = wiz.action_dispatch()
+        self.assertEqual(client.generate.call_count, 3)
+        client.generate_async.assert_not_called()
+        self.assertEqual(len(self._attachments(partners)), 3)
+        # Lands on the generated records, mirroring the async branch's
+        # redirect to the jobs list.
+        self.assertEqual(action["res_model"], "res.partner")
+        self.assertEqual(sorted(action["domain"][0][2]), sorted(partners.ids))
+        self.assertIn("3", action["name"])
+
+    def test_creates_no_async_jobs(self):
+        self._dataset()
+        partners = self.env["res.partner"].create([{"name": "A"}, {"name": "B"}])
+        with patch(self._BUILD_CLIENT, return_value=self._client()):
+            self._wizard(partners).action_dispatch()
+        self.assertFalse(
+            self.env["pdfgen.async.job"].search(
+                [("res_model", "=", "res.partner"), ("res_id", "in", partners.ids)]
+            )
+        )
+
+    def test_posts_the_document_to_the_chatter(self):
+        self._dataset()
+        partner = self.env["res.partner"].create({"name": "A"})
+        with patch(self._BUILD_CLIENT, return_value=self._client()):
+            self._wizard(partner).action_dispatch()
+        message = partner.message_ids[0]
+        self.assertIn("pdfgeneratorapi.com", message.body)
+        self.assertEqual(len(message.attachment_ids), 1)
+
+    def test_one_failure_does_not_lose_the_batch(self):
+        from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (
+            PdfGenApiError,
+        )
+
+        self._dataset()
+        partners = self.env["res.partner"].create([{"name": "A"}, {"name": "B"}, {"name": "C"}])
+        client = MagicMock()
+        client.generate.side_effect = [
+            {"response": self.PDF_B64},
+            PdfGenApiError(500, "boom"),
+            {"response": self.PDF_B64},
+        ]
+        with patch(self._BUILD_CLIENT, return_value=client):
+            action = self._wizard(partners).action_dispatch()
+        self.assertEqual(len(self._attachments(partners)), 2)
+        # The failed record is left out of the result list, and the
+        # breadcrumb carries the counts.
+        self.assertEqual(len(action["domain"][0][2]), 2)
+        self.assertNotIn(partners[1].id, action["domain"][0][2])
+        self.assertIn("failed", action["name"])
+
+    def test_every_failure_raises(self):
+        """Nothing generated: roll the batch back and say why, rather than
+        dropping the user on an empty list."""
+        from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (
+            PdfGenApiError,
+        )
+
+        self._dataset()
+        partner = self.env["res.partner"].create({"name": "A"})
+        client = MagicMock()
+        client.generate.side_effect = PdfGenApiError(500, "boom")
+        with patch(self._BUILD_CLIENT, return_value=client), self.assertRaises(UserError) as ctx:
+            self._wizard(partner).action_dispatch()
+        self.assertIn("500", str(ctx.exception))
+
+    def test_partial_failure_counts_are_reported(self):
+        from odoo.addons.pdfgeneratorapi_connector.models.pdfgen_api_client import (
+            PdfGenApiError,
+        )
+
+        self._dataset()
+        partners = self.env["res.partner"].create([{"name": f"P{i}"} for i in range(4)])
+        client = MagicMock()
+        client.generate.side_effect = [
+            {"response": self.PDF_B64},
+            PdfGenApiError(500, "boom"),
+            PdfGenApiError(500, "boom"),
+            {"response": self.PDF_B64},
+        ]
+        with patch(self._BUILD_CLIENT, return_value=client):
+            action = self._wizard(partners).action_dispatch()
+        self.assertIn("2", action["name"])
+        self.assertEqual(len(action["domain"][0][2]), 2)
+
+    def test_library_template_is_copied_once_for_the_batch(self):
+        self._dataset()
+        partners = self.env["res.partner"].create([{"name": "A"}, {"name": "B"}, {"name": "C"}])
+        client = self._client()
+        client.get_library_template.return_value = {"response": {"name": "Lib A"}}
+        client.create_template.return_value = {"response": {"id": 909}}
+        with patch(self._BUILD_CLIENT, return_value=client):
+            self._wizard(partners, template_id="lib:pub-sync").action_dispatch()
+        # The resolver caches the copy in ir.config_parameter, so records
+        # 2 and 3 reuse it rather than minting a template each.
+        client.create_template.assert_called_once()
+        self.assertEqual(client.generate.call_count, 3)

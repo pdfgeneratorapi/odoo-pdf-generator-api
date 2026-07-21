@@ -15,6 +15,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "%(done)s generated, %(failed)s failed"
+msgstr "%(done)s generati, %(failed)s non riusciti"
+
+msgid "%s document(s) generated"
+msgstr "%s documento/i generato/i"
+
 msgid "+ Create new template…"
 msgstr "+ Crea nuovo modello…"
 
@@ -82,6 +88,13 @@ msgid ""
 msgstr ""
 "<span> record verranno inviati a pdfgeneratorapi.com.\n"
 "                              Verrai reindirizzato all'elenco dei Job asincroni per seguirne l'avanzamento.</span>"
+
+msgid ""
+"<span> record(s) will be generated now, one at a time — this can take\n"
+"                              a while for a large selection. Set a Webhook Base URL in\n"
+"                              Settings &gt; PDF Generator API to generate them asynchronously\n"
+"                              instead.</span>"
+msgstr "<span> record verranno generati ora, uno alla volta — con una selezione ampia può richiedere tempo. Imposta un URL base del webhook in Impostazioni &gt; PDF Generator API per generarli in modo asincrono.</span>"
 
 msgid ""
 "<span>Advanced Settings</span>\n"
@@ -207,6 +220,9 @@ msgstr "Job PDF asincrono"
 
 msgid "Async PDF Jobs"
 msgstr "Job PDF asincroni"
+
+msgid "Async delivery available"
+msgstr "Consegna asincrona disponibile"
 
 msgid "Attachment"
 msgstr "Allegato"
@@ -532,6 +548,9 @@ msgstr "Nome del nuovo modello"
 msgid "No active dataset found for %s. Create one under PDF Generator API > Field Datasets."
 msgstr "Nessun dataset attivo trovato per %s. Crea uno in PDF Generator API > Dataset dei campi."
 
+msgid "No documents were generated. First error: %s"
+msgstr "Nessun documento è stato generato. Primo errore: %s"
+
 msgid "No fields match."
 msgstr "Nessun campo corrisponde."
 
@@ -854,6 +873,9 @@ msgstr "Totale segnaposto"
 msgid "True when PDF Generator API credentials are present."
 msgstr "Vero quando le credenziali PDF Generator API sono presenti."
 
+msgid "True when a Webhook Base URL is configured, so pdfgeneratorapi.com has somewhere to deliver finished documents. Without it the records are generated one at a time instead."
+msgstr "Vero quando è configurato un URL base del webhook, così pdfgeneratorapi.com ha dove consegnare i documenti completati. Senza di esso i record vengono generati uno alla volta."
+
 msgid "True when the picked template comes from the public Template Library. Drives the 'a copy will be created' hint — library templates are read-only, so Open copies them into the account first."
 msgstr "Vero quando il modello selezionato proviene dalla Libreria modelli pubblica. Determina il suggerimento «verrà creata una copia» — i modelli della libreria sono di sola lettura, quindi «Apri» li copia prima nell'account."
 
@@ -937,6 +959,9 @@ msgstr "es. https://mydomain.com/editor"
 
 msgid "id"
 msgstr "id"
+
+msgid "no records to process."
+msgstr "nessun record da elaborare."
 
 msgid "openEditor returned no URL."
 msgstr "openEditor non ha restituito alcuna URL."
