@@ -37,6 +37,13 @@
             "pdfgeneratorapi_connector/static/tests/**/*.test.js",
         ],
     },
-    "images": ["static/description/icon.png"],
+    "images": [
+      "static/description/pdfgeneratorapi_odoo_cover_560x315.png",
+      "static/description/template_settings_2.png",
+      "static/description/send_invoice_1.png",
+      "static/description/field_datasets_settings_2.png",
+      "static/description/batch_generation_2.png",
+      "static/description/settings_1.png"
+    ],
     "application": True,
 }
