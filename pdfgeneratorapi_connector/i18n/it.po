@@ -957,9 +957,6 @@ msgstr "es. https://abcd-1234.ngrok-free.app"
 msgid "e.g. https://mydomain.com/editor"
 msgstr "es. https://mydomain.com/editor"
 
-msgid "id"
-msgstr "id"
-
 msgid "no records to process."
 msgstr "nessun record da elaborare."
 

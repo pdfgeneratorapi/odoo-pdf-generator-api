@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0-20260409\n"
+"Project-Id-Version: Odoo Server 18.0-20260409\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-21 13:53+0000\n"
-"PO-Revision-Date: 2026-07-21 13:53+0000\n"
+"POT-Creation-Date: 2026-07-21 15:40+0000\n"
+"PO-Revision-Date: 2026-07-21 15:40+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -577,18 +577,13 @@ msgid "Dispatched At"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_mail_compose_message__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_async_dispatch_wizard__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_async_job__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_coverage_wizard__display_name
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_document_mixin__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_generate_wizard__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_model_dataset__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_model_dataset_line__display_name
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_send_mixin__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_template_editor_wizard__display_name
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_res_company__display_name
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -769,18 +764,13 @@ msgid "Helpers for Send wizards that substitute PDF API documents"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_mail_compose_message__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_async_dispatch_wizard__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_async_job__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_coverage_wizard__id
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_document_mixin__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_generate_wizard__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_model_dataset__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_model_dataset_line__id
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_send_mixin__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_template_editor_wizard__id
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_res_company__id
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_res_config_settings__id
 msgid "ID"
 msgstr ""
 
@@ -1741,12 +1731,6 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.res_config_settings_view_form
 msgid "e.g. https://mydomain.com/editor"
-msgstr ""
-
-#. module: pdfgeneratorapi_connector
-#. odoo-python
-#: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_async_dispatch_wizard.py:0
-msgid "id"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector

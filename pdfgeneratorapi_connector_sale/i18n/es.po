@@ -18,17 +18,11 @@ msgstr ""
 msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
 msgstr "<span class=\"visually-hidden\">Alternar desplegable</span>"
 
-msgid "Display Name"
-msgstr "Nombre mostrado"
-
 msgid "Generate and Download"
 msgstr "Generar y descargar"
 
 msgid "Generate custom PDF"
 msgstr "Generar PDF personalizado"
-
-msgid "ID"
-msgstr "ID"
 
 msgid "PDF API configured"
 msgstr "PDF API configurado"

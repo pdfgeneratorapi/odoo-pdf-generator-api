@@ -957,9 +957,6 @@ msgstr "ex.: https://abcd-1234.ngrok-free.app"
 msgid "e.g. https://mydomain.com/editor"
 msgstr "ex.: https://mydomain.com/editor"
 
-msgid "id"
-msgstr "id"
-
 msgid "no records to process."
 msgstr "nenhum registro a processar."
 
