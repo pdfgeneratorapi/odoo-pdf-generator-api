@@ -290,10 +290,30 @@ class TestMailComposerPdfgen(SaleCommon):
                 [("42", "Quote")],
             )
 
-    def test_toggling_off_keeps_a_report_that_is_still_attached(self):
-        """Turning the toggle off when the standard report was never dropped
-        (no template was ever picked) leaves the attachment set alone."""
+    def test_toggling_off_leaves_a_standard_report_attached(self):
+        """Turning the toggle off when nothing was ever swapped still leaves
+        exactly one standard report on the mail (re-rendered, so the id may
+        differ) and no PDF API document."""
         composer = self._composer()
-        before = composer.attachment_ids
         composer.pdfgen_use_custom = False
-        self.assertEqual(composer.attachment_ids, before)
+        self.assertEqual(len(self._rendered_reports(composer)), 1)
+        self.assertFalse(self._pdfgen_attachments(composer))
+
+    def test_toggling_off_the_way_the_v19_client_does(self):
+        """Odoo 19 saves the composer instead of running an onchange: one
+        `write` carrying both the new toggle value and the attachment list it
+        was showing. That skips the compute, so the restore has to happen in
+        `write` — this is the path the browser actually takes on 19."""
+        self._set_dataset_default_template("42")
+        with patch(_BUILD_CLIENT, return_value=self._client()):
+            composer = self._composer()
+            ours = self._pdfgen_attachments(composer)
+            self.assertTrue(ours)
+            composer.write(
+                {
+                    "pdfgen_use_custom": False,
+                    "attachment_ids": [(6, 0, ours.ids)],
+                }
+            )
+        self.assertFalse(self._pdfgen_attachments(composer))
+        self.assertTrue(self._rendered_reports(composer), "the report is rendered again")

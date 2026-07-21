@@ -151,20 +151,44 @@ class MailComposeMessage(models.TransientModel):
         # the templates endpoint at most once.
         return self.env["pdfgen.model.dataset"]._selection_default_template_id()
 
+    @api.depends(
+        # Upstream's own dependencies, repeated because a compute override
+        # replaces the inherited @api.depends rather than extending it. Same
+        # five on 17/18/19 — keep in sync with
+        # mail/wizard/mail_compose_message.py.
+        "composition_mode",
+        "model",
+        "res_domain",
+        "res_ids",
+        "template_id",
+        # Ours, so picking a template re-runs the swap.
+        "pdfgen_use_custom",
+        "pdfgen_template_id",
+    )
     # pylint-odoo's missing-return rule fires because we call super(); compute
     # methods must not return a value, so suppress it.
     # pylint: disable=missing-return
     def _compute_attachment_ids(self) -> None:
         """Run the stock template/report computation, then swap the report for
-        the PDF API document when the toggle starts ON.
+        the PDF API document when the toggle is ON.
 
-        This covers opening the dialog. Later edits never reach a compute —
-        the composer form goes straight from a field change to `web_save`
-        with `attachment_ids` already in the payload — so those are handled
-        in `create` / `write` below.
+        Belt and braces on purpose, because the composer dialog behaves
+        differently per Odoo version: 17/18 round-trip a field edit through
+        `onchange`, which re-runs this compute, while 19 goes straight to
+        `web_save` with `attachment_ids` already in the payload — which skips
+        the compute entirely and is why `create` / `write` sync too.
         """
+        # The stock compute resets `attachment_ids` wholesale, which would
+        # also throw away files the user attached by hand — stash and merge
+        # them back. Matters on 17/18, where flipping the toggle off comes
+        # through here rather than through `write`.
+        kept = {
+            composer.id: composer.attachment_ids.filtered(composer._pdfgen_is_user_attachment)
+            for composer in self
+        }
         super()._compute_attachment_ids()
         for composer in self:
+            composer.update({"attachment_ids": composer.attachment_ids | kept[composer.id]})
             if composer.pdfgen_use_custom:
                 composer._pdfgen_substitute_or_fallback()
 
