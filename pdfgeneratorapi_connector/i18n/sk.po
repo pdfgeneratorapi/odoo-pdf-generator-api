@@ -957,9 +957,6 @@ msgstr "napr. https://abcd-1234.ngrok-free.app"
 msgid "e.g. https://mydomain.com/editor"
 msgstr "napr. https://mydomain.com/editor"
 
-msgid "id"
-msgstr "id"
-
 msgid "no records to process."
 msgstr "žiadne záznamy na spracovanie."
 

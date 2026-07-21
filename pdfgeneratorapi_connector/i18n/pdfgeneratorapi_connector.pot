@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0-20260409\n"
+"Project-Id-Version: Odoo Server 17.0-20260421\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-21 13:53+0000\n"
-"PO-Revision-Date: 2026-07-21 13:53+0000\n"
+"POT-Creation-Date: 2026-07-21 16:03+0000\n"
+"PO-Revision-Date: 2026-07-21 16:03+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,18 +18,21 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_async_dispatch_wizard.py:0
+#, python-format
 msgid "%(done)s generated, %(failed)s failed"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_async_dispatch_wizard.py:0
+#, python-format
 msgid "%s document(s) generated"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_document_mixin.py:0
+#, python-format
 msgid "+ Create new template…"
 msgstr ""
 
@@ -189,6 +192,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_coverage_wizard.py:0
+#, python-format
 msgid "API returned invalid base64 HTML: %s"
 msgstr ""
 
@@ -196,12 +200,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_send_mixin.py:0
 #: code:addons/pdfgeneratorapi_connector/wizards/generate_pdf_wizard.py:0
+#, python-format
 msgid "API returned invalid base64: %s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_coverage_wizard.py:0
+#, python-format
 msgid "API sample data"
 msgstr ""
 
@@ -272,6 +278,7 @@ msgstr ""
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_async_dispatch_wizard.py:0
 #: model:ir.actions.act_window,name:pdfgeneratorapi_connector.action_pdfgen_async_job
 #: model:ir.ui.menu,name:pdfgeneratorapi_connector.menu_pdfgen_async_jobs
+#, python-format
 msgid "Async Jobs"
 msgstr ""
 
@@ -284,6 +291,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_document_mixin.py:0
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.view_pdfgen_async_job_list
+#, python-format
 msgid "Async PDF Jobs"
 msgstr ""
 
@@ -315,6 +323,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-javascript
 #: code:addons/pdfgeneratorapi_connector/static/src/mapping_editor/field_palette.xml:0
+#, python-format
 msgid "Browse related fields"
 msgstr ""
 
@@ -411,12 +420,14 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/res_config_settings.py:0
+#, python-format
 msgid "Connected to workspace: %s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/res_config_settings.py:0
+#, python-format
 msgid "Connection failed (HTTP %(status)s): %(body)s"
 msgstr ""
 
@@ -436,6 +447,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid ""
 "Could not copy the template to your account (HTTP %(status)s): %(body)s"
 msgstr ""
@@ -443,30 +455,35 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "Could not create template (HTTP %(status)s): %(body)s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_coverage_wizard.py:0
+#, python-format
 msgid "Could not load sample template data (HTTP %(status)s): %(body)s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_coverage_wizard.py:0
+#, python-format
 msgid "Could not load template data (HTTP %(status)s): %(body)s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "Could not load the default template (HTTP %(status)s): %(body)s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "Could not load the editor (HTTP %(status)s): %(body)s"
 msgstr ""
 
@@ -527,6 +544,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-javascript
 #: code:addons/pdfgeneratorapi_connector/static/src/template_editor/template_selection_field.js:0
+#, python-format
 msgid "Default Templates"
 msgstr ""
 
@@ -577,18 +595,13 @@ msgid "Dispatched At"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_mail_compose_message__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_async_dispatch_wizard__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_async_job__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_coverage_wizard__display_name
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_document_mixin__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_generate_wizard__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_model_dataset__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_model_dataset_line__display_name
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_send_mixin__display_name
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_template_editor_wizard__display_name
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_res_company__display_name
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -633,6 +646,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-javascript
 #: code:addons/pdfgeneratorapi_connector/static/src/template_editor/editor_iframe_field.js:0
+#, python-format
 msgid "Editor closed."
 msgstr ""
 
@@ -704,12 +718,14 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-javascript
 #: code:addons/pdfgeneratorapi_connector/static/src/mapping_editor/field_palette.xml:0
+#, python-format
 msgid "Field palette"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-javascript
 #: code:addons/pdfgeneratorapi_connector/static/src/mapping_editor/field_palette.xml:0
+#, python-format
 msgid "Filter fields…"
 msgstr ""
 
@@ -733,6 +749,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_document_mixin.py:0
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.view_pdfgen_generate_wizard_form
+#, python-format
 msgid "Generate custom PDF"
 msgstr ""
 
@@ -740,12 +757,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_document_mixin.py:0
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.view_pdfgen_async_dispatch_wizard_form
+#, python-format
 msgid "Generate custom PDFs"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/controllers/webhook.py:0
+#, python-format
 msgid "Generated custom PDF via pdfgeneratorapi.com (async)."
 msgstr ""
 
@@ -753,6 +772,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/generate_pdf_wizard.py:0
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_async_dispatch_wizard.py:0
+#, python-format
 msgid "Generated custom PDF via pdfgeneratorapi.com."
 msgstr ""
 
@@ -769,18 +789,13 @@ msgid "Helpers for Send wizards that substitute PDF API documents"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_mail_compose_message__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_async_dispatch_wizard__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_async_job__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_coverage_wizard__id
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_document_mixin__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_generate_wizard__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_model_dataset__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_model_dataset_line__id
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_send_mixin__id
 #: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_pdfgen_template_editor_wizard__id
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_res_company__id
-#: model:ir.model.fields,field_description:pdfgeneratorapi_connector.field_res_config_settings__id
 msgid "ID"
 msgstr ""
 
@@ -801,6 +816,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/controllers/webhook.py:0
+#, python-format
 msgid "Invalid base64 from PDF API: %s"
 msgstr ""
 
@@ -924,6 +940,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "Model %s is not available."
 msgstr ""
 
@@ -938,6 +955,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-javascript
 #: code:addons/pdfgeneratorapi_connector/static/src/template_editor/template_selection_field.js:0
+#, python-format
 msgid "My Templates"
 msgstr ""
 
@@ -950,6 +968,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "New template"
 msgstr ""
 
@@ -964,6 +983,7 @@ msgstr ""
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_send_mixin.py:0
 #: code:addons/pdfgeneratorapi_connector/wizards/generate_pdf_wizard.py:0
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_async_dispatch_wizard.py:0
+#, python-format
 msgid ""
 "No active dataset found for %s. Create one under PDF Generator API > Field "
 "Datasets."
@@ -972,18 +992,21 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_async_dispatch_wizard.py:0
+#, python-format
 msgid "No documents were generated. First error: %s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-javascript
 #: code:addons/pdfgeneratorapi_connector/static/src/mapping_editor/field_palette.xml:0
+#, python-format
 msgid "No fields match."
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_async_dispatch_wizard.py:0
+#, python-format
 msgid "No records selected."
 msgstr ""
 
@@ -1072,6 +1095,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:pdfgeneratorapi_connector.action_pdfgen_settings
 #: model:ir.ui.menu,name:pdfgeneratorapi_connector.menu_pdfgen_root
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.res_config_settings_view_form
+#, python-format
 msgid "PDF Generator API"
 msgstr ""
 
@@ -1093,6 +1117,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_document_mixin.py:0
+#, python-format
 msgid ""
 "PDF Generator API is not configured. Go to Settings > PDF Generator API."
 msgstr ""
@@ -1125,6 +1150,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_async_job.py:0
+#, python-format
 msgid ""
 "PDF Generator webhook is not configured. Set the Webhook Base URL and "
 "Webhook Secret in Settings > PDF Generator API."
@@ -1134,6 +1160,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_send_mixin.py:0
 #: code:addons/pdfgeneratorapi_connector/wizards/generate_pdf_wizard.py:0
+#, python-format
 msgid "PDF generation failed (HTTP %(status)s): %(body)s"
 msgstr ""
 
@@ -1168,6 +1195,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "Pick a sample record first."
 msgstr ""
 
@@ -1179,18 +1207,21 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_send_mixin.py:0
+#, python-format
 msgid "Pick a template before generating."
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "Pick a template first."
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/mail_compose_message.py:0
+#, python-format
 msgid "Pick a template to attach a PDF API document."
 msgstr ""
 
@@ -1202,6 +1233,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/res_config_settings.py:0
+#, python-format
 msgid "Please fill in: %s"
 msgstr ""
 
@@ -1213,6 +1245,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.email_compose_message_wizard_form_pdfgen
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.view_pdfgen_coverage_wizard_form
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.view_pdfgen_model_dataset_form
+#, python-format
 msgid "Preview"
 msgstr ""
 
@@ -1224,6 +1257,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_coverage_wizard.py:0
+#, python-format
 msgid "Preview failed (HTTP %(status)s): %(body)s"
 msgstr ""
 
@@ -1348,6 +1382,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_document_mixin.py:0
+#, python-format
 msgid "Select at least one record."
 msgstr ""
 
@@ -1423,12 +1458,15 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/controllers/webhook.py:0
+#: code:addons/pdfgeneratorapi_connector/controllers/webhook.py:0
+#, python-format
 msgid "Source record no longer exists for job %s."
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/generate_pdf_wizard.py:0
+#, python-format
 msgid "Source record no longer exists."
 msgstr ""
 
@@ -1458,6 +1496,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:pdfgeneratorapi_connector.action_pdfgen_template_editor
 #: model:ir.ui.menu,name:pdfgeneratorapi_connector.menu_pdfgen_template_editor
 #: model_terms:ir.ui.view,arch_db:pdfgeneratorapi_connector.view_pdfgen_template_editor_wizard_form
+#, python-format
 msgid "Template Editor"
 msgstr ""
 
@@ -1475,6 +1514,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-javascript
 #: code:addons/pdfgeneratorapi_connector/static/src/template_editor/editor_iframe_field.js:0
+#, python-format
 msgid "Template saved."
 msgstr ""
 
@@ -1496,12 +1536,14 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "Template was copied but the response had no id. Got: %s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "Template was created but the response had no id. Got: %s"
 msgstr ""
 
@@ -1518,6 +1560,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_document_mixin.py:0
+#, python-format
 msgid "The default template was copied but the response had no id."
 msgstr ""
 
@@ -1541,6 +1584,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_model_dataset.py:0
+#, python-format
 msgid "This dataset targets %(expected)s but the record is %(got)s."
 msgstr ""
 
@@ -1588,36 +1632,42 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "Type a name for the new template."
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_coverage_wizard.py:0
+#, python-format
 msgid "Unexpected API response for preview. Got: %s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_send_mixin.py:0
+#, python-format
 msgid "Unexpected API response shape from pdfgeneratorapi.com."
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/generate_pdf_wizard.py:0
+#, python-format
 msgid "Unexpected API response shape. Got keys: %s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/pdfgen_document_mixin.py:0
+#, python-format
 msgid "Unexpected default-template response. Got: %s"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "Unexpected template definition response. Got: %s"
 msgstr ""
 
@@ -1625,6 +1675,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/generate_pdf_wizard.py:0
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_async_dispatch_wizard.py:0
+#, python-format
 msgid "Unknown source model: %s"
 msgstr ""
 
@@ -1664,6 +1715,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/controllers/webhook.py:0
+#, python-format
 msgid "Webhook delivered no recognisable PDF payload. Got keys: %s"
 msgstr ""
 
@@ -1724,12 +1776,14 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-javascript
 #: code:addons/pdfgeneratorapi_connector/static/src/mapping_editor/field_palette.xml:0
+#, python-format
 msgid "breadcrumb"
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-javascript
 #: code:addons/pdfgeneratorapi_connector/static/src/mapping_editor/field_palette.xml:0
+#, python-format
 msgid "drag onto a row"
 msgstr ""
 
@@ -1746,18 +1800,14 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_async_dispatch_wizard.py:0
-msgid "id"
-msgstr ""
-
-#. module: pdfgeneratorapi_connector
-#. odoo-python
-#: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_async_dispatch_wizard.py:0
+#, python-format
 msgid "no records to process."
 msgstr ""
 
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/wizards/pdfgen_template_editor_wizard.py:0
+#, python-format
 msgid "openEditor returned no URL."
 msgstr ""
 
@@ -1779,6 +1829,7 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-python
 #: code:addons/pdfgeneratorapi_connector/models/res_config_settings.py:0
+#, python-format
 msgid "unknown"
 msgstr ""
 
@@ -1800,5 +1851,6 @@ msgstr ""
 #. module: pdfgeneratorapi_connector
 #. odoo-javascript
 #: code:addons/pdfgeneratorapi_connector/static/src/mapping_editor/field_palette.xml:0
+#, python-format
 msgid "↑↓ navigate · Enter drills in · Esc back · / filter"
 msgstr ""

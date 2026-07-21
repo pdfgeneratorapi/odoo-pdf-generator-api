@@ -18,23 +18,17 @@ msgstr ""
 msgid "<span class=\"visually-hidden\">Toggle dropdown</span>"
 msgstr "<span class=\"visually-hidden\">Prepnúť rozbaľovaciu ponuku</span>"
 
-msgid "Display Name"
-msgstr "Zobrazovaný názov"
-
 msgid "Generate and Download"
 msgstr "Vygenerovať a stiahnuť"
 
 msgid "Generate custom PDF"
 msgstr "Vygenerovať vlastné PDF"
 
-msgid "ID"
-msgstr "ID"
-
-msgid "Manufacturing Order"
-msgstr "Výrobná zákazka"
-
 msgid "PDF API configured"
 msgstr "PDF API nakonfigurované"
+
+msgid "Production Order"
+msgstr "Výrobný príkaz"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Pravda, keď sú prítomné prihlasovacie údaje PDF Generator API."
