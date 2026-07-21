@@ -6,10 +6,24 @@
         <field name="arch" type="xml">
             <form string="Generate custom PDFs">
                 <sheet>
-                    <div class="alert alert-info" role="alert">
+                    <field name="async_available" invisible="1"/>
+                    <!-- Async: the API calls us back, so the user follows
+                         progress in the jobs list. -->
+                    <div class="alert alert-info" role="alert"
+                         invisible="not async_available">
                         <field name="record_count" readonly="1" class="oe_inline"/>
                         <span> record(s) will be dispatched to pdfgeneratorapi.com.
                               You'll be redirected to the Async Jobs list to follow progress.</span>
+                    </div>
+                    <!-- No Webhook Base URL: nothing could deliver the results,
+                         so we generate here and now, one request per record. -->
+                    <div class="alert alert-warning" role="alert"
+                         invisible="async_available">
+                        <field name="record_count" readonly="1" class="oe_inline"/>
+                        <span> record(s) will be generated now, one at a time — this can take
+                              a while for a large selection. Set a Webhook Base URL in
+                              Settings &gt; PDF Generator API to generate them asynchronously
+                              instead.</span>
                     </div>
                     <group>
                         <field name="res_model" readonly="1"/>
@@ -23,7 +37,12 @@
                             type="object"
                             string="Dispatch"
                             class="btn-primary"
-                            invisible="not template_id"/>
+                            invisible="not template_id or not async_available"/>
+                    <button name="action_dispatch"
+                            type="object"
+                            string="Generate"
+                            class="btn-primary"
+                            invisible="not template_id or async_available"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
