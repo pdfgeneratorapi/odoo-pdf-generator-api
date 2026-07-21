@@ -35,7 +35,9 @@ class MailComposeMessage(models.TransientModel):
     _name = "mail.compose.message"
     _inherit = ["mail.compose.message", "pdfgen.send.mixin"]
 
-    pdfgen_configured = fields.Boolean(compute="_compute_pdfgen_configured")
+    pdfgen_configured = fields.Boolean(
+        string="PDF API configured", compute="_compute_pdfgen_configured"
+    )
     pdfgen_use_custom = fields.Boolean(
         string="Use PDF API document",
         compute="_compute_pdfgen_use_custom",

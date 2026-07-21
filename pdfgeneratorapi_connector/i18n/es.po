@@ -232,11 +232,11 @@ msgstr "Cancelar"
 msgid "Check"
 msgstr "Comprobar"
 
+msgid "Check PDF API template coverage against a dataset"
+msgstr "Comprobar cobertura de la plantilla PDF API contra un conjunto de datos"
+
 msgid "Check coverage"
 msgstr "Comprobar cobertura"
-
-msgid "Check pdfgen template coverage against a dataset"
-msgstr "Comprobar cobertura de la plantilla pdfgen contra un conjunto de datos"
 
 msgid "Check template coverage"
 msgstr "Comprobar cobertura de la plantilla"
@@ -319,8 +319,8 @@ msgstr "Conjunto de datos"
 msgid "Dataset applies to every PDF generated from this model."
 msgstr "El conjunto de datos se aplica a cada PDF generado desde este modelo."
 
-msgid "Dataset whose resolved payload was sent to pdfgen at dispatch."
-msgstr "Conjunto de datos cuya carga útil resuelta se envió a pdfgen al despachar."
+msgid "Dataset whose resolved payload was sent to PDF API at dispatch."
+msgstr "Conjunto de datos cuya carga útil resuelta se envió a PDF API al despachar."
 
 msgid "Default Templates"
 msgstr "Plantillas predeterminadas"
@@ -442,8 +442,8 @@ msgstr "PDF personalizado generado mediante pdfgeneratorapi.com."
 msgid "HTML render of the selected template with a sample record's data. Useful to sanity-check the template + dataset combination without generating a PDF."
 msgstr "Renderizado HTML de la plantilla seleccionada con datos de un registro de muestra. Útil para comprobar la combinación plantilla + conjunto sin generar un PDF."
 
-msgid "Helpers for Send wizards that substitute pdfgen PDFs"
-msgstr "Utilidades para los asistentes de envío que sustituyen PDF de pdfgen"
+msgid "Helpers for Send wizards that substitute PDF API documents"
+msgstr "Utilidades para los asistentes de envío que sustituyen PDF de PDF API"
 
 msgid "ID"
 msgstr "ID"
@@ -454,8 +454,8 @@ msgstr "Identificador devuelto por el punto de acceso asíncrono de pdfgenerator
 msgid "Installed version of the PDF Generator API connector, followed by each installed document bridge. Quote this when contacting support@pdfgeneratorapi.com so we know exactly which release you are running."
 msgstr "Versión instalada del conector de PDF Generator API, seguida de cada puente de documentos instalado. Indíquela al contactar con support@pdfgeneratorapi.com para que sepamos exactamente qué versión está ejecutando."
 
-msgid "Invalid base64 from pdfgen: %s"
-msgstr "base64 no válido recibido de pdfgen: %s"
+msgid "Invalid base64 from PDF API: %s"
+msgstr "base64 no válido recibido de PDF API: %s"
 
 msgid "Invoices & Credit Notes"
 msgstr "Facturas y notas de crédito"
@@ -472,8 +472,8 @@ msgstr "Lista tipo JSON de los ids de los registros seleccionados, separados por
 msgid "Keep all versions"
 msgstr "Conservar todas las versiones"
 
-msgid "Keep: every generation adds a new attachment. Replace: pdfgen-generated PDFs on that record are deleted first. Manually uploaded PDFs are never touched."
-msgstr "Conservar: cada generación añade un nuevo adjunto. Reemplazar: los PDF generados por pdfgen en ese registro se eliminan antes. Los PDF subidos manualmente nunca se tocan."
+msgid "Keep: every generation adds a new attachment. Replace: PDF API documents already on that record are deleted first. Manually uploaded PDFs are never touched."
+msgstr "Conservar: cada generación añade un nuevo adjunto. Reemplazar: los PDF generados por PDF API en ese registro se eliminan antes. Los PDF subidos manualmente nunca se tocan."
 
 msgid "Last Updated by"
 msgstr "Última actualización por"
@@ -576,8 +576,14 @@ msgstr ""
 msgid "Override the default API endpoint and the template editor's browser URL. Most users can leave these blank."
 msgstr "Sustituya el punto de acceso predeterminado de la API y la URL del editor de plantillas en el navegador. La mayoría de los usuarios pueden dejarlos en blanco."
 
+msgid "PDF API Job ID"
+msgstr "ID de trabajo de PDF API"
+
 msgid "PDF API Template"
 msgstr "Plantilla de PDF API"
+
+msgid "PDF API configured"
+msgstr "PDF API configurado"
 
 msgid "PDF API notice"
 msgstr "Aviso de PDF API"
@@ -626,9 +632,6 @@ msgstr "Rutas que el conjunto mapea pero que esta plantilla no referencia."
 
 msgid "Paths the template references but the dataset doesn't map."
 msgstr "Rutas que la plantilla referencia pero que el conjunto no mapea."
-
-msgid "Pdfgen Configured"
-msgstr "Pdfgen configurado"
 
 msgid "Pending"
 msgstr "Pendiente"
@@ -711,8 +714,8 @@ msgstr "Pedidos de alquiler"
 msgid "Rental orders (contracts, pickup/return slips). Enables the Sales bridge automatically."
 msgstr "Pedidos de alquiler (contratos, albaranes de recogida/devolución). Activa el puente de Ventas automáticamente."
 
-msgid "Replace previous pdfgen PDFs on the record"
-msgstr "Reemplazar los PDF de pdfgen anteriores del registro"
+msgid "Replace previous PDF API documents on the record"
+msgstr "Reemplazar los PDF de PDF API anteriores del registro"
 
 msgid "Replace the standard report attachment with the latest document generated by pdfgeneratorapi.com (or generate one from the template picked below)."
 msgstr "Reemplaza el informe estándar adjunto por el último documento generado por pdfgeneratorapi.com (o genera uno a partir de la plantilla elegida abajo)."
@@ -805,8 +808,8 @@ msgstr "Plantilla guardada."
 msgid "Template string composing multiple fields. Use {dotted.path} tokens, e.g. '{street}, {city} {zip}'. When set, beats the Odoo Field column."
 msgstr "Plantilla que compone varios campos. Use tokens {ruta.con.puntos}, p. ej. «{street}, {city} {zip}». Si está definida, prevalece sobre la columna «Campo de Odoo»."
 
-msgid "Template the Send wizard auto-generates a pdfgen PDF with when a record has no pdfgen attachment yet. Pick from your live pdfgeneratorapi.com templates. Leave blank to disable auto-generation for this model."
-msgstr "Plantilla con la que el asistente de envío genera automáticamente un PDF de pdfgen cuando un registro aún no tiene un adjunto de pdfgen. Elija entre sus plantillas activas de pdfgeneratorapi.com. Deje en blanco para desactivar la generación automática en este modelo."
+msgid "Template the Send wizard auto-generates a document with when a record has no PDF API document yet. Pick from your live pdfgeneratorapi.com templates. Leave blank to disable auto-generation for this model."
+msgstr "Plantilla con la que el asistente de envío genera automáticamente un PDF de PDF API cuando un registro aún no tiene un adjunto de PDF API. Elija entre sus plantillas activas de pdfgeneratorapi.com. Deje en blanco para desactivar la generación automática en este modelo."
 
 msgid "Template was copied but the response had no id. Got: %s"
 msgstr "La plantilla se copió pero la respuesta no contenía id. Se recibió: %s"
@@ -899,8 +902,8 @@ msgstr "Secreto del webhook"
 msgid "Webhook delivered no recognisable PDF payload. Got keys: %s"
 msgstr "El webhook no entregó ninguna carga útil de PDF reconocible. Claves recibidas: %s"
 
-msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Replace` deletes pdfgen-generated PDFs on that record before attaching the new one (default); `Keep` leaves every version attached. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
-msgstr "Qué hacer con los PDF generados previamente en el mismo registro cuando el usuario pulsa «Generar» de nuevo. «Reemplazar» elimina los PDF generados por pdfgen en ese registro antes de adjuntar el nuevo (por defecto); «Conservar» deja todas las versiones adjuntas. Solo se ven afectados los adjuntos creados por este conector — los PDF subidos manualmente nunca se tocan."
+msgid "What to do with previously-generated PDFs on the same record when the user clicks Generate again. `Replace` deletes the PDF API documents already on that record before attaching the new one (default); `Keep` leaves every version attached. Only attachments created by this connector are affected — manually uploaded PDFs are never touched."
+msgstr "Qué hacer con los PDF generados previamente en el mismo registro cuando el usuario pulsa «Generar» de nuevo. «Reemplazar» elimina los PDF generados por PDF API en ese registro antes de adjuntar el nuevo (por defecto); «Conservar» deja todas las versiones adjuntas. Solo se ven afectados los adjuntos creados por este conector — los PDF subidos manualmente nunca se tocan."
 
 msgid "When True, action_generate returns an ir.actions.act_url that downloads the just-created attachment in addition to attaching it to the source record. Set via context default from the split-button's `Generate and Download` dropdown item."
 msgstr "Cuando es Verdadero, action_generate devuelve un ir.actions.act_url que descarga el adjunto recién creado además de adjuntarlo al registro de origen. Se establece mediante el contexto por defecto desde la opción «Generar y descargar» del botón dividido."
@@ -914,7 +917,7 @@ msgstr "Adónde llama de vuelta pdfgeneratorapi.com cuando termina una generaci�
 msgid "Workspace Identifier"
 msgstr "Identificador del espacio de trabajo"
 
-msgid "Your account email for regular workspaces, or a sub-workspace identifier (format per the pdfgeneratorapi.com workspace settings page — typically `parent@domain.com:slug`) for sub-workspaces. The value is forwarded verbatim into the JWT `sub` claim so pdfgen routes requests to the right workspace."
+msgid "Your account email for regular workspaces, or a sub-workspace identifier (format per the pdfgeneratorapi.com workspace settings page — typically `parent@domain.com:slug`) for sub-workspaces. The value is forwarded verbatim into the JWT `sub` claim so PDF API routes requests to the right workspace."
 msgstr "Correo electrónico de su cuenta para espacios de trabajo normales, o un identificador de sub-espacio (formato según la página de ajustes del espacio en pdfgeneratorapi.com — típicamente «parent@domain.com:slug») para sub-espacios. El valor se reenvía tal cual al claim `sub` del JWT para que pdfgen enrute las peticiones al espacio correcto."
 
 msgid "auto-generated on save"
@@ -937,9 +940,6 @@ msgstr "id"
 
 msgid "openEditor returned no URL."
 msgstr "openEditor no devolvió ninguna URL."
-
-msgid "pdfgen Job ID"
-msgstr "ID de trabajo de pdfgen"
 
 msgid "pdfgeneratorapi.com dataset placeholder mapping"
 msgstr "Mapeo de marcadores del conjunto de datos de pdfgeneratorapi.com"

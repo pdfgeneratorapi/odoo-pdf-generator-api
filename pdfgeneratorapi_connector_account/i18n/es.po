@@ -39,14 +39,14 @@ msgstr "Asiento contable"
 msgid "PDF API Template"
 msgstr "Plantilla de PDF API"
 
+msgid "PDF API configured"
+msgstr "PDF API configurado"
+
 msgid "PDF API notice"
 msgstr "Aviso de PDF API"
 
 msgid "PDF Generator API"
 msgstr "PDF Generator API"
-
-msgid "Pdfgen Configured"
-msgstr "Pdfgen configurado"
 
 msgid "Pick a template to attach a PDF API document."
 msgstr "Elija una plantilla para adjuntar un documento de PDF API."

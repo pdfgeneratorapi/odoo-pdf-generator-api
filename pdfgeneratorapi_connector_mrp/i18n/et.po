@@ -33,8 +33,8 @@ msgstr "ID"
 msgid "Manufacturing Order"
 msgstr "Tootmistellimus"
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen seadistatud"
+msgid "PDF API configured"
+msgstr "PDF API seadistatud"
 
 msgid "True when PDF Generator API credentials are present."
 msgstr "Tõene, kui PDF Generator API mandaadid on olemas."

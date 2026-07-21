@@ -28,7 +28,9 @@ class AccountMoveSendWizard(models.TransientModel):
     _name = "account.move.send.wizard"
     _inherit = ["account.move.send.wizard", "pdfgen.send.mixin"]
 
-    pdfgen_configured = fields.Boolean(compute="_compute_pdfgen_configured")
+    pdfgen_configured = fields.Boolean(
+        string="PDF API configured", compute="_compute_pdfgen_configured"
+    )
     pdfgen_use_custom = fields.Boolean(
         string="Use PDF API document",
         compute="_compute_pdfgen_use_custom",

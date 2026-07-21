@@ -47,7 +47,7 @@ _TEMPLATE_RE = re.compile(r"^pdfgen:template:(?P<tid>\S+)")
 
 class PdfgenSendMixin(models.AbstractModel):
     _name = "pdfgen.send.mixin"
-    _description = "Helpers for Send wizards that substitute pdfgen PDFs"
+    _description = "Helpers for Send wizards that substitute PDF API documents"
 
     # ---------------------------------------------------------------- look-up
 

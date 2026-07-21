@@ -39,14 +39,14 @@ msgstr "Účetní zápis"
 msgid "PDF API Template"
 msgstr "Šablona PDF API"
 
+msgid "PDF API configured"
+msgstr "PDF API nakonfigurováno"
+
 msgid "PDF API notice"
 msgstr "Upozornění PDF API"
 
 msgid "PDF Generator API"
 msgstr "PDF Generator API"
-
-msgid "Pdfgen Configured"
-msgstr "Pdfgen nakonfigurován"
 
 msgid "Pick a template to attach a PDF API document."
 msgstr "Vyberte šablonu pro přiložení dokumentu PDF API."

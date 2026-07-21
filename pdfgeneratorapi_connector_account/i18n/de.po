@@ -39,14 +39,14 @@ msgstr "Buchung"
 msgid "PDF API Template"
 msgstr "PDF-API-Vorlage"
 
+msgid "PDF API configured"
+msgstr "PDF API konfiguriert"
+
 msgid "PDF API notice"
 msgstr "PDF-API-Hinweis"
 
 msgid "PDF Generator API"
 msgstr "PDF Generator API"
-
-msgid "Pdfgen Configured"
-msgstr "Pdfgen konfiguriert"
 
 msgid "Pick a template to attach a PDF API document."
 msgstr "Wählen Sie eine Vorlage, um ein PDF-API-Dokument anzuhängen."

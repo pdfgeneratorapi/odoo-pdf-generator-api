@@ -39,14 +39,14 @@ msgstr "Pearaamatukanne"
 msgid "PDF API Template"
 msgstr "PDF API mall"
 
+msgid "PDF API configured"
+msgstr "PDF API seadistatud"
+
 msgid "PDF API notice"
 msgstr "PDF API teade"
 
 msgid "PDF Generator API"
 msgstr "PDF Generator API"
-
-msgid "Pdfgen Configured"
-msgstr "Pdfgen seadistatud"
 
 msgid "Pick a template to attach a PDF API document."
 msgstr "Vali mall, et lisada PDF API dokument."

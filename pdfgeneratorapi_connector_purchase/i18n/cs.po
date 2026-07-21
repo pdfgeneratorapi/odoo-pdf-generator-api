@@ -30,8 +30,8 @@ msgstr "Vygenerovat vlastní PDF"
 msgid "ID"
 msgstr "ID"
 
-msgid "Pdfgen Configured"
-msgstr "Pdfgen nakonfigurován"
+msgid "PDF API configured"
+msgstr "PDF API nakonfigurováno"
 
 msgid "Purchase Order"
 msgstr "Nákupní objednávka"

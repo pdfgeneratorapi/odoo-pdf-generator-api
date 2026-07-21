@@ -185,6 +185,7 @@ class PdfgenDocumentMixin(models.AbstractModel):
     _description = "Expose the PDF Generator wizard on a document model"
 
     pdfgen_configured = fields.Boolean(
+        string="PDF API configured",
         compute="_compute_pdfgen_configured",
         help="True when PDF Generator API credentials are present.",
     )
