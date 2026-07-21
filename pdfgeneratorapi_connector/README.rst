@@ -18,10 +18,13 @@ Sales, Purchase, Stock, Manufacturing, Rental).
 
 Each bridge:
 
-- adds a **Generate custom PDF** button on its records,
-- seeds a starter placeholder dataset you can edit, and
-- (for the Invoicing bridge) wires a *Use pdfgen PDF* toggle into the
-  invoice Send wizard so the rendered PDF can replace the standard report.
+- adds a **Generate custom PDF** button on its records, and
+- seeds a starter placeholder dataset you can edit.
+
+Emailing a record picks up your document automatically: **Send** shows a
+*Use PDF API document* toggle with a template picker and a preview, and
+attaches your PDF in place of Odoo's standard report. This works in the
+invoice Send wizard and in the mail composer every other document uses.
 
 Hosting compatibility
 =====================

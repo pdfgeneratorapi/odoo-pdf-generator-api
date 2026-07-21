@@ -11,8 +11,8 @@ with a pdfgen-generated one.
 - `_pdfgen_pick_template_id(record)` — resolution chain: template id
   parsed from the latest pdfgen attachment > dataset.default_template_id
   > False.
-- `_pdfgen_should_default_on(record)` — True when latest-wins logic or a
-  configured default template means the toggle should start ON.
+- `_pdfgen_should_default_on(record)` — True when the connector is set up
+  for the model (active dataset), i.e. the toggle should start ON.
 - `_pdfgen_render_preview_html(template_id, record)` — calls
   `client.generate(..., format=Format.HTML)`, returns sanitised HTML.
 - `_pdfgen_generate_attachment(template_id, record)` — synchronous
@@ -20,14 +20,16 @@ with a pdfgen-generated one.
   the existing flows use) and returns it. Raises `UserError` on
   failure so the calling wizard can surface the message in the modal.
 
-The concrete Send wizards (one per model — only `account.move` ships
-today, the bridge wizards land in a follow-up commit) just expose the
-fields and call these helpers from their attachment-collection hooks.
+The concrete Send wizards just expose the fields and call these helpers
+from their attachment-collection hooks: `account.move.send.wizard` for
+invoices, and `mail.compose.message` for every other document (quotations,
+purchase orders, delivery slips, …).
 """
 
 import base64
 import logging
 import re
+from html import escape
 
 from odoo import _, models
 from odoo.exceptions import UserError
@@ -112,18 +114,20 @@ class PdfgenSendMixin(models.AbstractModel):
     def _pdfgen_should_default_on(self, record: models.Model) -> bool:
         """True iff the toggle should start ON for this record.
 
-        - pdfgen attachment exists AND is newer than the standard report.
-        - OR no pdfgen attachment yet but the dataset has a default template.
+        The rule is simply "is the connector in use for this model" — an
+        active dataset exists. Someone who set the connector up for
+        quotations expects their own document on the email, not Odoo's
+        report; making them flip a switch on every send is the wrong
+        default.
+
+        Which template that document uses is a separate question, answered
+        by `_pdfgen_pick_template_id`. When nothing resolves, the Send
+        wizards keep the standard report attached and ask for a template
+        rather than erroring out.
         """
         if not record:
             return False
-        pdfgen_att = self._pdfgen_latest_pdfgen_attachment(record)
-        standard_att = self._pdfgen_latest_standard_attachment(record)
-        if pdfgen_att:
-            if not standard_att:
-                return True
-            return pdfgen_att.create_date >= standard_att.create_date
-        return bool(self._pdfgen_dataset(record).default_template_id)
+        return bool(self._pdfgen_dataset(record))
 
     # -------------------------------------------------------- preview / render
 
@@ -151,8 +155,8 @@ class PdfgenSendMixin(models.AbstractModel):
 
     def _pdfgen_render_preview_html_via_api(self, template_id: str, record: models.Model) -> str:
         """API-rendered HTML fallback for the preview modal — used when no
-        live pdfgen attachment matches the chosen template. Empty string
-        on any failure.
+        live pdfgen attachment matches the chosen template. Returns an iframe
+        wrapping the rendered document, or an empty string on any failure.
         """
         dataset = self._pdfgen_dataset(record)
         if not dataset:
@@ -174,9 +178,18 @@ class PdfgenSendMixin(models.AbstractModel):
         if not b64:
             return ""
         try:
-            return base64.b64decode(b64).decode("utf-8", errors="replace")
+            rendered = base64.b64decode(b64).decode("utf-8", errors="replace")
         except (ValueError, TypeError):
             return ""
+        # Sandbox it in an iframe rather than handing the markup to Odoo's
+        # readonly Html viewer: the API returns a full `<html>` document, and
+        # the viewer's link retargeting crashes on one (it expects a fragment).
+        # Same shape as the existing-attachment branch above.
+        return (
+            f'<iframe srcdoc="{escape(rendered)}" '
+            f'style="width:100%; min-height:500px; border:0;" '
+            f'title="pdfgen preview"></iframe>'
+        )
 
     def _pdfgen_generate_attachment(self, template_id: str, record: models.Model) -> models.Model:
         """Synchronous PDF generation. Creates an `ir.attachment` on the

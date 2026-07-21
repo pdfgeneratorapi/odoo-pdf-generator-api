@@ -108,7 +108,7 @@ class ResConfigSettings(models.TransientModel):
         string="Invoices & Credit Notes",
         help=(
             "Adds a Generate custom PDF button on account.move (customer "
-            "invoices, vendor bills, credit notes) and a Use pdfgen PDF "
+            "invoices, vendor bills, credit notes) and a Use PDF API document "
             "toggle on the invoice Send wizard. Installs the Accounting app "
             "if not already present. Seeds a default placeholder dataset."
         ),
