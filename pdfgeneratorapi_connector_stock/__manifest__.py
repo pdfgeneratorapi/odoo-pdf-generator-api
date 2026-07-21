@@ -12,4 +12,7 @@
         "data/pdfgen_model_dataset_stock_picking.xml",
         "views/stock_picking_views.xml",
     ],
+    "images": [
+        "static/description/pdfgeneratorapi_odoo_cover_560x315.png"
+    ]
 }
