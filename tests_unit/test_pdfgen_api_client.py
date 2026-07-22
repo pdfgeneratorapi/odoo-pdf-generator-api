@@ -397,15 +397,16 @@ class LibraryTemplateTests(unittest.TestCase):
         self.assertEqual(normalize("lib:42"), "42")
         self.assertEqual(normalize("weird"), "weird")
 
-    def test_list_library_templates_hits_production_library_endpoint(self):
-        # The library is public, global content — calls bypass the configured
-        # (regional / on-prem) base URL and always target the production API.
+    def test_list_library_templates_uses_configured_base_url(self):
+        # Each deployment (production, staging, regional, on-prem) serves its
+        # own public library, so library calls follow the configured base URL
+        # like every other call.
         with patch.object(_client_module.requests, "request") as mock_req:
             mock_req.return_value = self._mock_response(json_body={"response": []})
             self.client.list_library_templates()
         args, kwargs = mock_req.call_args
         self.assertEqual(args[0], "GET")
-        self.assertEqual(args[1], "https://us1.pdfgeneratorapi.com/api/v4/templates/library")
+        self.assertEqual(args[1], "https://example.test/api/v4/templates/library")
         self.assertIsNone(kwargs["params"])
 
     def test_list_library_templates_forwards_tags(self):
@@ -421,7 +422,7 @@ class LibraryTemplateTests(unittest.TestCase):
             self.client.get_library_template("abc123")
         args, _ = mock_req.call_args
         self.assertEqual(args[0], "GET")
-        self.assertEqual(args[1], "https://us1.pdfgeneratorapi.com/api/v4/templates/library/abc123")
+        self.assertEqual(args[1], "https://example.test/api/v4/templates/library/abc123")
 
     def test_generate_with_library_value_sends_public_id_string(self):
         with patch.object(_client_module.requests, "request") as mock_req:
