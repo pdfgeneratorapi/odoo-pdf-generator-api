@@ -1,5 +1,5 @@
 {
-    "name": "PDF Generator: Rental",
+    "name": "Create Branded PDFs from any record: invoices, quotes, orders and more.",
     "version": "19.0.1.0.2",
     "category": "Sales",
     "summary": "Branded PDF rental orders and agreements from Odoo",

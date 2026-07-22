@@ -1,5 +1,5 @@
 {
-    "name": "PDF Generator: Stock",
+    "name": "Create Branded PDFs from any record: invoices, quotes, orders and more.",
     "version": "19.0.1.0.2",
     "category": "Inventory",
     "summary": "Branded PDF delivery slips, receipts and packing lists",

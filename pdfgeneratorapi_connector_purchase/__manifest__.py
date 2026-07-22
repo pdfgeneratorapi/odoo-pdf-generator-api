@@ -1,5 +1,5 @@
 {
-    "name": "PDF Generator: Purchase",
+    "name": "Create Branded PDFs from any record: invoices, quotes, orders and more.",
     "version": "19.0.1.0.3",
     "category": "Purchases",
     "summary": "Branded PDF purchase orders and RFQs from Odoo",
