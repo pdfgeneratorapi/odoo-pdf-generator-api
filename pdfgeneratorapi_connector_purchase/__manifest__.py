@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator: Purchase",
-    "version": "19.0.1.0.2",
+    "version": "19.0.1.0.3",
     "category": "Purchases",
     "summary": "Branded PDF purchase orders and RFQs from Odoo",
     "author": "PDF Generator API",

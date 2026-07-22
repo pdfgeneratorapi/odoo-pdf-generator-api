@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator: Rental",
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.0.2",
     "category": "Sales",
     "summary": "Branded PDF rental orders and agreements from Odoo",
     "author": "PDF Generator API",
