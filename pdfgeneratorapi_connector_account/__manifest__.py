@@ -1,5 +1,5 @@
 {
-    "name": "PDF Generator: Invoicing",
+    "name": "Create Branded PDFs from any record: invoices, quotes, orders and more.",
     "version": "18.0.1.2.2",
     "category": "Accounting",
     "summary": "Branded PDF invoices and credit notes from Odoo",
