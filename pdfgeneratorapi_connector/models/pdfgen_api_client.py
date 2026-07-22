@@ -182,13 +182,8 @@ class PdfGenApiClient:
         params: dict | None = None,
         json_body: dict | None = None,
         retries: int = DEFAULT_RETRIES,
-        base_url: str | None = None,
     ) -> ApiResponse:
         """HTTP call with retry + backoff on transient failures.
-
-        `base_url` overrides the configured workspace base URL for the one
-        call — used by the Template Library endpoints, which always live on
-        the public production API.
 
         Retries on connection errors, timeouts, and responses with status in
         RETRYABLE_STATUSES (429 / 502 / 503 / 504). Honors `Retry-After` when
@@ -209,7 +204,7 @@ class PdfGenApiClient:
             try:
                 response = requests.request(
                     method,
-                    f"{base_url or self.base_url}{path}",
+                    f"{self.base_url}{path}",
                     params=params,
                     json=json_body,
                     timeout=self.timeout,
@@ -325,13 +320,12 @@ class PdfGenApiClient:
             params["access"] = access
         return self._request("GET", "/templates", params=params)
 
-    # The Template Library is public, global content served by the production
-    # API — it requires no auth and is identical for every workspace. Library
-    # calls therefore always target DEFAULT_BASE_URL (per the official docs at
-    # https://docs.pdfgeneratorapi.com/v4) instead of the configured regional /
-    # on-prem base URL, whose library may be empty.
-    LIBRARY_BASE_URL = DEFAULT_BASE_URL
-
+    # The Template Library is public content, but it is *per deployment*: each
+    # environment (production, staging, a regional or on-prem install) serves
+    # its own set of public templates. Library calls therefore go to the
+    # configured base URL like every other call — pinning them to production
+    # made a staging-configured Odoo list production's "Default Templates" and
+    # then copy them into a staging workspace.
     def list_library_templates(self, tags: str | None = None) -> ApiResponse:
         """List the public Template Library (`GET /templates/library`).
 
@@ -342,9 +336,7 @@ class PdfGenApiClient:
         params = {}
         if tags:
             params["tags"] = tags
-        return self._request(
-            "GET", "/templates/library", params=params or None, base_url=self.LIBRARY_BASE_URL
-        )
+        return self._request("GET", "/templates/library", params=params or None)
 
     def get_library_template(self, public_id: str) -> ApiResponse:
         """Fetch a library template's full definition
@@ -352,9 +344,7 @@ class PdfGenApiClient:
         TemplateDefinition (name, layout, pages, dataSettings, editor) that can
         be POSTed to `/templates` to copy the template into the account.
         """
-        return self._request(
-            "GET", f"/templates/library/{public_id}", base_url=self.LIBRARY_BASE_URL
-        )
+        return self._request("GET", f"/templates/library/{public_id}")
 
     def get_template_data(self, template_id: int | str) -> ApiResponse:
         """Return the sample data dict the template expects.
