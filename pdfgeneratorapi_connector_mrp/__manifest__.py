@@ -2,7 +2,7 @@
     "name": "PDF Generator: MRP",
     "version": "19.0.1.0.1",
     "category": "Manufacturing",
-    "summary": "Generate pdfgeneratorapi.com PDFs from manufacturing orders",
+    "summary": "Branded PDF manufacturing orders from Odoo",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
     "support": "support@pdfgeneratorapi.com",

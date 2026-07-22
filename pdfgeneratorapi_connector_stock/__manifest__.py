@@ -2,7 +2,7 @@
     "name": "PDF Generator: Stock",
     "version": "19.0.1.0.1",
     "category": "Inventory",
-    "summary": "Generate pdfgeneratorapi.com PDFs from stock transfers (delivery slips, receipts)",
+    "summary": "Branded PDF delivery slips, receipts and packing lists",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
     "support": "support@pdfgeneratorapi.com",
