@@ -2,7 +2,7 @@
     "name": "PDF Generator: Sales",
     "version": "18.0.1.0.2",
     "category": "Sales",
-    "summary": "Generate pdfgeneratorapi.com PDFs from quotations and sale orders",
+    "summary": "Branded PDF quotes and sales orders from Odoo",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
     "support": "support@pdfgeneratorapi.com",

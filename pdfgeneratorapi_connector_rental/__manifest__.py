@@ -2,7 +2,7 @@
     "name": "PDF Generator: Rental",
     "version": "18.0.1.0.1",
     "category": "Sales",
-    "summary": "Generate pdfgeneratorapi.com PDFs from rental orders (contracts, pickup/return slips)",
+    "summary": "Branded PDF rental orders and agreements from Odoo",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
     "support": "support@pdfgeneratorapi.com",
