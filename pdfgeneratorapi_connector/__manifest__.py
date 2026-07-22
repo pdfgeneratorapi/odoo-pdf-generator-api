@@ -2,7 +2,7 @@
     "name": "PDF Generator API",
     "version": "17.0.7.3.1",
     "category": "Productivity/Documents",
-    "summary": "Framework: generate custom PDFs of any record via pdfgeneratorapi.com",
+    "summary": "Drag-and-drop PDF templates for Odoo, no QWeb or XML",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
     "support": "support@pdfgeneratorapi.com",

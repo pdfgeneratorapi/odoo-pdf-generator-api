@@ -2,7 +2,7 @@
     "name": "PDF Generator: Purchase",
     "version": "17.0.1.0.2",
     "category": "Purchases",
-    "summary": "Generate pdfgeneratorapi.com PDFs from purchase orders",
+    "summary": "Branded PDF purchase orders and RFQs from Odoo",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
     "support": "support@pdfgeneratorapi.com",

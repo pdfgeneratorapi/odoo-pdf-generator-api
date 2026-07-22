@@ -2,7 +2,7 @@
     "name": "PDF Generator: Invoicing",
     "version": "17.0.1.2.1",
     "category": "Accounting",
-    "summary": "Generate pdfgeneratorapi.com PDFs from customer invoices and credit notes",
+    "summary": "Branded PDF invoices and credit notes from Odoo",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
     "support": "support@pdfgeneratorapi.com",
