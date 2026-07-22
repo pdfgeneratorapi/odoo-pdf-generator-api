@@ -18,4 +18,5 @@
     # Without this, fresh installs of the new layout work fine but in-place
     # upgrades of existing DBs hit the dataset's unique-per-model constraint.
     "pre_init_hook": "pre_init_hook",
+    "images": ["static/description/pdfgeneratorapi_odoo_cover_560x315.png"],
 }

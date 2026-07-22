@@ -11,4 +11,5 @@
     "data": [
         "data/pdfgen_model_dataset_rental.xml",
     ],
+    "images": ["static/description/pdfgeneratorapi_odoo_cover_560x315.png"],
 }

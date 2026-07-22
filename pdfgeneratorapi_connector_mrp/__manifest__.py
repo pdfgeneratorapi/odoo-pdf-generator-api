@@ -12,4 +12,5 @@
         "data/pdfgen_model_dataset_mrp_production.xml",
         "views/mrp_production_views.xml",
     ],
+    "images": ["static/description/pdfgeneratorapi_odoo_cover_560x315.png"],
 }
