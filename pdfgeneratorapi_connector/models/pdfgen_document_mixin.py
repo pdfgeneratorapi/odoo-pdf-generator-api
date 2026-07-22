@@ -9,6 +9,7 @@ per-company value if set, else global `ir.config_parameter` fallback.
 
 import logging
 from collections.abc import Callable
+from urllib.parse import urlparse
 
 from odoo import _, api, fields, models, release
 from odoo.exceptions import UserError
@@ -130,12 +131,16 @@ def pdfgen_template_selection(
 def _library_copy_param(env: api.Environment, public_id: str) -> str:
     """ir.config_parameter key caching a library template's account copy.
 
-    Keyed by workspace: the copy is an entity inside one pdfgen workspace, so
-    a second company pointing at a different workspace must not reuse the
-    first one's template id.
+    Keyed by base URL *and* workspace: the copy is an entity inside one
+    workspace on one deployment. A second company pointing at a different
+    workspace must not reuse the first one's template id, and repointing the
+    same workspace at another deployment (production ↔ staging) must not reuse
+    an id that only exists on the other side — that resolves to a 404 at
+    generation time.
     """
+    base_url = urlparse(pdfgen_config(env, "api_base_url") or DEFAULT_BASE_URL).netloc or "default"
     workspace = pdfgen_config(env, "workspace_identifier") or "default"
-    return f"pdfgen.library_copy.{workspace}.{public_id}"
+    return f"pdfgen.library_copy.{base_url}.{workspace}.{public_id}"
 
 
 def pdfgen_resolve_template_id(
