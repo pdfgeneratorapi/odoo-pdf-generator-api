@@ -1,8 +1,8 @@
 {
-    "name": "PDF Generator API",
+    "name": "Create Branded PDFs from any record: invoices, quotes, orders and more.",
     "version": "17.0.7.3.3",
     "category": "Productivity/Documents",
-    "summary": "Drag-and-drop PDF templates for Odoo, no QWeb or XML",
+    "summary": "Drag-and-drop PDF templates for your Odoo invoices, quotes and orders. No QWeb, no XML, no code.",
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
     "support": "support@pdfgeneratorapi.com",

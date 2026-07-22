@@ -1,5 +1,5 @@
 {
-    "name": "PDF Generator: Sales",
+    "name": "Create Branded PDFs from any record: invoices, quotes, orders and more.",
     "version": "17.0.1.0.3",
     "category": "Sales",
     "summary": "Branded PDF quotes and sales orders from Odoo",
