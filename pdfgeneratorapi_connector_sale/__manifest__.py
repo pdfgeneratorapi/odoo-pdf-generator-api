@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator: Sales",
-    "version": "17.0.1.0.2",
+    "version": "17.0.1.0.3",
     "category": "Sales",
     "summary": "Branded PDF quotes and sales orders from Odoo",
     "author": "PDF Generator API",

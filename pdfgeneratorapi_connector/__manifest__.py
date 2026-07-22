@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator API",
-    "version": "17.0.7.3.1",
+    "version": "17.0.7.3.2",
     "category": "Productivity/Documents",
     "summary": "Drag-and-drop PDF templates for Odoo, no QWeb or XML",
     "author": "PDF Generator API",

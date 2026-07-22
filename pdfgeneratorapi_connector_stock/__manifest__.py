@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator: Stock",
-    "version": "17.0.1.0.1",
+    "version": "17.0.1.0.2",
     "category": "Inventory",
     "summary": "Branded PDF delivery slips, receipts and packing lists",
     "author": "PDF Generator API",

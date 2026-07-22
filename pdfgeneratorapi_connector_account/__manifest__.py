@@ -1,6 +1,6 @@
 {
     "name": "PDF Generator: Invoicing",
-    "version": "17.0.1.2.1",
+    "version": "17.0.1.2.2",
     "category": "Accounting",
     "summary": "Branded PDF invoices and credit notes from Odoo",
     "author": "PDF Generator API",
