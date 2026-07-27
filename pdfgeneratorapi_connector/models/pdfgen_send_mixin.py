@@ -19,6 +19,9 @@ with a pdfgen-generated one.
   PDF generation. Creates the `ir.attachment` (with the `pdfgen:` marker
   the existing flows use) and returns it. Raises `UserError` on
   failure so the calling wizard can surface the message in the modal.
+  Safe to call from a compute: the wizard's own values survive the
+  cache invalidation the attachment cleanup triggers (see
+  `_pdfgen_preserving_cache`).
 
 The concrete Send wizards just expose the fields and call these helpers
 from their attachment-collection hooks: `account.move.send.wizard` for
@@ -29,6 +32,8 @@ purchase orders, delivery slips, …).
 import base64
 import logging
 import re
+from collections.abc import Iterator
+from contextlib import contextmanager
 from html import escape
 
 from odoo import _, models
@@ -234,35 +239,69 @@ class PdfgenSendMixin(models.AbstractModel):
         except (ValueError, TypeError) as e:
             raise UserError(_("API returned invalid base64: %s", e)) from e
 
-        # Honour the same Replace/Keep cleanup policy the sync wizard uses,
-        # so the two flows interoperate. Default to `replace` when the param
-        # is unset so fresh installs match the field's default.
-        icp = self.env["ir.config_parameter"].sudo()
-        if icp.get_param("pdfgen.attachment_cleanup", "replace") == "replace":
-            self.env["ir.attachment"].search(
-                [
-                    ("res_model", "=", record._name),
-                    ("res_id", "=", record.id),
-                    ("description", "=like", "pdfgen:%"),
-                    # Bypass ir.attachment._search's implicit res_field=False
-                    # filter — Send promotes attachments via res_field, and
-                    # cleanup must still find them.
-                    "|",
-                    ("res_field", "=", False),
-                    ("res_field", "!=", False),
-                ]
-            ).unlink()
-        return self.env["ir.attachment"].create(
-            {
-                "name": filename,
-                "type": "binary",
-                "datas": pdf_b64,
-                "res_model": record._name,
-                "res_id": record.id,
-                "mimetype": "application/pdf",
-                "description": f"pdfgen:template:{template_id}",
-            }
-        )
+        with self._pdfgen_preserving_cache():
+            # Honour the same Replace/Keep cleanup policy the sync wizard uses,
+            # so the two flows interoperate. Default to `replace` when the param
+            # is unset so fresh installs match the field's default.
+            icp = self.env["ir.config_parameter"].sudo()
+            if icp.get_param("pdfgen.attachment_cleanup", "replace") == "replace":
+                self.env["ir.attachment"].search(
+                    [
+                        ("res_model", "=", record._name),
+                        ("res_id", "=", record.id),
+                        ("description", "=like", "pdfgen:%"),
+                        # Bypass ir.attachment._search's implicit res_field=False
+                        # filter — Send promotes attachments via res_field, and
+                        # cleanup must still find them.
+                        "|",
+                        ("res_field", "=", False),
+                        ("res_field", "!=", False),
+                    ]
+                ).unlink()
+            return self.env["ir.attachment"].create(
+                {
+                    "name": filename,
+                    "type": "binary",
+                    "datas": pdf_b64,
+                    "res_model": record._name,
+                    "res_id": record.id,
+                    "mimetype": "application/pdf",
+                    "description": f"pdfgen:template:{template_id}",
+                }
+            )
+
+    @contextmanager
+    def _pdfgen_preserving_cache(self) -> Iterator[None]:
+        """Keep this wizard's own field values across ORM calls that wipe the
+        environment cache.
+
+        `unlink()` ends by invalidating the *whole* cache — "the orm does not
+        handle all changes made in the database, like cascading delete!"
+        (`BaseModel.unlink`). Harmless for a saved record, fatal here: the Send
+        wizards reach this from a compute that runs during `onchange`, where
+        the wizard is still an in-memory `new` record. Recipients, subject,
+        body and the chosen mail template live *only* in that cache, so
+        replacing the previous PDF used to hand the user back a blank dialog.
+
+        Snapshot before, restore after — and only for entries the call didn't
+        repopulate itself, so nothing fresher gets stomped. Values that were
+        never cached are left alone: re-reading them is correct, and forcing
+        them here would run computes (the preview's API call among them) that
+        the caller never asked for.
+        """
+        cache = self.env.cache
+        saved = []
+        for record in self:
+            for field in record._fields.values():
+                if cache.contains(record, field):
+                    value = cache.get(record, field, None)
+                    saved.append((record, field, value))
+        try:
+            yield
+        finally:
+            for record, field, value in saved:
+                if not cache.contains(record, field):
+                    cache.set(record, field, value)
 
     def _pdfgen_promote_attachment(self, record: models.Model, attachment: models.Model) -> None:
         """Make `attachment` the record's canonical PDF attachment.

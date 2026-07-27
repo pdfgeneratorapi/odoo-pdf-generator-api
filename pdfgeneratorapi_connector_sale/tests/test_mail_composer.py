@@ -299,6 +299,52 @@ class TestMailComposerPdfgen(SaleCommon):
         self.assertEqual(len(self._rendered_reports(composer)), 1)
         self.assertFalse(self._pdfgen_attachments(composer))
 
+    def test_switching_template_keeps_the_rest_of_the_dialog(self):
+        """Picking a different template must not blank the Send dialog.
+
+        The generation's Replace cleanup calls `ir.attachment.unlink()`, which
+        invalidates the *whole* environment cache. During an onchange the
+        composer is still an unsaved `new` record whose recipients, subject,
+        body and mail template only exist in that cache — so the swap used to
+        hand the user back an empty dialog. Exercised on a `new` record because
+        that is the only shape where the loss is observable.
+        """
+        self._set_dataset_default_template("42")
+        self.env["ir.attachment"].create(
+            {
+                # A leftover from an earlier template: this is what the Replace
+                # cleanup unlinks, and the unlink is what wipes the cache.
+                "name": "previous.pdf",
+                "type": "binary",
+                "datas": PDF_B64,
+                "res_model": "sale.order",
+                "res_id": self.sale_order.id,
+                "mimetype": "application/pdf",
+                "description": "pdfgen:template:41",
+            }
+        )
+        composer = self.env["mail.compose.message"].new(
+            {
+                "model": "sale.order",
+                "res_ids": repr(self.sale_order.ids),
+                "composition_mode": "comment",
+                "template_id": self.template.id,
+                "pdfgen_use_custom": True,
+                "pdfgen_template_id": "42",
+            }
+        )
+        subject, body, recipients = composer.subject, composer.body, composer.partner_ids
+        self.assertTrue(subject)
+        with patch(_BUILD_CLIENT, return_value=self._client()):
+            composer._pdfgen_substitute()
+        self.assertEqual(composer.model, "sale.order")
+        self.assertEqual(composer.template_id, self.template)
+        self.assertEqual(composer.subject, subject)
+        self.assertEqual(composer.body, body)
+        self.assertEqual(composer.partner_ids, recipients)
+        self.assertTrue(composer.pdfgen_use_custom)
+        self.assertEqual(composer.pdfgen_template_id, "42")
+
     def test_toggling_off_the_way_the_v19_client_does(self):
         """Odoo 19 saves the composer instead of running an onchange: one
         `write` carrying both the new toggle value and the attachment list it
