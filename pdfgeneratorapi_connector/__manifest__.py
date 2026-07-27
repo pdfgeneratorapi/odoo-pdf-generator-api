@@ -1,8 +1,9 @@
 {
     "name": "Create Branded PDFs from any record: invoices, quotes, orders and more.",
-    "version": "17.0.7.3.4",
+    "version": "17.0.7.3.5",
     "category": "Productivity/Documents",
-    "summary": "Drag-and-drop PDF templates for your Odoo invoices, quotes and orders. No QWeb, no XML, no code.",
+    # App Store copy, kept verbatim — the store renders it as one line.
+    "summary": "Drag-and-drop PDF templates for your Odoo invoices, quotes and orders. No QWeb, no XML, no code.",  # pylint: disable=line-too-long
     "author": "PDF Generator API",
     "website": "https://pdfgeneratorapi.com",
     "support": "support@pdfgeneratorapi.com",
